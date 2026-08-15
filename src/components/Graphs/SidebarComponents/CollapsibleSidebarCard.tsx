@@ -13,15 +13,15 @@ export const CollapsibleSidebarCard = ({title, isOpen=false, children}: Props) =
     const [showCardContent, setShowCardContent] = useState(isOpen);
 
     return (
-        <Card>
-            <Card.Body className="p-1">
-                <Card.Subtitle onClick={() => setShowCardContent(!showCardContent)}
+        <Card className="graph-tool-card">
+            <Card.Body>
+                <Card.Subtitle className="graph-tool-title" onClick={() => setShowCardContent(!showCardContent)}
                                style={{cursor: "pointer"}}>
                     {showCardContent ? <BsCaretDownFill/> : <BsCaretRightFill/>}
                     {title}
                 </Card.Subtitle>
                 <Collapse in={showCardContent}>
-                    <Card.Text className="border p-1">
+                    <Card.Text className="graph-tool-content">
                         {children}
                     </Card.Text>
                 </Collapse>

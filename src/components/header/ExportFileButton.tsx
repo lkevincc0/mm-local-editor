@@ -48,13 +48,6 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         return "Export is ready.";
     };
 
-    const recentreView = (graph: Graph) => {
-        if (graph) {
-            graph.fit();
-            graph.center();
-        }
-    };
-
     const findSVGElementInGraph = (graph: Graph) => {
         // Check if the model is ready before proceeding
         if (!isModelReadyForExport()) {
@@ -70,8 +63,6 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         if (!graph) {
             return null;
         }
-
-        recentreView(graph);
 
         // Clear all selection for no green bounding box
         graph.clearSelection();
@@ -142,9 +133,9 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
             return;
         }
 
-        // Append a white background rect to the SVG
-        // Use D3 to select the SVG and append a white background rect
-        const svg = d3.select(svgElement);
+        // Export a copy so the visible canvas is never mutated.
+        const svgCopy = svgElement.cloneNode(true) as SVGSVGElement;
+        const svg = d3.select(svgCopy);
         svg.insert("rect", ":first-child")
             .attr("width", "100%")
             .attr("height", "100%")
@@ -152,7 +143,7 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
 
         // Serialize the SVG element to a string
         const serializer = new XMLSerializer();
-        const svgString = serializer.serializeToString(svgElement);
+        const svgString = serializer.serializeToString(svgCopy);
 
         // Create a canvas element
         const canvas = document.createElement('canvas');

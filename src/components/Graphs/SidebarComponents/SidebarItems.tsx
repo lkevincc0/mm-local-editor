@@ -145,7 +145,7 @@ const SidebarItems = ({graph, className=""}: SidebarItemsProps) => {
         addSidebarItem(graph, sidebar, lineSymbol, dragAndDropEdge(createEdgeCell(LINE_SIZE, LINE_SIZE)));
     }, [divSidebar.current]);
 
-    return <div className={`border border-black p-1 rounded ${className}`}
+    return <div className={`graph-sidebar-items ${className}`}
                 ref={divSidebar}/>;
 };
 
