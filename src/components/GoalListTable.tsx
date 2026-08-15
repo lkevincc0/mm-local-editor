@@ -1,11 +1,6 @@
 import React, {RefObject, useState} from "react";
-import Button from "react-bootstrap/Button";
-import Table from "react-bootstrap/Table";
-import Row from "react-bootstrap/Row";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import {Label, newTreeGoal, TreeGoal} from "./types.ts";
-import {handleGoalBlur, handleGoalKeyPress, isEmptyGoal, isGoalDraggable, isTextEmpty} from "./utils/GoalHint.tsx";
+import {handleGoalBlur, isEmptyGoal, isGoalDraggable} from "./utils/GoalHint.tsx";
 import {
     addGoalToTab,
     deleteGoalFromGoalList,
@@ -13,7 +8,8 @@ import {
     updateTextForGoalId
 } from "./context/treeDataSlice.ts";
 import {useFileContext} from "./context/FileProvider.tsx";
-import {BsFillTrash3Fill} from "react-icons/bs";
+import {BsFillTrash3Fill, BsGripVertical} from "react-icons/bs";
+import styles from "./GoalListTable.module.css";
 
 const goalDescriptionForLabel = (label: Label): string => {
     const goalNames: Partial<Record<Label, string>> = {
@@ -34,59 +30,42 @@ interface Props {
 
 const GoalListTable: React.FC<Props> = ({label, goals, setDraggedItem, groupSelected, setGroupSelected, handleSynTableTree, inputRef}) => {
 	const treeData = useFileContext();
-	const {dispatch, treeIds} = treeData;
+	const {dispatch} = treeData;
 	const [editingGoalId, setEditingGoalId] = useState<number | null>(null);
 	const [editedText, setEditedText] = useState<string>("");
-	const [newRowAllowed, setNewRowAllowed] = useState<boolean>(false);
-
-	// add new row
-	const handleKeyPress = (
-		e: React.KeyboardEvent<HTMLInputElement>,
-		label: Label
-	) => {
-		if (e.key === "Enter") {
-			e.preventDefault(); // Prevent default Enter key behavior
-			dispatch(addGoalToTab(newTreeGoal({type: label})));
-		}
-	};
+	const [invalidGoalId, setInvalidGoalId] = useState<number | null>(null);
 
 	// Function to update tree data while user finish input changes
 	const handleSave = (treeItem: TreeGoal, text: string) => {
 		handleSynTableTree(treeItem, text);
 	};
 
-	// Handle key press with GoalHint functions
-	const handleTableKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, row: TreeGoal, label: Label) => {
-
-		// If we're editing this specific goal
-		if (editingGoalId === row.id && !newRowAllowed) {
-			handleGoalKeyPress(
-				e,
-				row.content, // original content
-				editedText, // current content
-				(content) => {
-					// On save callback
-					dispatch(updateTextForGoalId({id: row.id, text: content}));
-					handleSave(row, content);
-					// allow creating a new roll after current roll is saved
-					setNewRowAllowed(true);
-
-				},
-				() => {
-					// On cancel callback
-					// empty or press esc will keep origjal item and stay on current row
-					setEditedText(row.content);
-					setNewRowAllowed(false);
-				}
-			);
+	const handleTableKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, row: TreeGoal) => {
+		if (event.key === "Escape") {
+			event.preventDefault();
+			setEditedText(row.content);
+			setEditingGoalId(null);
+			setInvalidGoalId(null);
+			event.currentTarget.blur();
+			return;
 		}
-		// enter to create new row
-		else if (newRowAllowed && e.key === "Enter") {
-			// Second Enter after completing edit - only create new row if current row is not empty
-			handleKeyPress(e, label);
-			setNewRowAllowed(false);
-			// setEditingGoalId(null); // Exit editing mode
+
+		if (event.key !== "Enter") return;
+
+		event.preventDefault();
+		const content = editedText.trim();
+		if (!content) {
+			setInvalidGoalId(row.id);
+			return;
 		}
+
+		dispatch(updateTextForGoalId({id: row.id, text: content}));
+		handleSave(row, content);
+		setEditingGoalId(null);
+		setInvalidGoalId(null);
+		dispatch(addGoalToTab(newTreeGoal({type: label})));
+
+		requestAnimationFrame(() => inputRef.current?.focus());
 	};
 
 	// Handle blur with GoalHint functions
@@ -124,7 +103,6 @@ const GoalListTable: React.FC<Props> = ({label, goals, setDraggedItem, groupSele
 
 
 	const handleDragStart = (row: TreeGoal) => {
-		console.log("drag start");
 		setDraggedItem(row);
 	};
 
@@ -162,10 +140,6 @@ const GoalListTable: React.FC<Props> = ({label, goals, setDraggedItem, groupSele
 		);
 	};
 
-    const isGoalInHierarchy = (goal: TreeGoal): boolean => {
-        return treeIds[goal.id]?.length > 0;
-    };
-
 	// Select all items in the goals tab
 	const handleSelectAll = () => {
 		const allItemsInTab = selectGoalsForLabel({treeData}, label);
@@ -179,80 +153,81 @@ const GoalListTable: React.FC<Props> = ({label, goals, setDraggedItem, groupSele
 		}
 	};
 
+	const nonEmptyGoalCount = goals.filter((goal) => !isEmptyGoal(goal)).length;
+
 	return (
-		<Table striped bordered hover>
-			<thead>
-				<tr>
-					<th style={{width: '1px', whiteSpace: 'nowrap'}}>
-						<Form.Group as={Row}>
-							<Form.Check
+		<div className={styles.editor}>
+			<div className={styles.editorHeader}>
+				<label className={styles.selectAll}>
+					<input type="checkbox" onChange={handleSelectAll} checked={isAllSelected()}/>
+					<span>{goalDescriptionForLabel(label)}</span>
+				</label>
+				<span>{nonEmptyGoalCount} {nonEmptyGoalCount === 1 ? "entry" : "entries"}</span>
+			</div>
+
+			<div className={styles.goalList}>
+				{goals.map((row, index) => {
+					const isEditing = editingGoalId === row.id;
+					const isInvalid = invalidGoalId === row.id;
+
+					return (
+						<div className={`${styles.goalRow} ${isEditing ? styles.editing : ""}`} key={`${label}-${row.id}`}>
+							<span
+								className={styles.dragHandle}
+								draggable={isGoalDraggable(row)}
+								onDragStart={() => handleDragStart(row)}
+								title={isEmptyGoal(row) ? "Name this goal before dragging" : "Drag to hierarchy"}
+							>
+								<BsGripVertical/>
+							</span>
+							<input
+								className={styles.rowCheckbox}
 								type="checkbox"
-								onChange={handleSelectAll}
-								checked={isAllSelected()}
+								onChange={() => handleCheckboxToggle(row)}
+								checked={isChecked(row)}
+								disabled={isEmptyGoal(row)}
+								aria-label={`Select ${row.content || label} goal`}
 							/>
-						</Form.Group>
-					</th>
-					<th style={{display: 'flex'}}>
-						{goalDescriptionForLabel(label)}
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-			{goals.map((row, index) => (
-				<tr key={`${label}-${index}`}>
-					<td className="align-middle">
-						<Form.Check type="checkbox"
-									onChange={() => handleCheckboxToggle(row)}
-									checked={isChecked(row)}
-									disabled={isEmptyGoal(row)}/>
-					</td>
-					<td>
-						<InputGroup>
-                            <Form.Control onDragStart={() => handleDragStart(row)}
-                                          draggable={isGoalDraggable(row)} // Only draggable if not empty
-                                          type="text"
-                                          value={editingGoalId === row.id ? editedText : row.content} // Show edited text when editing
-                                          onChange={(e) => {
-                                              if (editingGoalId === row.id) {
-                                                  setEditedText(e.target.value); // Allow free typing
-                                              }
-                                          }}
-                                          onFocus={() => {
-                                              // Start editing when focused
-                                              if (editingGoalId !== row.id) {
-                                                  setEditingGoalId(row.id);
-                                                  setEditedText(row.content);
-                                              }
-                                          }}
-                                          placeholder={`Enter ${label}...`}
-                                          spellCheck
-                                          className={`
-											  ${isEmptyGoal(row) ? "text-muted" : ""}
-											  ${editingGoalId === row.id && isTextEmpty(editedText) ? "is-invalid" : ""}
-											  ${isGoalInHierarchy(row) ? "" : "bg-secondary-subtle"}
-										  `}
-                                          onKeyDown={(e) => handleTableKeyPress(e as React.KeyboardEvent<HTMLInputElement>, row, label)}
-                                          onBlur={() => handleTableBlur(row)}
-                                          ref={index === selectGoalsForLabel({treeData}, label).length - 1 ? inputRef : undefined}
-                            />
-
-							{selectGoalsForLabel({treeData}, label).length > 1 && (
-								<Button onClick={() => handleDeleteRow(row)}>
+							<div className={styles.inputArea}>
+								<input
+									className={`${styles.goalInput} ${isInvalid ? styles.invalid : ""}`}
+									type="text"
+									value={isEditing ? editedText : row.content}
+									onChange={(event) => {
+										if (!isEditing) return;
+										setEditedText(event.target.value);
+										if (event.target.value.trim()) setInvalidGoalId(null);
+									}}
+									onFocus={() => {
+										if (!isEditing) {
+											setEditingGoalId(row.id);
+											setEditedText(row.content);
+										}
+									}}
+									placeholder={`Add a ${label.toLowerCase()} goal`}
+									spellCheck
+									onKeyDown={(event) => handleTableKeyDown(event, row)}
+									onBlur={() => handleTableBlur(row)}
+									ref={index === goals.length - 1 ? inputRef : undefined}
+								/>
+								{isInvalid && <span className={styles.errorText}>Enter a name or press Esc</span>}
+							</div>
+							{goals.length > 1 && (
+								<button
+									type="button"
+									className={styles.deleteButton}
+									onClick={() => handleDeleteRow(row)}
+									aria-label={`Delete ${row.content || label} goal`}
+								>
 									<BsFillTrash3Fill/>
-								</Button>
+								</button>
 							)}
-
-							{editingGoalId === row.id && isTextEmpty(editedText) && (
-								<div className="invalid-feedback d-block">
-									Content cannot be empty
-								</div>
-							)}
-						</InputGroup>
-					</td>
-				</tr>
-			))}
-			</tbody>
-		</Table>
+						</div>
+					);
+				})}
+			</div>
+			<p className={styles.keyboardHint}>Enter saves and starts the next goal · Esc cancels</p>
+		</div>
 	);
 };
 

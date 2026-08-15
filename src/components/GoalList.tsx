@@ -18,9 +18,10 @@ type GoalListProps = {
     setGroupSelected: (groupSelected: TreeGoal[]) => void;
     handleSynTableTree: (treeItem: TreeGoal, editedText: string) => void;
     handleDropGroupSelected: () => void;
+    panelActions?: React.ReactNode;
 };
 
-const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedItem, groupSelected, setGroupSelected, handleSynTableTree, handleDropGroupSelected,}, ref) => {
+const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedItem, groupSelected, setGroupSelected, handleSynTableTree, handleDropGroupSelected, panelActions}, ref) => {
         const treeData = useFileContext();
         const {dispatch, tabs} = treeData;
         const [activeKey, setActiveKey] = useState<Label>(tabs.keys().next().value ?? "Do");
@@ -58,19 +59,23 @@ const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedIte
         };
 
         const GroupDropBtn = () => {
+            if (groupSelected.length === 0) return null;
+
             return (
-                <div className="d-flex justify-content-end my-2">
-                    <Button variant="primary"
-                            className="me-1"
+                <div className={styles.footerActions}>
+                    <span>{groupSelected.length} selected</span>
+                    <Button variant="dark"
+                            className={styles.groupButton}
                             disabled={groupSelected.length <= 0}
                             onClick={handleDropGroupSelected}>
                         {/* Click to Drop To Right Panel */}
-                        Add Group
+                        Add to hierarchy
                     </Button>
-                    <Button variant="danger"
+                    <Button variant="outline-danger"
+                            className={styles.deleteSelectedButton}
                             disabled={groupSelected.length <= 0}
                             onClick={handleDeleteSelected}>
-                        Delete Selected
+                        Delete
                     </Button>
                 </div>
             );
@@ -78,6 +83,16 @@ const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedIte
 
         return (
             <div className={styles.tabContainer} ref={ref}>
+                <div className={styles.sectionHeading}>
+                    <div>
+                        <span className={styles.eyebrow}>Goal library</span>
+                        <strong>Define your model</strong>
+                    </div>
+                    <div className={styles.headingMeta}>
+                        <span className={styles.countLabel}>{tabs.size} types</span>
+                        {panelActions}
+                    </div>
+                </div>
                 <Tab.Container activeKey={activeKey ?? undefined}
                                onSelect={(label: string | null) => handleSelect(label as Label ?? "Be")}>
                     <Nav variant="tabs" className="flex-row">
@@ -85,7 +100,7 @@ const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedIte
                             <Nav.Item key={tab.label} className={styles.navItem}>
                                 <Nav.Link eventKey={tab.label}
                                           active={activeKey === tab.label}
-                                          className={`${styles.navLink} ${(activeKey === tab.label) ? "bg-primary" : ""}`}>
+                                          className={`${styles.navLink} ${(activeKey === tab.label) ? styles.active : ""}`}>
                                     <img src={tab.icon}
                                          alt={`${tab.label} icon`}
                                          className={styles.icon}
@@ -105,14 +120,15 @@ const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedIte
                                                setGroupSelected={setGroupSelected}
                                                handleSynTableTree={handleSynTableTree}
                                                inputRef={inputRef}/>
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <Button className="me-2"
+                                <div className={styles.editorFooter}>
+                                    <Button className={styles.addGoalButton}
                                             onClick={() => handleAddRow(activeKey)}
-                                            variant="primary">
-                                        <BsPlus/>
+                                            variant="dark"
+                                            aria-label={`Add ${activeKey} goal`}>
+                                        <BsPlus/> Add {activeKey.toLowerCase()} goal
                                     </Button>
-                                    <div className="text-muted">
-                                        Drag goals to arrange hierarchy
+                                    <div className={styles.dragHint}>
+                                        Drag the handle to place a goal in the hierarchy
                                     </div>
                                 </div>
                             </Tab.Pane>
