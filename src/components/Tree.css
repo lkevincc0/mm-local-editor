@@ -2,6 +2,9 @@
 .edit-icon {
 	visibility: hidden;
 	margin-right: 10px;
+	opacity: 0;
+	transform: translateY(1px);
+	transition: opacity 140ms ease, transform 140ms ease;
 }
 
 .delete-icon:hover,
@@ -12,10 +15,50 @@
 .tree-list:hover .delete-icon,
 .tree-list:hover .edit-icon {
 	visibility: visible;
+	opacity: 1;
+	transform: translateY(0);
 }
 
 .tree-list:hover {
 	cursor: move;
+	border-color: #9f978b !important;
+	box-shadow: 0 3px 12px rgba(40, 37, 31, 0.08);
+}
+
+.tree-list {
+	margin-bottom: 4px;
+	transition: border-color 150ms ease, box-shadow 180ms ease;
+}
+
+.tree-wrapper {
+	max-height: 160px;
+	overflow: hidden;
+}
+
+.tree-collapse-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 120ms ease;
+}
+
+.tree-collapse-icon:active {
+	transform: scale(0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tree-list,
+	.tree-wrapper,
+	.tree-collapse-icon,
+	.delete-icon,
+	.edit-icon {
+		animation: none;
+		transition: none;
+	}
+}
+
+.hierarchy-panel .tree-list {
+	background: #fff !important;
 }
 
 input:focus {

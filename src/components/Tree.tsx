@@ -4,7 +4,6 @@ import DoIcon from "/img/Function.png";
 import BeIcon from "/img/Cloud.png";
 import FeelIcon from "/img/Heart.png";
 import ConcernIcon from "/img/Risk.png";
-import Nestable, {NestableProps} from "react-nestable";
 import {FaPlus, FaMinus} from "react-icons/fa";
 import {
     SimpleTreeItemWrapper,
@@ -32,19 +31,19 @@ const treeListStyle: React.CSSProperties = {
     position: "relative",
     background: "white",
     display: "flex",
-    border: "1px solid gray",
-    borderRadius: "5px",
+    border: "1px solid #deddd6",
+    borderRadius: "8px",
     alignItems: "center",
-    padding: "0.1rem",
+    padding: "0.35rem 0.5rem",
     minWidth: "100px",
     width: "100%",
 };
 
 const treeInputStyle: React.CSSProperties = {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "transparent",
     border: "none",
     margin: 0,
-    padding: 0,
+    padding: "0.35rem 0.5rem",
     flex: 1,
     outline: "none",
     width: "100%",
@@ -192,6 +191,13 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
       (itemRef) => itemRef.goalId === treeItem.id && itemRef.instanceId === treeItem.instanceId
     );
 
+    const handleCollapseClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        if (!onCollapse || !childCount) return;
+
+        onCollapse();
+    };
+
     const handleEdit = () => {
         if (isEmptyGoal(treeItem)) {
           return;
@@ -269,6 +275,8 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
           manualDrag
           showDragHandle={false}
           hideCollapseButton
+          className="tree-wrapper"
+          data-tree-depth={depth}
         >
         <div
           style={{
@@ -304,13 +312,24 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
                 justifyContent: "center",
                 cursor: childCount ? "pointer" : "default",
               }}
-              onClick={(event) => {
-                event.stopPropagation();
-                onCollapse?.();
+              onClick={handleCollapseClick}
+              onDoubleClick={(event) => event.stopPropagation()}
+              onKeyDown={(event) => {
+                if (childCount && (event.key === "Enter" || event.key === " ")) {
+                  event.preventDefault();
+                  event.currentTarget.click();
+                }
               }}
+              role={childCount ? "button" : undefined}
+              tabIndex={childCount ? 0 : -1}
+              aria-label={childCount
+                ? `${collapsed ? "Expand" : "Collapse"} ${treeItem.content}`
+                : undefined}
             >
               {childCount ? (
-                collapsed ? <FaPlus size={13} /> : <FaMinus size={13} />
+                <span className={`tree-collapse-icon ${collapsed ? "is-collapsed" : ""}`}>
+                  {collapsed ? <FaPlus size={13} /> : <FaMinus size={13} />}
+                </span>
               ) : null}
             </div>
             <div
@@ -362,6 +381,7 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
           <div
             className="edit-icon"
             onMouseDown={(event) => event.stopPropagation()}
+            onDoubleClick={(event) => event.stopPropagation()}
             onClick={(event) => {
               event.stopPropagation();
               if (isEditing) {
@@ -388,6 +408,7 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
               setDisableOnBlur(true);
               event.stopPropagation();
             }}
+            onDoubleClick={(event) => event.stopPropagation()}
             onClick={(event) => {
               event.stopPropagation();
               if (isEditing) {
