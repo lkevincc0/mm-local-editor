@@ -1,0 +1,52 @@
+.canvas-toolbar {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 5px 20px;
+	background: #fbfaf7;
+	border-bottom: 1px solid #d8d6cf;
+}
+
+.canvas-toolbar-pill {
+	border: 1px solid transparent;
+	background: transparent;
+    color: #6d6c66;
+	border-radius: 6px;
+	padding: 6px 11px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.canvas-toolbar-pill:hover {
+    border-color: #a9a399;
+    color: #11110f;
+}
+
+.canvas-toolbar-pill.active {
+	background: #fff;
+	color: #1f1f1b;
+	border-color: #aaa79f;
+	box-shadow: inset 0 -2px 0 #2b2a26;
+}
+
+.canvas-toolbar-sep {
+    width: 1px;
+    height: 20px;
+	background: #d8d6cf;
+    margin: 0 6px;
+}
+
+.canvas-toolbar-help {
+    display: inline-flex;
+    align-items: center;
+    color: #6d6c66;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.canvas-toolbar-help:hover {
+    color: #11110f;
+}

@@ -1,5 +1,5 @@
-import {Resizable, ResizeCallback} from "re-resizable";
 import React, {useEffect, useRef, useState} from "react";
+import {BsChevronLeft, BsChevronRight, BsXLg} from "react-icons/bs";
 
 import ErrorModal from "./ErrorModal";
 import GoalList from "./GoalList";
@@ -10,83 +10,86 @@ import GraphWorker from "./Graphs/GraphWorker";
 import {addGoalToTree, updateTextForGoalId} from "./context/treeDataSlice.ts";
 import {isEmptyGoal} from "./utils/GoalHint.tsx";
 import {TreeGoal, InstanceId} from "./types.ts";
-
-const defaultStyle = {
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "center",
-  borderStyle: "solid",
-  borderColor: "lightgrey",
-  borderWidth: "1px",
-  borderRadius: "3px",
-};
-
-const DEFINED_PROPORTIONS = {
-  maxWidth: "80%",
-  minWidth: "10%",
-};
-
-const INITIAL_PROPORTIONS = {
-  sectionOne: 0.5,
-  sectionThree: 0.63,
-  sectionsCombine: {
-    sectionOne: 0.2,
-    sectionThree: 0.5,
-  },
-};
-
-const DEFAULT_HEIGHT = "800px";
-
-
+import type {PanelDock} from "./ProjectEdit.tsx";
 
 type SectionPanelProps = {
   showGoalSection: boolean;
+  setShowGoalSection: (show: boolean) => void;
+  goalDock: PanelDock;
+  setGoalDock: (dock: PanelDock) => void;
+  showHierarchySection: boolean;
+  setShowHierarchySection: (show: boolean) => void;
+  hierarchyDock: PanelDock;
+  setHierarchyDock: (dock: PanelDock) => void;
   showGraphSection: boolean;
-  setShowGoalSection: (showGoalSection: boolean) => void;
   paddingX: number;
 };
 
+type PanelControlsProps = {
+  dock: PanelDock;
+  label: string;
+  onDock: (dock: PanelDock) => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
+};
+
+const PanelControls = ({dock, label, onDock, onClose}: PanelControlsProps) => (
+  <div className="panel-actions" aria-label={`${label} panel controls`}>
+    <button
+      type="button"
+      className={`panel-action ${dock === "left" ? "active" : ""}`}
+      onClick={() => onDock("left")}
+      title={`Dock ${label} left`}
+      aria-label={`Dock ${label} left`}
+    >
+      <BsChevronLeft />
+    </button>
+    <button
+      type="button"
+      className={`panel-action ${dock === "right" ? "active" : ""}`}
+      onClick={() => onDock("right")}
+      title={`Dock ${label} right`}
+      aria-label={`Dock ${label} right`}
+    >
+      <BsChevronRight />
+    </button>
+    <button
+      type="button"
+      className="panel-action panel-close"
+      onClick={onClose}
+      title={`Close ${label}`}
+      aria-label={`Close ${label}`}
+    >
+      <BsXLg />
+    </button>
+  </div>
+);
+
 const SectionPanel: React.FC<SectionPanelProps> = ({
   showGoalSection,
-  showGraphSection,
   setShowGoalSection,
+  goalDock,
+  setGoalDock,
+  showHierarchySection,
+  setShowHierarchySection,
+  hierarchyDock,
+  setHierarchyDock,
+  showGraphSection,
   paddingX,
 }) => {
-  const [sectionOneWidth, setSectionOneWidth] = useState(0);
-  const [sectionThreeWidth, setSectionThreeWidth] = useState(0);
-  const [parentWidth, setParentWidth] = useState(0);
-
   const [draggedItem, setDraggedItem] = useState<TreeGoal | null>(null);
   // Simply store ids of all items in the tree for fast check instead of recursive search
     const {dispatch, tree} = useFileContext();
 
   const [groupSelected, setGroupSelected] = useState<TreeGoal[]>([]);
 
-  const [existingItemIds, setExistingItemIds] = useState<number[]>([]);
     const [existingGoalReferenceInstanceId, setExistingGoalReferenceInstanceId] = useState<{goalId: TreeGoal["id"]; instanceId: InstanceId}[]>([])
   const [existingError, setExistingError] = useState<boolean>(false);
 
   // const [isHintVisible, setIsHintVisible] = useState(true);
 
-  const sectionTwoRef = useRef<HTMLDivElement>(null);
-  const parentRef = useRef<HTMLDivElement>(null);
   const goalListRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle section one resize and section three auto resize
-  const handleResizeSectionOne: ResizeCallback = (_event, _direction, ref) => {
-    setSectionOneWidth(ref.offsetWidth);
-        if (sectionTwoRef.current) {
-            const totalWidth =
-                ref.offsetWidth + sectionTwoRef.current.offsetWidth + sectionThreeWidth;
-
-            if (totalWidth >= parentWidth) {
-      setSectionThreeWidth(
-        parentWidth - ref.offsetWidth - sectionTwoRef.current.offsetWidth
-      );
-    }
-        }
-  };
   // Clear timeout when component unmounts
   useEffect(() => {
     return () => {
@@ -95,26 +98,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
       }
     };
   }, []);
-
-  // Handle section three resize and section one auto resize
-  const handleResizeSectionThree: ResizeCallback = (
-    _event,
-    _direction,
-    ref
-  ) => {
-    setSectionThreeWidth(ref.offsetWidth);
-    // If the width sum exceeds the parent total width, auto resize the section one until reach the minimum
-    if (
-      sectionTwoRef.current &&
-      sectionOneWidth + sectionTwoRef.current.offsetWidth + ref.offsetWidth >=
-        parentWidth
-    ) {
-      setSectionOneWidth(
-        parentWidth - ref.offsetWidth - sectionTwoRef.current.offsetWidth
-      );
-    }
-    console.log(sectionOneWidth);
-  };
 
   // Hide the drop error modal automatically after a set time
   const hideErrorModalTimeout = () => {
@@ -126,7 +109,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
     }
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
-      setExistingItemIds([]);
       setGroupSelected([]);
       setExistingError(false);
     }, delayTime);
@@ -147,7 +129,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
             if (!tree.map((item) => item.id).includes(draggedItem.id)) {
               dispatch(addGoalToTree(draggedItem));
           } else {
-              setExistingItemIds([...existingItemIds, draggedItem.id]);
               setExistingError(true);
               hideErrorModalTimeout();
           }
@@ -167,10 +148,9 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
 
     // If all items are in the tree, then show the warning
     if (newItemsToAdd.length === 0) {
-      setExistingItemIds([...groupSelected.map((item) => item.id)]);
       setExistingError(true);
       hideErrorModalTimeout();
-     
+
       return;
     }
 
@@ -184,7 +164,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
   };
 
   const handleGroupDropModal = () => {
-    setExistingItemIds([]);
     setExistingError(false);
     setGroupSelected([]);
   };
@@ -194,45 +173,80 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
     dispatch(updateTextForGoalId({id: treeItem.id, text: editedText}));
   };
 
-  // Get the parent div inner width and set starter width for section one and section three
-  useEffect(() => {
-    if (parentRef.current) {
-      const newParentWidth = parentRef.current.clientWidth - paddingX * 2;
-      setParentWidth(newParentWidth);
-
-      if (showGoalSection && showGraphSection) {
-        setSectionOneWidth(
-          newParentWidth * INITIAL_PROPORTIONS.sectionsCombine.sectionOne
-        );
-        setSectionThreeWidth(
-          newParentWidth * INITIAL_PROPORTIONS.sectionsCombine.sectionThree
-        );
-      } 
-      else if (showGoalSection) {
-        setSectionOneWidth(newParentWidth * INITIAL_PROPORTIONS.sectionOne);
-      } 
-      else if (showGraphSection) {
-        setSectionThreeWidth(newParentWidth * INITIAL_PROPORTIONS.sectionThree);
-      } 
-      else {
-        setSectionOneWidth(newParentWidth * INITIAL_PROPORTIONS.sectionOne);
-        setSectionThreeWidth(newParentWidth * INITIAL_PROPORTIONS.sectionThree);
-      }
+  const closePanel = (panel: HTMLElement | null, onClose: () => void) => {
+    if (!panel || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onClose();
+      return;
     }
-  }, [paddingX, showGoalSection, showGraphSection]); 
+
+    panel.classList.add("is-closing");
+
+    window.setTimeout(onClose, 190);
+  };
+
+  const renderGoalPanel = () => (
+    <section className="dock-panel goal-library-panel" aria-label="Goal library panel">
+      <GoalList
+        ref={goalListRef}
+        setDraggedItem={setDraggedItem}
+        groupSelected={groupSelected}
+        setGroupSelected={setGroupSelected}
+        handleSynTableTree={(treeItem: TreeGoal, text: string) => dispatch(updateTextForGoalId({id: treeItem.id, text}))}
+        handleDropGroupSelected={handleDropGroupSelected}
+        panelActions={
+          <PanelControls
+            dock={goalDock}
+            label="Goal library"
+            onDock={setGoalDock}
+            onClose={(event) => closePanel(
+              event.currentTarget.closest<HTMLElement>(".dock-panel"),
+              () => setShowGoalSection(false)
+            )}
+          />
+        }
+      />
+    </section>
+  );
+
+  const renderHierarchyPanel = () => (
+    <section className="dock-panel hierarchy-panel" aria-label="Model hierarchy panel">
+      <div
+        className="hierarchy-panel-content"
+        onDrop={handleDrop}
+        onDragOver={(event) => event.preventDefault()}
+      >
+        <div className="panel-heading hierarchy-panel-heading">
+          <div>
+            <span className="panel-eyebrow">Structure</span>
+            <strong>Model hierarchy</strong>
+          </div>
+          <div className="panel-heading-meta">
+            <span className="panel-status">Drag to reorder</span>
+            <PanelControls
+              dock={hierarchyDock}
+              label="Model hierarchy"
+              onDock={setHierarchyDock}
+              onClose={(event) => closePanel(
+                event.currentTarget.closest<HTMLElement>(".dock-panel"),
+                () => setShowHierarchySection(false)
+              )}
+            />
+          </div>
+        </div>
+        <Tree
+          handleSynTableTree={handleSynTableTree}
+          existingGoalReferenceInstanceId={existingGoalReferenceInstanceId}
+          setExistingGoalReferenceInstanceId={setExistingGoalReferenceInstanceId}
+        />
+      </div>
+    </section>
+  );
 
   return (
     <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        padding: paddingX,
-      }}
-      ref={parentRef}
-      // onClick={() => setIsHintVisible(false)}
+      className="section-panel"
+      style={{padding: paddingX}}
     >
-      {/* Additional helper components */}
       <ErrorModal
         show={existingError}
         title="Drop Failed"
@@ -240,82 +254,31 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         } already ${groupSelected.length > 1 ? "exist" : "exists"}.`}
         onHide={handleGroupDropModal}
       />
-      {/* <DragHint isHintVisible={isHintVisible} width={sectionOneWidth-paddingX*2} height={4}/> */}
 
-      {/* Goal List Section */}
-      <Resizable
-        handleClasses={{right: "right-handler"}}
-        enable={{right: true}}
-        style={{
-          ...defaultStyle,
-          backgroundColor: "rgb(236, 244, 244)",
-          display: showGoalSection ? "flex" : "none",
-        }}
-        size={{width: sectionOneWidth, height: "100%"}}
-        maxWidth={DEFINED_PROPORTIONS.maxWidth}
-        minWidth={DEFINED_PROPORTIONS.minWidth}
-        minHeight={DEFAULT_HEIGHT}
-        onResize={handleResizeSectionOne}
-      >
-        {/* First Panel Content */}
-        <GoalList
-          ref={goalListRef}
-          setDraggedItem={setDraggedItem}
-          groupSelected={groupSelected} 
-          setGroupSelected={setGroupSelected}
-          handleSynTableTree={(treeItem: TreeGoal, text: string) => dispatch(updateTextForGoalId({id: treeItem.id, text: text}))}
-          handleDropGroupSelected={handleDropGroupSelected}
-        />
-      </Resizable>
-
-      {/* Cluster Hierarchy Section */}
-      <div
-        style={{
-          ...defaultStyle,
-          width: "100%",
-          minWidth: DEFINED_PROPORTIONS.minWidth,
-          minHeight: DEFAULT_HEIGHT,
-          height: DEFAULT_HEIGHT,
-          padding: "10px",
-          backgroundColor: "rgba(35, 144, 231, 0.1)",
-          overflow: "auto",
-        }}
-        onDrop={handleDrop}
-        onDragOver={(event) => event.preventDefault()}
-        ref={sectionTwoRef}
-      >
-        <Tree
-
-          // existingItemIds={existingItemIds}
-          // setTreeIds={setTreeIds}
-          handleSynTableTree={handleSynTableTree}
-          // setExistingItemIds={setExistingItemIds}
-          existingGoalReferenceInstanceId={existingGoalReferenceInstanceId}
-          setExistingGoalReferenceInstanceId={setExistingGoalReferenceInstanceId}
-        />
+      <div className="panel-dock panel-dock-left">
+        {showGoalSection && goalDock === "left" && renderGoalPanel()}
+        {showHierarchySection && hierarchyDock === "left" && renderHierarchyPanel()}
       </div>
 
-      {/* Graph Render Section */}
-      <Resizable
-        handleClasses={{left: "left-handler"}}
-        enable={{left: true}}
-        style={{
-          ...defaultStyle,
-          backgroundColor: "rgb(236, 244, 244)",
-          display: showGraphSection ? "flex" : "none",
-        }}
-        size={{
-          width: sectionThreeWidth,
-          height: "100%",
-        }}
-        maxWidth={DEFINED_PROPORTIONS.maxWidth}
-        minWidth={DEFINED_PROPORTIONS.minWidth}
-        minHeight={DEFAULT_HEIGHT}
-        onResize={handleResizeSectionThree}
-      >
-        {/* Third Panel Content */}
-        <GraphWorker showGraphSection={showGraphSection}/>
-      </Resizable>
+      {showGraphSection && (
+        <main className="editor-canvas-panel">
+          <div className="panel-heading canvas-panel-heading">
+            <div>
+              <span className="panel-eyebrow">Workspace</span>
+              <strong>Model canvas</strong>
+            </div>
+            <span className="panel-status">Editable</span>
+          </div>
+          <div className="canvas-panel-body">
+            <GraphWorker showGraphSection={showGraphSection}/>
+          </div>
+        </main>
+      )}
+
+      <div className="panel-dock panel-dock-right">
+        {showGoalSection && goalDock === "right" && renderGoalPanel()}
+        {showHierarchySection && hierarchyDock === "right" && renderHierarchyPanel()}
+      </div>
     </div>
   );
 };
