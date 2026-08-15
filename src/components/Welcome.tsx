@@ -51,12 +51,12 @@ const Welcome: React.FC = () => {
                 <nav className={styles.nav} aria-label="Welcome navigation">
                     <Link to="/papers">Papers</Link>
                     <Link to="/papers/AMMBER_User_Manual.pdf" target="_blank">User manual</Link>
-                    {/* <Link to="/projects" className={styles.navCta}>Open workspace <BsArrowRight/></Link> */}
                 </nav>
             </header>
 
             <main className={styles.hero}>
                 <section className={styles.intro}>
+                    <span className={styles.eyebrow}>Motivational modelling</span>
                     <h1>Make motivation clear.</h1>
                     <p className={styles.summary}>Create and edit motivational models in your browser.</p>
                     <div className={styles.actions}>
