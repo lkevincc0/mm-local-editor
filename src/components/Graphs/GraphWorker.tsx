@@ -21,6 +21,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import ErrorModal, {ErrorModalProps} from "../ErrorModal.tsx";
 import {associateNonFunctions, isGoalNameEmpty, layoutFunctions, renderGoals, restoreSavedPositions} from './GraphHelpers';
+import {recentreView} from "./recentreView";
 import {registerCustomShapes} from "./GraphShapes";
 import "./GraphWorker.css";
 import {useFileContext} from "../context/FileProvider.tsx";
@@ -43,12 +44,6 @@ const GRAPH_DIV_ID = "graphContainer";
 //   of the delete function
 const DELETE_KEYBINDING = 8;
 const DELETE_KEYBINDING2 = 46;
-
-// Extracted outside component - no useCallback needed, better for testing
-const recentreView = (graphInstance: Graph) => {
-    graphInstance.fit();
-    graphInstance.center();
-};
 
 interface CellHistory {
     [cellID: string]: [width: number | undefined, height: number | undefined];
@@ -104,17 +99,21 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         cells.forEach(collect);
         const toRemove = Array.from(toRemoveSet);
 
-        // 2) Validate all IDs up-front
+        // Validate goal IDs only.
         type InvalidInfo = { id: string | null, reason: string };
         const invalids: InvalidInfo[] = [];
         const parsedById = new Map<string, { goalId: number; instanceId: InstanceId }>();
 
         toRemove.forEach(cell => {
+            if (cell.isEdge()) return;
+
             const id = cell.getId();
             try {
-                const pairs = parseGoalRefId(id!);
-                pairs!.forEach(({goalId, instanceId}) => {
-                    parsedById.set(id!, {goalId, instanceId});
+                if (!id) throw new Error("Missing goal cell ID");
+                const pairs = parseGoalRefId(id);
+                if (!pairs?.length) throw new Error(`Malformed goal cell ID "${id}"`);
+                pairs.forEach(({goalId, instanceId}) => {
+                    parsedById.set(id, {goalId, instanceId});
                 });
 
             } catch (err) {
@@ -125,21 +124,19 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
             }
         });
 
-        // 3) If any invalid, show ONE modal and abort (do not touch the graph)
         if (invalids.length > 0) {
             const message = invalids
                 .map(inv => inv.reason)
-                .join('\n\n'); // keep \n, and render with pre-wrap (see Modal)
+                .join('\n\n');
             setErrorModal({
                 show: true,
                 title: 'Invalid Cell IDs',
                 message,
                 onHide: () => setErrorModal(prev => ({...prev, show: false})),
             });
-            return; // abort deletion
+            return;
         }
 
-        // 4) All valid → proceed to remove from graph (same recursive removal you used)
         const deletedCells: Cell[] = [];
         const removeCellRecursively = (cell: Cell) => {
             const outgoing = graph.getOutgoingEdges(cell, null) || [];
@@ -151,9 +148,9 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         };
         cells.forEach(cell => removeCellRecursively(cell));
 
-        // 5) Dispatch Redux actions only for actually deleted cells,
-        //    map by id to use parsed info we saved earlier.
         deletedCells.forEach(cell => {
+            if (cell.isEdge()) return;
+
             const id = cell.getId();
             if (!id) return;
             const parsed = parsedById.get(id);
@@ -169,27 +166,6 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         });
         setShowDeleteWarning(false);
     };
-
-
-    // Function to reset the graph to empty
-    //  const resetEmptyGraph = () => {
-    //   if (graph) {
-    //     onResetEmpty();
-    //   }
-    // };
-
-    // Function to reset the graph to the default set of goals
-    // const resetDefaultGraph = () => {
-    //   if (graph) {
-    //     onResetDefault();
-    //   }
-    // };
-
-    const prevShowGraphSectionRef = useRef(false);
-    // Using useRef instead of useState because this value is only used to detect
-    // changes (comparing previous vs current count) and does not affect UI rendering.
-    // Updating a ref doesn't trigger re-renders, which is more efficient for this use case.
-    const prevClusterGoalsCountRef = useRef(cluster.ClusterGoals.length);
 
     const adjustFontSize = (
         theOldStyle: CellStyle,
@@ -255,21 +231,6 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         graph.getStylesheet().putDefaultVertexStyle(nodeStyle);
     };
 
-    // Ensure mouse interactions restore focus so keyboard shortcuts work, without breaking in-place editing
-    if (graph) {
-        graph.addListener(InternalEvent.CLICK, (_sender: string, evt: EventObject) => {
-            const cell = evt.getProperty('cell') as Cell | null;
-            if (!cell && !graph.isEditing()) {
-                returnFocusToGraph();
-            }
-        });
-        graph.getSelectionModel().addListener(InternalEvent.CHANGE, () => {
-            if (!graph.isEditing()) {
-                returnFocusToGraph();
-            }
-        });
-    }
-
     const graphListener = useCallback((graph: Graph): (() => void) => {
         const cellHistory: CellHistory = {};
         const changeHandler = (_sender: string, evt: EventObject) => {
@@ -323,7 +284,7 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
                                 const geo = cell.getGeometry();
                                 if (geo !== null) {
                                     const instanceId = validateInstanceId(cellID.replace("Functional-", ""));
-                                    dispatch(updatePositionForInstanceId({ instanceId, x: geo.x, y: geo.y }));
+                                    dispatch(updatePositionForInstanceId({instanceId, x: geo.x, y: geo.y}));
                                 }
                             }
                         }
@@ -371,51 +332,26 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         return () => graph.getDataModel().removeListener(changeHandler);
     }, [dispatch]);
 
-    /**
-     * Support Functions
-     *
-     * These are functions added to the renderer largely for the convenience
-     * of the user. They're primarily to assist with manually adjusting the
-     * model after it's been rendererd.
-     * (1) Delete
-     * (2) Undo
-     */
-
     const supportFunctions = (graph: Graph) => {
-        // delete: add key-handler that listens for 'delete' key
         const keyHandler = new KeyHandler(graph);
-        keyHandler.bindKey(DELETE_KEYBINDING, () => {
-            if (graph.isEnabled()) {
+        const deleteSelection = () => {
+            if (!graph.isEnabled()) return;
 
-                const selectedCells = graph.getSelectionCells();
-                if (!selectedCells || selectedCells.length === 0) return;
+            const selectedCells = graph.getSelectionCells();
+            if (!selectedCells.length) return;
 
-                setDeletingCells(selectedCells);
-
-                const outgoingEdges = childrenOfSelectedCell(graph, selectedCells[0]);
-                const nAssociatedGoal = outgoingEdges.length;
-                // setRemoveChildren(hasChildren);
-                if (nAssociatedGoal > 0) {
-                    setShowDeleteWarning(true)
-                } else {
-                    deleteItemFromGraph(graph, false, selectedCells);
-                }
-
-                // const cells = graph.removeCells(); // no arguments, internally take all selected ones and delete, and return th deleted cells as an array
-                // graph.removeStateForCell(cells[0]);
-                // cells.forEach(cell => {
-                //   dispatch(removeGoalIdFromTree({ id: Number(cell.getId()),removeChildren:true})); // or with removeChildren
-                // });
-                // graph.removeCells(cells, true); remove children
-                // graph.removeStateForCell(cells[0]); // ERROR ON CONSOLE LOG, but can delete cells and text redundant
+            setDeletingCells(selectedCells);
+            const hasChildren = childrenOfSelectedCell(graph, selectedCells[0]).length > 0;
+            if (hasChildren && !selectedCells[0].isEdge()) {
+                setShowDeleteWarning(true);
+                return;
             }
-        });
-        keyHandler.bindKey(DELETE_KEYBINDING2, () => {
-            if (graph.isEnabled()) {
-                const cells = graph.removeCells();
-                graph.removeStateForCell(cells[0]); // ERROR ON CONSOLE LOG, but can delete cell and text
-            }
-        });
+
+            deleteItemFromGraph(graph, false, selectedCells);
+        };
+
+        keyHandler.bindKey(DELETE_KEYBINDING, deleteSelection);
+        keyHandler.bindKey(DELETE_KEYBINDING2, deleteSelection);
 
         // undo: add undo manager, this is the object that keeps track of the
         //   history of changes made to the graph
@@ -578,6 +514,20 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
             const removeChangeListener = graphListener(graphInstance);
             fixEditorPosition(graphInstance);
             supportFunctions(graphInstance);
+
+            // Ensure mouse interactions restore focus so keyboard shortcuts work, without breaking in-place editing
+            graphInstance.addListener(InternalEvent.CLICK, (_sender: string, evt: EventObject) => {
+                const cell = evt.getProperty('cell') as Cell | null;
+                if (!cell && !graphInstance.isEditing()) {
+                    returnFocusToGraph();
+                }
+            });
+            graphInstance.getSelectionModel().addListener(InternalEvent.CHANGE, () => {
+                if (!graphInstance.isEditing()) {
+                    returnFocusToGraph();
+                }
+            });
+
             registerCustomShapes();
             setGraph(graphInstance);
 
@@ -587,14 +537,20 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
                 setGraph(null);
             };
         }
+    // supportFunctions must not be a dependency: its identity changes every
+    // render, which would tear down and re-create the graph on each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [graphListener, setGraph]);
 
-    // Separate useEffect to render / update the graph.
+    // Render graph changes.
     useEffect(() => {
         if (graph) {
             // If user has goals defined, draw the graph
             if (cluster.ClusterGoals.length > 0) {
                 renderGraph();
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => recentreView(graph));
+                });
             }
             else {
                 graph.getDataModel().clear();
@@ -602,51 +558,24 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
         }
     }, [cluster, graph, renderGraph]);
 
-    // Auto-center when goals in the canvas change (e.g. new goal added)
-    useEffect(() => {
-        const currentCount = cluster.ClusterGoals.length;
-        const prevCount = prevClusterGoalsCountRef.current;
-
-        if (showGraphSection && currentCount > prevCount && graph) {
-            requestAnimationFrame(() => {
-                recentreView(graph);
-            });
-        }
-
-        prevClusterGoalsCountRef.current = currentCount;
-    }, [cluster.ClusterGoals.length, showGraphSection, graph]);
-
-    // Auto-center when entering render section (every time, not just first entry)
+    // Recenter after canvas resizes.
     useEffect(() => {
         if (!showGraphSection || !graph || !divGraph.current) return;
 
         const container = divGraph.current;
-        let lastBounds: { width: number; height: number } | null = null;
+        let frameId: number | null = null;
 
         const observer = new ResizeObserver(() => {
-            const bounds = graph.getGraphBounds();
-            if (!bounds) return;
-
-            const {width, height} = bounds;
-
-            // Wait until graph has valid size
-            if (width > 0 && height > 0) {
-
-                // Check if bounds are stable (same as last frame)
-                if (lastBounds && lastBounds.width === width && lastBounds.height === height) {
-                    // Graph is finalized -> center and stop observing
-                    recentreView(graph);
-                    observer.disconnect();
-                } else {
-                    // Store bounds for next frame
-                    lastBounds = {width, height};
-                }
-            }
+            if (frameId !== null) cancelAnimationFrame(frameId);
+            frameId = requestAnimationFrame(() => recentreView(graph));
         });
 
         observer.observe(container);
 
-        return () => observer.disconnect();
+        return () => {
+            observer.disconnect();
+            if (frameId !== null) cancelAnimationFrame(frameId);
+        };
     }, [showGraphSection, graph]);
 
 
@@ -657,7 +586,7 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
             : 0;
 
     return (
-        <div style={{position: "relative", width: "100%", height: "100%"}}>
+        <div style={{position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column"}}>
             <ErrorModal {...errorModal} />
             <ConfirmModal
                 show={showDeleteWarning}
@@ -687,12 +616,12 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
                     />
                 }
             />
-            <Container>
-                <Row className="row">
-                    <Col md={10}>
-                        <div id={GRAPH_DIV_ID} data-cy="graph-canvas" ref={divGraph} tabIndex={0} style={{outline: 'none'}} />
+            <Container fluid style={{flex: "1 1 auto", minHeight: 0, display: "flex", flexDirection: "column", padding: 0}}>
+                <Row className="row" style={{flex: "1 1 auto", minHeight: 0, height: "100%", margin: 0}}>
+                    <Col md={10} className="graph-stage-column" style={{height: "100%", padding: 0}}>
+                        <div id={GRAPH_DIV_ID} data-cy="graph-canvas" ref={divGraph} tabIndex={0} style={{outline: 'none', width: '100%', height: '100%'}} />
                     </Col>
-                    <Col md={2}>
+                    <Col md={2} className="graph-tools-column" style={{height: "100%"}}>
                         <GraphSidebar graph={graph} recentreView={() => graph && recentreView(graph)} />
                     </Col>
                 </Row>
