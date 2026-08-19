@@ -8,6 +8,8 @@ export type Label = "Do" | "Be" | "Feel" | "Concern" | "Who";
 
 export type GoalType = "Functional" | "Quality" | "Stakeholder" | "Negative" | "Emotional"
 
+export type FeedbackStatus = "open" | "resolved";
+
 export interface GoalBase {
     GoalID: number
     instanceId: TreeGoal["instanceId"]
@@ -155,3 +157,13 @@ export const isNonFunctionalGoal = (
     label: Label | undefined
 ): label is NonFunctionalGoalType =>
     NON_FUNCTIONAL_GOAL_TYPES.includes(label as NonFunctionalGoalType);
+
+export interface Feedback {
+  id: string;
+  nodeId: string;
+  author: string;
+  content: string;
+  createdAt: string;
+  status: FeedbackStatus;
+  replyCount?: number;
+}

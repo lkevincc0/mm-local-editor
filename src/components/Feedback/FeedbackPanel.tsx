@@ -1,0 +1,413 @@
+import React, { 
+    useMemo, 
+    useState 
+} from "react";
+
+import FeedbackItem from "./FeedbackItem";
+
+import type {
+    Feedback,
+    FeedbackStatus
+} from "../types.ts";
+
+import "./FeedbackPanel.css";
+
+type FeedbackFilter =
+    | "all"
+    | "open"
+    | "resolved";
+
+interface FeedbackPanelProps {
+    /**
+     * The id of the currently selected graph node.
+     *
+     * Later this will probably come directly from FeedbackContext.
+     */
+    selectedNodeId: string | null;
+
+    /**
+     * Human-readable label of the selected node.
+     * e.g. "Do1", "Concern", "Feel"
+     */
+    selectedNodeLabel?: string;
+
+    /**
+     * All feedback in the project.
+     *
+     * The panel will automatically filter them by selectedNodeId.
+     */
+    feedbacks: Feedback[];
+
+    /**
+     * Called when the user closes the feedback drawer.
+     */
+    onClose?: () => void;
+
+    /**
+     * Called when the user submits a new feedback item.
+     */
+    onAddFeedback?: (
+        nodeId: string,
+        content: string
+    ) => void;
+
+    /**
+     * Called when the status of an existing feedback changes.
+     */
+    onStatusChange?: (
+        feedbackId: string,
+        newStatus: FeedbackStatus
+    ) => void;
+
+    /**
+     * Reserved for the reply feature.
+     */
+    onReply?: (feedbackId: string) => void;
+
+    onDeleteFeedback?: (feedbackId: string) => void;
+}
+
+const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
+    selectedNodeId,
+    selectedNodeLabel,
+    feedbacks,
+    onClose,
+    onAddFeedback,
+    onStatusChange,
+    onReply,
+    onDeleteFeedback
+}) => {
+    const [activeFilter, setActiveFilter] =
+        useState<FeedbackFilter>("all");
+
+    const [isComposerOpen, setIsComposerOpen] =
+        useState(false);
+
+    const [newFeedback, setNewFeedback] =
+        useState("");
+
+    /**
+     * Feedback belonging only to the currently selected node.
+     */
+    const nodeFeedbacks = useMemo(() => {
+        if (!selectedNodeId) {
+            return [];
+        }
+
+        return feedbacks.filter(
+            (feedback) =>
+                feedback.nodeId === selectedNodeId
+        );
+    }, [feedbacks, selectedNodeId]);
+
+    const openCount = useMemo(
+        () =>
+            nodeFeedbacks.filter(
+                (feedback) =>
+                    feedback.status === "open"
+            ).length,
+        [nodeFeedbacks]
+    );
+
+    const resolvedCount = useMemo(
+        () =>
+            nodeFeedbacks.filter(
+                (feedback) =>
+                    feedback.status === "resolved"
+            ).length,
+        [nodeFeedbacks]
+    );
+
+    const filteredFeedbacks = useMemo(() => {
+        switch (activeFilter) {
+            case "open":
+                return nodeFeedbacks.filter(
+                    (feedback) =>
+                        feedback.status === "open"
+                );
+
+            case "resolved":
+                return nodeFeedbacks.filter(
+                    (feedback) =>
+                        feedback.status === "resolved"
+                );
+
+            case "all":
+            default:
+                return nodeFeedbacks;
+        }
+    }, [activeFilter, nodeFeedbacks]);
+
+    const handleSubmitFeedback = () => {
+        const content = newFeedback.trim();
+
+        if (
+            !selectedNodeId ||
+            !content ||
+            !onAddFeedback
+        ) {
+            return;
+        }
+
+        onAddFeedback(
+            selectedNodeId,
+            content
+        );
+
+        setNewFeedback("");
+        setIsComposerOpen(false);
+
+        /**
+         * Newly-created feedback is normally unresolved,
+         * so switch back to All to ensure that the user sees it.
+         */
+        setActiveFilter("all");
+    };
+
+    const handleCancelComposer = () => {
+        setNewFeedback("");
+        setIsComposerOpen(false);
+    };
+
+    if (!selectedNodeId) {
+        return (
+            <aside className="feedback-panel">
+                <header className="feedback-panel-header">
+                    <div>
+                        <span className="feedback-panel-eyebrow">
+                            Review
+                        </span>
+
+                        <h2>Feedback</h2>
+                    </div>
+
+                    {onClose && (
+                        <button
+                            type="button"
+                            className="feedback-close-button"
+                            onClick={onClose}
+                            aria-label="Close feedback panel"
+                        >
+                            ×
+                        </button>
+                    )}
+                </header>
+
+                <div className="feedback-empty-selection">
+                    <div
+                        className="feedback-empty-icon"
+                        aria-hidden="true"
+                    >
+                        ◇
+                    </div>
+
+                    <strong>
+                        Select a node
+                    </strong>
+
+                    <p>
+                        Select a node in the model to view
+                        and add feedback associated with it.
+                    </p>
+                </div>
+            </aside>
+        );
+    }
+
+    return (
+        <aside className="feedback-panel">
+            <header className="feedback-panel-header">
+                <div>
+                    <span className="feedback-panel-eyebrow">
+                        Review
+                    </span>
+
+                    <h2>Feedback</h2>
+                </div>
+
+                {onClose && (
+                    <button
+                        type="button"
+                        className="feedback-close-button"
+                        onClick={onClose}
+                        aria-label="Close feedback panel"
+                    >
+                        ×
+                    </button>
+                )}
+            </header>
+
+            <section className="feedback-node-context">
+                <span className="feedback-node-label">
+                    Attached to
+                </span>
+
+                <span
+                    className="feedback-node-name"
+                    title={
+                        selectedNodeLabel ??
+                        selectedNodeId
+                    }
+                >
+                    {selectedNodeLabel ??
+                        selectedNodeId}
+                </span>
+
+                {!isComposerOpen && (
+                    <button
+                        type="button"
+                        className="feedback-new-button"
+                        onClick={() =>
+                            setIsComposerOpen(true)
+                        }
+                    >
+                        + New Feedback
+                    </button>
+                )}
+            </section>
+
+            {isComposerOpen && (
+                <section className="feedback-composer">
+                    <label
+                        htmlFor="feedback-new-content"
+                        className="feedback-composer-label"
+                    >
+                        New Feedback
+                    </label>
+
+                    <textarea
+                        id="feedback-new-content"
+                        className="feedback-composer-textarea"
+                        value={newFeedback}
+                        onChange={(event) =>
+                            setNewFeedback(
+                                event.target.value
+                            )
+                        }
+                        placeholder={`Add feedback about ${
+                            selectedNodeLabel ??
+                            selectedNodeId
+                        }...`}
+                        rows={4}
+                        autoFocus
+                    />
+
+                    <div className="feedback-composer-actions">
+                        <button
+                            type="button"
+                            className="feedback-cancel-button"
+                            onClick={
+                                handleCancelComposer
+                            }
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            className="feedback-submit-button"
+                            onClick={
+                                handleSubmitFeedback
+                            }
+                            disabled={
+                                !newFeedback.trim() ||
+                                !onAddFeedback
+                            }
+                        >
+                            Add Feedback
+                        </button>
+                    </div>
+                </section>
+            )}
+
+            <nav
+                className="feedback-filter-tabs"
+                aria-label="Feedback filters"
+            >
+                <button
+                    type="button"
+                    className={
+                        activeFilter === "all"
+                            ? "active"
+                            : ""
+                    }
+                    onClick={() =>
+                        setActiveFilter("all")
+                    }
+                >
+                    All
+                    <span>
+                        {nodeFeedbacks.length}
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    className={
+                        activeFilter === "open"
+                            ? "active"
+                            : ""
+                    }
+                    onClick={() =>
+                        setActiveFilter("open")
+                    }
+                >
+                    Unresolved
+                    <span>{openCount}</span>
+                </button>
+
+                <button
+                    type="button"
+                    className={
+                        activeFilter === "resolved"
+                            ? "active"
+                            : ""
+                    }
+                    onClick={() =>
+                        setActiveFilter(
+                            "resolved"
+                        )
+                    }
+                >
+                    Resolved
+                    <span>{resolvedCount}</span>
+                </button>
+            </nav>
+
+            <div className="feedback-list">
+                {filteredFeedbacks.length > 0 ? (
+                    filteredFeedbacks.map(
+                        (feedback) => (
+                            <FeedbackItem
+                                key={feedback.id}
+                                feedback={feedback}
+                                onStatusChange={onStatusChange}
+                                onReply={onReply}
+                                onDelete={onDeleteFeedback}
+                            />
+                        )
+                    )
+                ) : (
+                    <div className="feedback-empty-list">
+                        <strong>
+                            {activeFilter === "all"
+                                ? "No feedback yet"
+                                : activeFilter ===
+                                  "open"
+                                ? "No unresolved feedback"
+                                : "No resolved feedback"}
+                        </strong>
+
+                        <p>
+                            {activeFilter === "all"
+                                ? "Add the first feedback item for this node."
+                                : "Try another feedback filter."}
+                        </p>
+                    </div>
+                )}
+            </div>
+        </aside>
+    );
+};
+
+export default FeedbackPanel;
