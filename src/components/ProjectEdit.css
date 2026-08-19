@@ -93,7 +93,11 @@ html:has(.project-edit-shell) {
 	width: 100%;
 	min-height: 0;
 	flex: 1;
-	grid-template-columns: auto minmax(320px, 1fr) auto;
+	grid-template-columns: 
+		auto 
+		minmax(420px, 1fr)
+		300px 
+		auto;
 	gap: 12px;
 	padding: 20px !important;
 	background: var(--paper);

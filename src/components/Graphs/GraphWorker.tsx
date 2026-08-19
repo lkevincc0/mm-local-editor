@@ -37,6 +37,8 @@ import ConfirmModal from "../ConfirmModal.tsx";
 import {parseGoalRefId} from "../utils/GraphUtils";
 import {fixEditorPosition, returnFocusToGraph} from "../utils/GraphUtils.tsx";
 
+import {useFeedbackContext} from "../context/FeedbackContext";
+
 //Graph id & Side bar id
 const GRAPH_DIV_ID = "graphContainer";
 
@@ -53,6 +55,13 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
     const divGraph = useRef<HTMLDivElement>(null);
     const {cluster, dispatch, treeIds, showLineBetweenNonFunctionalGoals} = useFileContext();
     const {graph, setGraph} = useGraph();
+    const {setSelectedNode} = useFeedbackContext();
+
+    // Keep the latest context function available to maxGraph listeners without
+    // forcing the graph setup effect to re-run whenever the context re-renders.
+    const setSelectedNodeRef = useRef(setSelectedNode);
+    setSelectedNodeRef.current = setSelectedNode;
+
     const treeIdsRef = useRef(treeIds);
     treeIdsRef.current = treeIds;
     // Guards against dispatching stale positions while renderGraph is rebuilding cells.
@@ -526,6 +535,38 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
                 if (!graphInstance.isEditing()) {
                     returnFocusToGraph();
                 }
+
+                const selectedCells = graphInstance.getSelectionCells();
+
+                // Feedback is attached to exactly one graph node at a time.
+                // Clear the feedback target if nothing (or multiple cells) is selected.
+                if (selectedCells.length !== 1) {
+                    setSelectedNodeRef.current(null);
+                    return;
+                }
+
+                const selectedCell = selectedCells[0];
+
+                // Do not attach feedback to edges.
+                if (!selectedCell.isVertex()) {
+                    setSelectedNodeRef.current(null);
+                    return;
+                }
+
+                const cellId = selectedCell.getId();
+
+                if (!cellId) {
+                    setSelectedNodeRef.current(null);
+                    return;
+                }
+
+                const cellValue = selectedCell.getValue();
+                const nodeLabel =
+                    typeof cellValue === "string" && cellValue.trim().length > 0
+                        ? cellValue
+                        : cellId;
+
+                setSelectedNodeRef.current(cellId, nodeLabel);
             });
 
             registerCustomShapes();
