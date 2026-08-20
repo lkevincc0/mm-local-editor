@@ -1,20 +1,15 @@
 .feedback-panel {
     display: flex;
-    width: 300px;
-    min-width: 280px;
-    max-width: 320px;
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 0;
     flex-direction: column;
     overflow: hidden;
 
     border: 1px solid var(--line, #d8d6cf);
     border-radius: 10px;
-
     background: var(--surface, #fbfaf7);
-
-    box-shadow:
-        0 8px 22px
-        rgba(42, 40, 35, 0.055);
+    box-shadow: 0 8px 22px rgba(42, 40, 35, 0.055);
 
     color: var(--ink, #1f1f1b);
 
@@ -853,7 +848,6 @@
 
 @media (max-width: 1100px) {
     .feedback-panel {
-        width: 300px;
-        min-width: 280px;
+        min-width: 0;
     }
 }

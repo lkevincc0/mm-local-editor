@@ -43,6 +43,7 @@ const ProjectEdit: React.FC = () => {
         readPanelDock("hierarchy", "right")
     );
 
+
     useEffect(() => {
         localStorage.setItem(
             PANEL_LAYOUT_STORAGE_KEY,
