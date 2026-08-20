@@ -16,19 +16,40 @@ interface FeedbackItemProps {
     onReply?: (feedbackId: string) => void;
 
     onDelete?: (feedbackId: string) => void;
+
+    /**
+     * Called when the card is clicked, to locate the node it is
+     * attached to on the graph canvas.
+     */
+    onSelectNode?: (nodeId: string) => void;
 }
 
 const FeedbackItem: React.FC<FeedbackItemProps> = ({
     feedback,
     onStatusChange,
     onReply,
-    onDelete
+    onDelete,
+    onSelectNode
 }) => {
     const [showMenu, setShowMenu] = useState(false);
 
     const isResolved = feedback.status === "resolved";
 
-    const handleStatusClick = () => {
+    const nodeLabel = feedback.nodeLabel ?? feedback.nodeId;
+
+    const handleCardClick = () => {
+        if (!onSelectNode) {
+            return;
+        }
+
+        onSelectNode(feedback.nodeId);
+    };
+
+    const handleStatusClick = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        event.stopPropagation();
+
         if (!onStatusChange) {
             return;
         }
@@ -39,11 +60,17 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
         );
     };
 
-    const handleReplyClick = () => {
+    const handleReplyClick = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        event.stopPropagation();
         onReply?.(feedback.id);
     };
 
-    const handleDelete = () => {
+    const handleDelete = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        event.stopPropagation();
         onDelete?.(feedback.id);
         setShowMenu(false);
     };
@@ -55,7 +82,25 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                     ? "feedback-item-resolved"
                     : ""
             }`}
+            onClick={handleCardClick}
+            title={
+                onSelectNode
+                    ? "Click to locate this node"
+                    : undefined
+            }
         >
+            <div
+                className="feedback-node-tag"
+                title={`On ${nodeLabel}`}
+            >
+                <span
+                    className="feedback-node-tag-dot"
+                    aria-hidden="true"
+                />
+
+                {nodeLabel}
+            </div>
+
             <header className="feedback-item-header">
                 <div className="feedback-author">
                     <div
@@ -129,12 +174,13 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                         className="feedback-more-button"
                         aria-label="More feedback actions"
                         title="More actions"
-                        onClick={() =>
+                        onClick={(event) => {
+                            event.stopPropagation();
                             setShowMenu(
                                 (current) =>
                                     !current
-                            )
-                        }
+                            );
+                        }}
                     >
                         •••
                     </button>
@@ -144,9 +190,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                             <button
                                 type="button"
                                 className="feedback-delete-action"
-                                onClick={
-                                    handleDelete
-                                }
+                                onClick={handleDelete}
                             >
                                 Delete
                             </button>

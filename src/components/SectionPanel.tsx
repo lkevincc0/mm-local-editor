@@ -6,6 +6,7 @@ import GoalList from "./GoalList";
 import Tree from "./Tree";
 import {useFileContext} from "./context/FileProvider";
 import {useFeedbackContext} from "./context/FeedbackContext";
+import {useGraph} from "./context/GraphContext";
 
 import GraphWorker from "./Graphs/GraphWorker";
 import {addGoalToTree, updateTextForGoalId} from "./context/treeDataSlice.ts";
@@ -101,6 +102,7 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
     useState<TreeGoal | null>(null);
 
   const {dispatch, tree} = useFileContext();
+  const {graph} = useGraph();
 
   const {
     feedbacks,
@@ -228,6 +230,23 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         text: editedText
       })
     );
+  };
+
+  // Locate a feedback's node on the canvas: select it so it highlights and
+  // scrolls into view, which also narrows the feedback list to that node.
+  const handleSelectFeedbackNode = (nodeId: string) => {
+    if (!graph) {
+      return;
+    }
+
+    const cell = graph.getDataModel().getCell(nodeId);
+
+    if (!cell) {
+      return;
+    }
+
+    graph.setSelectionCell(cell);
+    graph.scrollCellToVisible(cell, true);
   };
 
   const closePanel = (
@@ -429,6 +448,7 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
             onAddFeedback={addFeedback}
             onStatusChange={updateFeedbackStatus}
             onDeleteFeedback={deleteFeedback}
+            onSelectNode={handleSelectFeedbackNode}
             onClose={() => setShowFeedbackSection(false)}
           />
         </section>

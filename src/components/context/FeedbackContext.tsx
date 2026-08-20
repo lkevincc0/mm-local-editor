@@ -23,7 +23,8 @@ type FeedbackContextType = {
 
   addFeedback: (
     nodeId: string,
-    content: string
+    content: string,
+    nodeLabel?: string
   ) => void;
 
   updateFeedbackStatus: (
@@ -51,6 +52,7 @@ const initialFeedbacks: Feedback[] = [
   {
     id: "feedback-1",
     nodeId: "Functional-6-1",
+    nodeLabel: "Do1",
     author: "Kevin",
     content:
       "The boundary and purpose of Do1 could be clarified.",
@@ -61,6 +63,7 @@ const initialFeedbacks: Feedback[] = [
   {
     id: "feedback-2",
     nodeId: "Functional-6-1",
+    nodeLabel: "Do1",
     author: "Alice",
     content:
       "The relationship between Do1 and Do2 could be explained more clearly.",
@@ -71,6 +74,7 @@ const initialFeedbacks: Feedback[] = [
   {
     id: "feedback-3",
     nodeId: "Functional-6-1",
+    nodeLabel: "Do1",
     author: "Sam",
     content:
       "Consider adding more detail about the expected outcome of this goal.",
@@ -107,11 +111,13 @@ export const FeedbackProvider: React.FC<
 
   const addFeedback = (
     nodeId: string,
-    content: string
+    content: string,
+    nodeLabel?: string
   ) => {
     const newFeedback: Feedback = {
       id: `feedback-${Date.now()}`,
       nodeId,
+      nodeLabel,
       author: "Current User",
       content,
       createdAt: "Just now",

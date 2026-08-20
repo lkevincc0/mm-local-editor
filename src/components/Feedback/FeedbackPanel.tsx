@@ -65,6 +65,12 @@ interface FeedbackPanelProps {
     onReply?: (feedbackId: string) => void;
 
     onDeleteFeedback?: (feedbackId: string) => void;
+
+    /**
+     * Called when the user clicks a feedback card, to locate its node
+     * on the graph canvas.
+     */
+    onSelectNode?: (nodeId: string) => void;
 }
 
 const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
@@ -75,7 +81,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
     onAddFeedback,
     onStatusChange,
     onReply,
-    onDeleteFeedback
+    onDeleteFeedback,
+    onSelectNode
 }) => {
     const [activeFilter, setActiveFilter] =
         useState<FeedbackFilter>("all");
@@ -87,11 +94,13 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         useState("");
 
     /**
-     * Feedback belonging only to the currently selected node.
+     * Feedback shown in the list. When a graph node is selected only that
+     * node's feedback is shown; otherwise all feedback across the model is
+     * listed so nothing stays hidden until its node happens to be clicked.
      */
-    const nodeFeedbacks = useMemo(() => {
+    const visibleFeedbacks = useMemo(() => {
         if (!selectedNodeId) {
-            return [];
+            return feedbacks;
         }
 
         return feedbacks.filter(
@@ -102,41 +111,41 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
     const openCount = useMemo(
         () =>
-            nodeFeedbacks.filter(
+            visibleFeedbacks.filter(
                 (feedback) =>
                     feedback.status === "open"
             ).length,
-        [nodeFeedbacks]
+        [visibleFeedbacks]
     );
 
     const resolvedCount = useMemo(
         () =>
-            nodeFeedbacks.filter(
+            visibleFeedbacks.filter(
                 (feedback) =>
                     feedback.status === "resolved"
             ).length,
-        [nodeFeedbacks]
+        [visibleFeedbacks]
     );
 
     const filteredFeedbacks = useMemo(() => {
         switch (activeFilter) {
             case "open":
-                return nodeFeedbacks.filter(
+                return visibleFeedbacks.filter(
                     (feedback) =>
                         feedback.status === "open"
                 );
 
             case "resolved":
-                return nodeFeedbacks.filter(
+                return visibleFeedbacks.filter(
                     (feedback) =>
                         feedback.status === "resolved"
                 );
 
             case "all":
             default:
-                return nodeFeedbacks;
+                return visibleFeedbacks;
         }
-    }, [activeFilter, nodeFeedbacks]);
+    }, [activeFilter, visibleFeedbacks]);
 
     const handleSubmitFeedback = () => {
         const content = newFeedback.trim();
@@ -151,7 +160,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
         onAddFeedback(
             selectedNodeId,
-            content
+            content,
+            selectedNodeLabel ?? undefined
         );
 
         setNewFeedback("");
@@ -168,49 +178,6 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         setNewFeedback("");
         setIsComposerOpen(false);
     };
-
-    if (!selectedNodeId) {
-        return (
-            <aside className="feedback-panel">
-                <header className="feedback-panel-header">
-                    <div>
-                        <span className="feedback-panel-eyebrow">
-                            Review
-                        </span>
-
-                        <h2>Feedback</h2>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="feedback-close-button"
-                        onClick={onClose}
-                        aria-label="Close feedback panel"
-                    >
-                        ×
-                    </button>
-                </header>
-
-                <div className="feedback-empty-selection">
-                    <div
-                        className="feedback-empty-icon"
-                        aria-hidden="true"
-                    >
-                        ◇
-                    </div>
-
-                    <strong>
-                        Select a node
-                    </strong>
-
-                    <p>
-                        Select a node in the model to view
-                        and add feedback associated with it.
-                    </p>
-                </div>
-            </aside>
-        );
-    }
 
     return (
         <aside className="feedback-panel">
@@ -233,36 +200,48 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 </button>
             </header>
 
-            <section className="feedback-node-context">
-                <span className="feedback-node-label">
-                    Attached to
-                </span>
+            {selectedNodeId ? (
+                <section className="feedback-node-context">
+                    <span className="feedback-node-label">
+                        Attached to
+                    </span>
 
-                <span
-                    className="feedback-node-name"
-                    title={
-                        selectedNodeLabel ??
-                        selectedNodeId
-                    }
-                >
-                    {selectedNodeLabel ??
-                        selectedNodeId}
-                </span>
-
-                {!isComposerOpen && (
-                    <button
-                        type="button"
-                        className="feedback-new-button"
-                        onClick={() =>
-                            setIsComposerOpen(true)
+                    <span
+                        className="feedback-node-name"
+                        title={
+                            selectedNodeLabel ??
+                            selectedNodeId
                         }
                     >
-                        + New Feedback
-                    </button>
-                )}
-            </section>
+                        {selectedNodeLabel ??
+                            selectedNodeId}
+                    </span>
 
-            {isComposerOpen && (
+                    {!isComposerOpen && (
+                        <button
+                            type="button"
+                            className="feedback-new-button"
+                            onClick={() =>
+                                setIsComposerOpen(true)
+                            }
+                        >
+                            + New Feedback
+                        </button>
+                    )}
+                </section>
+            ) : (
+                <div className="feedback-all-context">
+                    <span className="feedback-all-title">
+                        All feedback
+                    </span>
+
+                    <span className="feedback-all-hint">
+                        Click a card to locate its node
+                    </span>
+                </div>
+            )}
+
+            {isComposerOpen && selectedNodeId && (
                 <section className="feedback-composer">
                     <label
                         htmlFor="feedback-new-content"
@@ -333,7 +312,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 >
                     All
                     <span>
-                        {nodeFeedbacks.length}
+                        {visibleFeedbacks.length}
                     </span>
                 </button>
 
@@ -380,6 +359,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                                 onStatusChange={onStatusChange}
                                 onReply={onReply}
                                 onDelete={onDeleteFeedback}
+                                onSelectNode={onSelectNode}
                             />
                         )
                     )
