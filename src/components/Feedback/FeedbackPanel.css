@@ -389,11 +389,11 @@
 }
 
 .feedback-item:hover {
-    border-color: #c2b0ee;
+    border-color: #c9c5bc;
 
     box-shadow:
-        0 3px 10px
-        rgba(107, 81, 201, 0.10);
+        0 3px 9px
+        rgba(42, 40, 35, 0.055);
 
     transform: translateY(-1px);
 }
@@ -418,7 +418,7 @@
 
     background: #f6f4ef;
 
-    color: #6b51c9;
+    color: #6f5b8a;
 
     font-size: 9px;
     font-weight: 700;
@@ -432,7 +432,7 @@
 
     border-radius: 50%;
 
-    background: #6b51c9;
+    background: #6f5b8a;
 }
 
 .feedback-item-resolved {
@@ -552,13 +552,13 @@
 }
 
 .feedback-status-open {
-    background: #f3ecff;
+    background: #f0edf5;
 
-    color: #6b51c9;
+    color: #6f5b8a;
 }
 
 .feedback-status-open:hover {
-    background: #e6d9ff;
+    background: #e5e1ef;
 }
 
 .feedback-status-resolved {
@@ -619,7 +619,7 @@
 
     border-radius: 8px;
 
-    color: #6b51c9;
+    color: #6f5b8a;
 
     font-size: 10px;
     font-weight: 700;
@@ -630,9 +630,9 @@
 }
 
 .feedback-text-button:hover {
-    background: #f3ecff;
+    background: #f0edf5;
 
-    color: #5842ad;
+    color: #5d4b73;
 }
 
 .feedback-reply-count {
@@ -732,11 +732,11 @@
 }
 
 .feedback-composer-textarea:focus {
-    border-color: #6b51c9;
+    border-color: #6f5b8a;
 
     box-shadow:
         0 0 0 3px
-        rgba(107, 81, 201, 0.14);
+        rgba(111, 91, 138, 0.16);
 }
 
 .feedback-composer-textarea::placeholder {
@@ -789,15 +789,15 @@
 .feedback-submit-button {
     border:
         1px solid
-        #6b51c9;
+        #6f5b8a;
 
-    background: #6b51c9;
+    background: #6f5b8a;
 
     color: #fff;
 }
 
 .feedback-submit-button:hover:not(:disabled) {
-    background: #5842ad;
+    background: #5d4b73;
 }
 
 .feedback-submit-button:disabled {
