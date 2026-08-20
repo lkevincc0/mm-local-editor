@@ -2,26 +2,20 @@ import React, {useState} from "react";
 
 import Avatar from "./Avatar";
 import {useProfileContext} from "./context/ProfileContext";
-import {AVATAR_COUNT} from "./utils/avatarSprite";
 
 import "./Profile.css";
 
 const Profile: React.FC = () => {
     const {
         authorName,
-        authorAvatar,
         updateProfile
     } = useProfileContext();
 
     const [showModal, setShowModal] = useState(false);
     const [nameInput, setNameInput] = useState(authorName);
-    const [avatarInput, setAvatarInput] = useState(
-        authorAvatar
-    );
 
     const openModal = () => {
         setNameInput(authorName);
-        setAvatarInput(authorAvatar);
         setShowModal(true);
     };
 
@@ -30,10 +24,7 @@ const Profile: React.FC = () => {
     };
 
     const handleSave = () => {
-        updateProfile(
-            nameInput.trim(),
-            avatarInput
-        );
+        updateProfile(nameInput.trim());
         setShowModal(false);
     };
 
@@ -45,23 +36,11 @@ const Profile: React.FC = () => {
                 onClick={openModal}
                 aria-label="Edit profile"
             >
-                {authorAvatar ? (
-                    <Avatar
-                        avatar={authorAvatar}
-                        size={34}
-                        className="avatar"
-                    />
-                ) : (
-                    <span className="avatar avatar-default">
-                        {(
-                            authorName ||
-                            "?"
-                        )
-                            .trim()
-                            .charAt(0)
-                            .toUpperCase() || "?"}
-                    </span>
-                )}
+                <Avatar
+                    seed={authorName}
+                    size={34}
+                    className="avatar"
+                />
 
                 <span className="profile-name">
                     {authorName.trim() || "Set name"}
@@ -106,6 +85,14 @@ const Profile: React.FC = () => {
                             </button>
                         </header>
 
+                        <div className="profile-preview">
+                            <Avatar
+                                seed={nameInput}
+                                size={72}
+                                className="profile-preview-avatar"
+                            />
+                        </div>
+
                         <label className="profile-field">
                             <span className="profile-field-label">
                                 Name
@@ -123,41 +110,6 @@ const Profile: React.FC = () => {
                                 autoFocus
                             />
                         </label>
-
-                        <span className="profile-field-label">
-                            Avatar
-                        </span>
-
-                        <div className="avatar-grid">
-                            {Array.from(
-                                {length: AVATAR_COUNT},
-                                (_, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        className={`avatar-cell ${
-                                            avatarInput ===
-                                            String(index + 1)
-                                                ? "selected"
-                                                : ""
-                                        }`}
-                                        onClick={() =>
-                                            setAvatarInput(
-                                                String(index + 1)
-                                            )
-                                        }
-                                        aria-label={`Avatar ${
-                                            index + 1
-                                        }`}
-                                    >
-                                        <Avatar
-                                            avatar={String(index + 1)}
-                                            size={64}
-                                        />
-                                    </button>
-                                )
-                            )}
-                        </div>
 
                         <footer className="profile-modal-actions">
                             <button

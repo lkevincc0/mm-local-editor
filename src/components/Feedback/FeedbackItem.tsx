@@ -125,23 +125,11 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
 
             <header className="feedback-item-header">
                 <div className="feedback-author">
-                    {feedback.authorAvatar ? (
-                        <Avatar
-                            avatar={feedback.authorAvatar}
-                            size={28}
-                            className="feedback-avatar"
-                        />
-                    ) : (
-                        <div
-                            className="feedback-avatar"
-                            aria-hidden="true"
-                        >
-                            {feedback.author
-                                .trim()
-                                .charAt(0)
-                                .toUpperCase()}
-                        </div>
-                    )}
+                    <Avatar
+                        seed={feedback.author}
+                        size={28}
+                        className="feedback-avatar"
+                    />
 
                     <div className="feedback-author-info">
                         <strong className="feedback-author-name">

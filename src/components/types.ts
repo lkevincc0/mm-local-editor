@@ -161,7 +161,6 @@ export const isNonFunctionalGoal = (
 export interface FeedbackReply {
   id: string;
   author: string;
-  authorAvatar?: string;
   content: string;
   createdAt: string;
 }
@@ -171,7 +170,6 @@ export interface Feedback {
   nodeId: string;
   nodeLabel?: string;
   author: string;
-  authorAvatar?: string;
   content: string;
   createdAt: string;
   status: FeedbackStatus;

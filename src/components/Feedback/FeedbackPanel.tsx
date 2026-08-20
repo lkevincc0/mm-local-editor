@@ -45,7 +45,6 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
     const {
         authorName,
-        authorAvatar,
         updateProfile
     } = useProfileContext();
 
@@ -173,7 +172,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             return;
         }
 
-        updateProfile(name, authorAvatar);
+        updateProfile(name);
         setShowAuthorPrompt(false);
 
         const content = newFeedback.trim();
