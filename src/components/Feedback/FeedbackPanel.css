@@ -181,6 +181,36 @@
     background: #f3f7fd;
 }
 
+.feedback-all-context {
+    display: flex;
+    min-height: 48px;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    padding: 9px 14px;
+
+    border-bottom:
+        1px solid
+        #e5e2db;
+}
+
+.feedback-all-title {
+    color: #55524b;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.feedback-all-hint {
+    color: #8a877f;
+
+    font-size: 9px;
+}
+
 
 /* ============================================
    Filter tabs
@@ -337,12 +367,12 @@
 
     gap: 9px;
 
-    padding: 11px;
+    padding: 12px;
 
     border:
         1px solid
         #ddd9d0;
-    border-radius: 8px;
+    border-radius: 10px;
 
     background: #fff;
 
@@ -350,18 +380,59 @@
         0 2px 7px
         rgba(42, 40, 35, 0.035);
 
+    cursor: pointer;
+
     transition:
         border-color 130ms ease,
         box-shadow 130ms ease,
-        opacity 130ms ease;
+        transform 130ms ease;
 }
 
 .feedback-item:hover {
-    border-color: #c8c4bb;
+    border-color: #c2b0ee;
 
     box-shadow:
-        0 3px 9px
-        rgba(42, 40, 35, 0.055);
+        0 3px 10px
+        rgba(107, 81, 201, 0.10);
+
+    transform: translateY(-1px);
+}
+
+.feedback-node-tag {
+    display: inline-flex;
+
+    align-self: flex-start;
+
+    align-items: center;
+
+    gap: 5px;
+
+    padding:
+        2px
+        8px;
+
+    border:
+        1px solid
+        #ddd8d0;
+    border-radius: 999px;
+
+    background: #f6f4ef;
+
+    color: #6b51c9;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.02em;
+}
+
+.feedback-node-tag-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #6b51c9;
 }
 
 .feedback-item-resolved {
@@ -461,9 +532,13 @@
     flex: 0 0 auto;
 
     padding:
-        3px 6px;
+        3px
+        10px;
 
-    border-radius: 5px;
+    border:
+        1px solid
+        transparent;
+    border-radius: 999px;
 
     font-family: inherit;
     font-size: 9px;
@@ -472,38 +547,28 @@
     cursor: pointer;
 
     transition:
-        border-color 120ms ease,
-        background 120ms ease;
+        background 120ms ease,
+        color 120ms ease;
 }
 
 .feedback-status-open {
-    border:
-        1px solid
-        #e2a1a1;
+    background: #f3ecff;
 
-    background: #fff4f4;
-
-    color: #a54141;
+    color: #6b51c9;
 }
 
 .feedback-status-open:hover {
-    border-color: #c86f6f;
-    background: #fdeaea;
+    background: #e6d9ff;
 }
 
 .feedback-status-resolved {
-    border:
-        1px solid
-        #9dcea5;
+    background: #eef2eb;
 
-    background: #f1faf2;
-
-    color: #397543;
+    color: #5f6d57;
 }
 
 .feedback-status-resolved:hover {
-    border-color: #70ae7a;
-    background: #e8f6ea;
+    background: #e2e9de;
 }
 
 
@@ -548,16 +613,26 @@
 }
 
 .feedback-text-button {
-    padding: 2px 0;
+    padding:
+        4px
+        9px;
 
-    color: #3570bd;
+    border-radius: 8px;
 
-    font-size: 9px;
+    color: #6b51c9;
+
+    font-size: 10px;
     font-weight: 700;
+
+    transition:
+        background 120ms ease,
+        color 120ms ease;
 }
 
 .feedback-text-button:hover {
-    text-decoration: underline;
+    background: #f3ecff;
+
+    color: #5842ad;
 }
 
 .feedback-reply-count {
@@ -567,16 +642,26 @@
 .feedback-more-button {
     margin-left: auto;
 
-    padding: 1px 3px;
+    padding:
+        4px
+        6px;
+
+    border-radius: 8px;
 
     color: #8a877f;
 
     font-size: 12px;
 
     letter-spacing: 1px;
+
+    transition:
+        background 120ms ease,
+        color 120ms ease;
 }
 
 .feedback-more-button:hover {
+    background: #efece6;
+
     color: var(--ink, #1f1f1b);
 }
 
@@ -591,15 +676,18 @@
 
     flex-direction: column;
 
-    gap: 7px;
+    gap: 8px;
 
-    padding: 10px 12px;
+    padding:
+        12px
+        12px
+        11px;
 
     border-bottom:
         1px solid
         #e5e2db;
 
-    background: #f7f8fa;
+    background: #faf9f6;
 }
 
 .feedback-composer-label {
@@ -616,15 +704,15 @@
 
     resize: vertical;
 
-    min-height: 76px;
+    min-height: 84px;
     max-height: 170px;
 
-    padding: 8px 9px;
+    padding: 10px 12px;
 
     border:
         1px solid
-        #c8c5bd;
-    border-radius: 7px;
+        #d9d5cc;
+    border-radius: 10px;
 
     outline: none;
 
@@ -634,21 +722,21 @@
         var(--ink, #1f1f1b);
 
     font-family: inherit;
-    font-size: 11px;
+    font-size: 12px;
 
-    line-height: 1.45;
+    line-height: 1.5;
 
     transition:
-        border-color 120ms ease,
-        box-shadow 120ms ease;
+        border-color 140ms ease,
+        box-shadow 140ms ease;
 }
 
 .feedback-composer-textarea:focus {
-    border-color: #6c99d3;
+    border-color: #6b51c9;
 
     box-shadow:
-        0 0 0 2px
-        rgba(54, 116, 201, 0.10);
+        0 0 0 3px
+        rgba(107, 81, 201, 0.14);
 }
 
 .feedback-composer-textarea::placeholder {
@@ -660,26 +748,32 @@
 
     justify-content: flex-end;
 
-    gap: 6px;
+    gap: 8px;
 }
 
 .feedback-cancel-button,
 .feedback-submit-button {
-    padding: 5px 9px;
+    padding:
+        6px
+        13px;
 
-    border-radius: 6px;
+    border-radius: 999px;
 
     font-family: inherit;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
 
     cursor: pointer;
+
+    transition:
+        background 120ms ease,
+        border-color 120ms ease;
 }
 
 .feedback-cancel-button {
     border:
         1px solid
-        #c9c5bc;
+        #d9d5cc;
 
     background: #fff;
 
@@ -687,29 +781,31 @@
 }
 
 .feedback-cancel-button:hover {
-    border-color: #99958d;
+    border-color: #b9b4aa;
+
+    background: #f3f1eb;
 }
 
 .feedback-submit-button {
     border:
         1px solid
-        #2e67b2;
+        #6b51c9;
 
-    background: #3674c9;
+    background: #6b51c9;
 
     color: #fff;
 }
 
 .feedback-submit-button:hover:not(:disabled) {
-    background: #2e67b2;
+    background: #5842ad;
 }
 
 .feedback-submit-button:disabled {
-    border-color: #c4c8cd;
+    border-color: #ddd9d0;
 
-    background: #d4d7db;
+    background: #e7e4de;
 
-    color: #f4f4f4;
+    color: #a9a69e;
 
     cursor: not-allowed;
 }
@@ -719,7 +815,6 @@
    Empty states
    ============================================ */
 
-.feedback-empty-selection,
 .feedback-empty-list {
     display: flex;
 
@@ -729,41 +824,15 @@
     flex-direction: column;
 
     text-align: center;
-}
 
-.feedback-empty-selection {
     min-height: 0;
     flex: 1;
 
     gap: 6px;
 
-    padding: 28px 22px;
+    padding: 30px 14px;
 }
 
-.feedback-empty-icon {
-    display: flex;
-
-    width: 38px;
-    height: 38px;
-
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 5px;
-
-    border:
-        1px solid
-        #d7d3ca;
-    border-radius: 50%;
-
-    background: #f3f1eb;
-
-    color: #77736b;
-
-    font-size: 18px;
-}
-
-.feedback-empty-selection strong,
 .feedback-empty-list strong {
     color: #55524b;
 
@@ -771,7 +840,6 @@
     font-weight: 700;
 }
 
-.feedback-empty-selection p,
 .feedback-empty-list p {
     max-width: 230px;
 
@@ -784,14 +852,6 @@
     line-height: 1.5;
 }
 
-.feedback-empty-list {
-    flex: 1;
-
-    gap: 4px;
-
-    padding: 30px 14px;
-}
-
 .feedback-more-wrapper {
     position: relative;
 
@@ -801,45 +861,66 @@
 .feedback-action-menu {
     position: absolute;
 
-    top: calc(100% + 4px);
+    top: calc(100% + 5px);
     right: 0;
 
     z-index: 100;
 
-    min-width: 90px;
+    min-width: 120px;
 
-    padding: 4px;
+    padding: 5px;
 
-    border: 1px solid #ddd9d0;
-    border-radius: 6px;
+    border: 1px solid #e4e0d8;
+    border-radius: 10px;
 
     background: #ffffff;
 
     box-shadow:
-        0 6px 16px
-        rgba(0, 0, 0, 0.12);
+        0 8px 22px
+        rgba(42, 40, 35, 0.14);
+
+    animation:
+        feedback-menu-in 120ms ease;
+}
+
+@keyframes feedback-menu-in {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .feedback-delete-action {
     width: 100%;
 
-    padding: 6px 8px;
+    padding:
+        7px
+        10px;
 
     border: none;
-    border-radius: 4px;
+    border-radius: 7px;
 
     background: transparent;
 
     color: #c0392b;
 
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 600;
     text-align: left;
 
     cursor: pointer;
+
+    transition:
+        background 120ms ease;
 }
 
 .feedback-delete-action:hover {
-    background: #fff1f1;
+    background: #fdeceb;
 }
 
 /* ============================================
