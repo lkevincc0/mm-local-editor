@@ -1,9 +1,11 @@
 import React, {useMemo, useRef, useState} from "react";
-import WhoIcon from "/img/Stakeholder.png";
-import DoIcon from "/img/Function.png";
-import BeIcon from "/img/Cloud.png";
-import FeelIcon from "/img/Heart.png";
-import ConcernIcon from "/img/Risk.png";
+import {assetUrl} from "./utils/basename";
+
+const WhoIcon = assetUrl("/img/Stakeholder.png");
+const DoIcon = assetUrl("/img/Function.png");
+const BeIcon = assetUrl("/img/Cloud.png");
+const FeelIcon = assetUrl("/img/Heart.png");
+const ConcernIcon = assetUrl("/img/Risk.png");
 import {FaPlus, FaMinus} from "react-icons/fa";
 import {
     SimpleTreeItemWrapper,

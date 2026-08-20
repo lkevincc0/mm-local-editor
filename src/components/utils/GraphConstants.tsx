@@ -3,12 +3,14 @@
 
 // --- Default Element Dimensions ---
 import {CellStateStyle} from "@maxgraph/core";
-import BeIcon from "/img/Cloud.png";
-import DoIcon from "/img/Function.png";
-import FeelIcon from "/img/Heart.png";
-import ConcernIcon from "/img/Risk.png";
-import WhoIcon from "/img/Stakeholder.png";
-import LineIcon from "/img/line.svg";
+import {assetUrl} from "./basename";
+
+const BeIcon = assetUrl("/img/Cloud.png");
+const DoIcon = assetUrl("/img/Function.png");
+const FeelIcon = assetUrl("/img/Heart.png");
+const ConcernIcon = assetUrl("/img/Risk.png");
+const WhoIcon = assetUrl("/img/Stakeholder.png");
+const LineIcon = assetUrl("/img/line.svg");
 
 export const LINE_SIZE = 50;             // Line length between nodes
 export const SYMBOL_WIDTH = 145;         // Base width of a symbol node
