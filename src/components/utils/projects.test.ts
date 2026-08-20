@@ -5,6 +5,7 @@ import {
     convertTabContentToInitialTab,
     defaultProjectName,
     formatRelativeTime,
+    uniqueProjectName,
     newProjectData,
     newProjectId,
 } from "./projects";
@@ -23,6 +24,32 @@ describe("defaultProjectName", () => {
 
     it("increments to avoid collisions", () => {
         expect(defaultProjectName(["Untitled", "Untitled 1"])).toBe("Untitled 2");
+    });
+});
+
+describe("uniqueProjectName", () => {
+    it("keeps the base name when there is no collision", () => {
+        expect(uniqueProjectName("My Model", ["Other"])).toBe("My Model");
+    });
+
+    it("appends (2) when the name is taken", () => {
+        expect(uniqueProjectName("My Model", ["My Model"])).toBe("My Model (2)");
+    });
+
+    it("reuses the first free suffix", () => {
+        expect(
+            uniqueProjectName("My Model", ["My Model", "My Model (2)"])
+        ).toBe("My Model (3)");
+    });
+
+    it("keeps incrementing past existing suffixes", () => {
+        expect(
+            uniqueProjectName("My Model", [
+                "My Model",
+                "My Model (2)",
+                "My Model (3)"
+            ])
+        ).toBe("My Model (4)");
     });
 });
 

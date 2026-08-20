@@ -158,13 +158,23 @@ export const isNonFunctionalGoal = (
 ): label is NonFunctionalGoalType =>
     NON_FUNCTIONAL_GOAL_TYPES.includes(label as NonFunctionalGoalType);
 
+export interface FeedbackReply {
+  id: string;
+  author: string;
+  authorAvatar?: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface Feedback {
   id: string;
   nodeId: string;
   nodeLabel?: string;
   author: string;
+  authorAvatar?: string;
   content: string;
   createdAt: string;
   status: FeedbackStatus;
   replyCount?: number;
+  replies?: FeedbackReply[];
 }

@@ -1,11 +1,12 @@
 import {createContext, useContext} from "react";
 import {InitialTab} from "../../data/initialTabs";
-import {TreeGoal} from "../types";
+import {Feedback, TreeGoal} from "../types";
 import {Project} from "../utils/projects";
 
 export type ProjectData = {
     treeData: TreeGoal[];
     tabData: InitialTab[];
+    feedbacks?: Feedback[];
 };
 
 export type ProjectContextValue = {

@@ -2,13 +2,20 @@ import {useNavigate} from "react-router-dom";
 import {useProjectContext} from "../context/ProjectContext";
 import {JSONData, useFileContext} from "../context/FileProvider";
 import {reset} from "../context/treeDataSlice";
-import {Project, convertTabContentToInitialTab} from "./projects";
+import {Project, convertTabContentToInitialTab, defaultProjectName, uniqueProjectName} from "./projects";
+import {extractJsonFromPng, extractJsonFromSvg} from "./imageMetadata";
 
 type ShowError = (title: string, message: string) => void;
 
+// Strip the last extension from a filename: "Model.v2.json" -> "Model.v2".
+const fileNameWithoutExtension = (name: string): string => {
+    const idx = name.lastIndexOf(".");
+    return idx > 0 ? name.slice(0, idx) : name;
+};
+
 // Shared "start modelling" actions used by the welcome page and the projects home.
 export const useProjectLauncher = (showError: ShowError) => {
-    const {createProject, openProject} = useProjectContext();
+    const {projects, createProject, openProject} = useProjectContext();
     const {dispatch} = useFileContext();
     const navigate = useNavigate();
 
@@ -22,18 +29,58 @@ export const useProjectLauncher = (showError: ShowError) => {
         openEditor(createProject());
     };
 
+    const loadProjectFromJsonData = (jsonData: JSONData, fallbackName?: string) => {
+        const tabData = convertTabContentToInitialTab(jsonData.tabData, jsonData.treeData);
+        const existingNames = projects.map((project) => project.name);
+        const baseName = jsonData.name?.trim() || fallbackName?.trim();
+
+        // Prefer the name embedded in the file, then the filename, then "Untitled".
+        const name = baseName
+            ? uniqueProjectName(baseName, existingNames)
+            : defaultProjectName(existingNames);
+
+        // Restore feedback into the store the FeedbackProvider reads on mount.
+        localStorage.setItem(
+            "ammber/feedbacks",
+            JSON.stringify(jsonData.feedbacks ?? [])
+        );
+
+        openEditor(createProject(name, {treeData: jsonData.treeData, tabData}));
+    };
+
     const importProjectFile = async (file: File) => {
         try {
-            if (file.type !== "application/json" && !file.name.endsWith(".json")) {
-                showError("Incorrect File Type", "Please select a JSON file.");
+            const isJson = file.type === "application/json" || file.name.endsWith(".json");
+            const isPng = file.type === "image/png" || file.name.endsWith(".png");
+            const isSvg = file.type === "image/svg+xml" || file.name.endsWith(".svg");
+
+            if (!isJson && !isPng && !isSvg) {
+                showError("Incorrect File Type", "Please select a JSON, PNG, or SVG file.");
                 return;
             }
-            const fileContent = await file.text();
-            const jsonData: JSONData = JSON.parse(fileContent);
-            const tabData = convertTabContentToInitialTab(jsonData.tabData, jsonData.treeData);
-            openEditor(createProject(undefined, {treeData: jsonData.treeData, tabData}));
+
+            let jsonData: JSONData | null = null;
+
+            if (isJson) {
+                const fileContent = await file.text();
+                jsonData = JSON.parse(fileContent);
+            } else if (isPng) {
+                jsonData = await extractJsonFromPng(file) as JSONData | null;
+            } else if (isSvg) {
+                jsonData = await extractJsonFromSvg(file) as JSONData | null;
+            }
+
+            if (!jsonData) {
+                showError(
+                    "No Project Data Found",
+                    "This image doesn't contain embedded project data. Please export it from this editor first, or import a JSON file instead."
+                );
+                return;
+            }
+
+            loadProjectFromJsonData(jsonData, fileNameWithoutExtension(file.name));
         } catch (error) {
-            console.error("Error importing JSON file:", error);
+            console.error("Error importing file:", error);
             showError("File Upload Failed", "Failed to process the selected file. Please try again.");
         }
     };

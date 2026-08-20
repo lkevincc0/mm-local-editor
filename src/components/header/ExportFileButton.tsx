@@ -7,10 +7,13 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import ErrorModal, {ErrorModalProps} from "../ErrorModal";
 import {useFileContext} from "../context/FileProvider";
+import {useProjectContext} from "../context/ProjectContext";
+import {useFeedbackContext} from "../context/FeedbackContext";
 import {useGraph} from "../context/GraphContext";
 import {returnFocusToGraph} from "../utils/GraphUtils";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import {embedJsonInPng, embedJsonInSvg} from "../utils/imageMetadata";
 
 const PNG_EXPORT_SCALE = 3;
 
@@ -18,7 +21,9 @@ const PNG_EXPORT_SCALE = 3;
 // This ensures Export is only available when user is in "Render Model" interface
 const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => {
     const {graph} = useGraph(); // Use the context to get the graph instance
-    const {cluster} = useFileContext(); // Get goals and cluster from file context
+    const {cluster, tabData, treeData} = useFileContext(); // Get goals and cluster from file context
+    const {currentProject} = useProjectContext(); // Get the project name for the embedded metadata
+    const {feedbacks} = useFeedbackContext(); // Get the feedback for the embedded metadata
     const [errorModal, setErrorModal] = useState<ErrorModalProps>({
         show: false,
         title: "",
@@ -85,7 +90,10 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
 
         // Serialize the SVG element to a string
         const serializer = new XMLSerializer();
-        const svgString = serializer.serializeToString(svgElement);
+        const rawSvgString = serializer.serializeToString(svgElement);
+
+        const projectData = {name: currentProject?.name, feedbacks, tabData, treeData: treeData || []};
+        const svgString = embedJsonInSvg(rawSvgString, projectData);
         try {
             // If chromium browser
             if ('showSaveFilePicker' in self) {
@@ -170,6 +178,9 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         canvas.toBlob(async (blob) => {
             if (blob) {
                 try {
+                    const projectData = {name: currentProject?.name, feedbacks, tabData, treeData: treeData || []};
+                    const finalBlob = await embedJsonInPng(blob, projectData);
+
                     if ('showSaveFilePicker' in self) {
                         const options: SaveFilePickerOptions = {
                             id: 'exportImage',
@@ -182,11 +193,11 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
                         };
                         const handle = await self.showSaveFilePicker(options);
                         const writable = await handle.createWritable();
-                        await writable.write(blob);
+                        await writable.write(finalBlob);
                         await writable.close();
                     } else {
                         // Fallback for non-Chromium browsers
-                        const url = URL.createObjectURL(blob);
+                        const url = URL.createObjectURL(finalBlob);
                         const link = document.createElement('a');
                         link.href = url;
                         link.download = 'graph.png';

@@ -69,7 +69,7 @@ const Welcome: React.FC = () => {
                         <input
                             ref={fileInputRef}
                             type="file"
-                            accept=".json"
+                            accept=".json,.png,.svg,application/json,image/png,image/svg+xml"
                             className={styles.fileInput}
                             onChange={handleFileChange}
                         />
