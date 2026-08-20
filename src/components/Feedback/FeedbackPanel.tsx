@@ -39,9 +39,9 @@ interface FeedbackPanelProps {
     feedbacks: Feedback[];
 
     /**
-     * Called when the user closes the feedback drawer.
+     * Called when the user closes the feedback panel.
      */
-    onClose?: () => void;
+    onClose: () => void;
 
     /**
      * Called when the user submits a new feedback item.
@@ -181,16 +181,14 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                         <h2>Feedback</h2>
                     </div>
 
-                    {onClose && (
-                        <button
-                            type="button"
-                            className="feedback-close-button"
-                            onClick={onClose}
-                            aria-label="Close feedback panel"
-                        >
-                            ×
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        className="feedback-close-button"
+                        onClick={onClose}
+                        aria-label="Close feedback panel"
+                    >
+                        ×
+                    </button>
                 </header>
 
                 <div className="feedback-empty-selection">
@@ -225,16 +223,14 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     <h2>Feedback</h2>
                 </div>
 
-                {onClose && (
-                    <button
-                        type="button"
-                        className="feedback-close-button"
-                        onClick={onClose}
-                        aria-label="Close feedback panel"
-                    >
-                        ×
-                    </button>
-                )}
+                <button
+                    type="button"
+                    className="feedback-close-button"
+                    onClick={onClose}
+                    aria-label="Close feedback panel"
+                >
+                    ×
+                </button>
             </header>
 
             <section className="feedback-node-context">

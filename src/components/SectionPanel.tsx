@@ -385,7 +385,13 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
       </div>
 
       {showGraphSection && (
-        <main className="editor-canvas-panel">
+        <main
+          className={`editor-canvas-panel ${
+            showFeedbackSection
+              ? ""
+              : "editor-canvas-panel-expanded"
+          }`}
+        >
           <div className="panel-heading canvas-panel-heading">
             <div>
               <span className="panel-eyebrow">
@@ -412,15 +418,20 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
       )}
 
       {showFeedbackSection && (
-        <FeedbackPanel
-          selectedNodeId={selectedNodeId}
-          selectedNodeLabel={selectedNodeLabel ?? undefined}
-          feedbacks={feedbacks}
-          onAddFeedback={addFeedback}
-          onStatusChange={updateFeedbackStatus}
-          onDeleteFeedback={deleteFeedback}
-          onClose={() => setShowFeedbackSection(false)}
-        />
+        <section
+          className="feedback-panel-column"
+          aria-label="Feedback panel"
+        >
+          <FeedbackPanel
+            selectedNodeId={selectedNodeId}
+            selectedNodeLabel={selectedNodeLabel ?? undefined}
+            feedbacks={feedbacks}
+            onAddFeedback={addFeedback}
+            onStatusChange={updateFeedbackStatus}
+            onDeleteFeedback={deleteFeedback}
+            onClose={() => setShowFeedbackSection(false)}
+          />
+        </section>
       )}
 
       <div className="panel-dock panel-dock-right">
