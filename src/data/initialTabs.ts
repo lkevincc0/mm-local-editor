@@ -1,10 +1,11 @@
 import {Label, newTreeGoal, TreeGoal} from "../components/types.ts";
+import {assetUrl} from "../components/utils/basename.ts";
 
-import BeIcon from "/img/Cloud.png";
-import DoIcon from "/img/Function.png";
-import FeelIcon from "/img/Heart.png";
-import ConcernIcon from "/img/Risk.png";
-import WhoIcon from "/img/Stakeholder.png";
+const BeIcon = assetUrl("/img/Cloud.png");
+const DoIcon = assetUrl("/img/Function.png");
+const FeelIcon = assetUrl("/img/Heart.png");
+const ConcernIcon = assetUrl("/img/Risk.png");
+const WhoIcon = assetUrl("/img/Stakeholder.png");
 
 export interface InitialTab {
     label: Label

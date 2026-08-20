@@ -4,8 +4,8 @@ describe('Graph Deletion UI Tests', () => {
   beforeEach(() => {
     // 1. Start at the page and ensure graph is loaded with data
     cy.visit('/');
-    cy.contains("Create Model").click();
-    cy.contains("Arrange Hierarchy / Render Model").click();
+    cy.contains("Get started").click();
+    cy.contains("New project").click();
     cy.get('[data-cy="graph-canvas"]').should('be.visible');
   });
 
