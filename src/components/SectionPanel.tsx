@@ -25,6 +25,8 @@ type SectionPanelProps = {
   hierarchyDock: PanelDock;
   setHierarchyDock: (dock: PanelDock) => void;
   showGraphSection: boolean;
+  showFeedbackSection: boolean;
+  setShowFeedbackSection: (show: boolean) => void;
   paddingX: number;
 };
 
@@ -91,6 +93,8 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
   hierarchyDock,
   setHierarchyDock,
   showGraphSection,
+  showFeedbackSection,
+  setShowFeedbackSection,
   paddingX,
 }) => {
   const [draggedItem, setDraggedItem] =
@@ -407,14 +411,17 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         </main>
       )}
 
-      <FeedbackPanel
-        selectedNodeId={selectedNodeId}
-        selectedNodeLabel={selectedNodeLabel ?? undefined}
-        feedbacks={feedbacks}
-        onAddFeedback={addFeedback}
-        onStatusChange={updateFeedbackStatus}
-        onDeleteFeedback={deleteFeedback}
-      />
+      {showFeedbackSection && (
+        <FeedbackPanel
+          selectedNodeId={selectedNodeId}
+          selectedNodeLabel={selectedNodeLabel ?? undefined}
+          feedbacks={feedbacks}
+          onAddFeedback={addFeedback}
+          onStatusChange={updateFeedbackStatus}
+          onDeleteFeedback={deleteFeedback}
+          onClose={() => setShowFeedbackSection(false)}
+        />
+      )}
 
       <div className="panel-dock panel-dock-right">
         {showGoalSection &&

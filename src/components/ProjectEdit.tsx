@@ -33,6 +33,7 @@ const ProjectEdit: React.FC = () => {
     const [showGoalSection, setShowGoalSection] = useState(true);
     const [showHierarchySection, setShowHierarchySection] = useState(true);
     const [showGraphSection, setShowGraphSection] = useState(true);
+    const [showFeedbackSection, setShowFeedbackSection] = useState(true);
 
     const [goalDock, setGoalDock] = useState<PanelDock>(() =>
         readPanelDock("goal", "left")
@@ -69,6 +70,8 @@ const ProjectEdit: React.FC = () => {
                         setShowHierarchySection={setShowHierarchySection}
                         showGraphSection={showGraphSection}
                         setShowGraphSection={setShowGraphSection}
+                        showFeedbackSection={showFeedbackSection}
+                        setShowFeedbackSection={setShowFeedbackSection}
                     />
 
                     <SectionPanel
@@ -81,6 +84,8 @@ const ProjectEdit: React.FC = () => {
                         hierarchyDock={hierarchyDock}
                         setHierarchyDock={setHierarchyDock}
                         showGraphSection={showGraphSection}
+                        showFeedbackSection={showFeedbackSection}
+                        setShowFeedbackSection={setShowFeedbackSection}
                         paddingX={20}
                     />
                 </div>
