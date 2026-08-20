@@ -7,8 +7,7 @@ import useLocalStorage from "../utils/useLocalStorage";
 
 type ProfileContextType = {
     authorName: string;
-    authorAvatar: string;
-    updateProfile: (name: string, avatar: string) => void;
+    updateProfile: (name: string) => void;
 };
 
 const ProfileContext =
@@ -29,23 +28,12 @@ export const ProfileProvider: React.FC<
             ""
         );
 
-    const [authorAvatar, setAuthorAvatar] =
-        useLocalStorage<string>(
-            "ammber/authorAvatar",
-            ""
-        );
-
-    const updateProfile = (
-        name: string,
-        avatar: string
-    ) => {
+    const updateProfile = (name: string) => {
         setAuthorName(name);
-        setAuthorAvatar(avatar);
     };
 
     const value = {
         authorName,
-        authorAvatar,
         updateProfile
     };
 

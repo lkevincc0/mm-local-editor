@@ -66,7 +66,7 @@ export const FeedbackProvider: React.FC<
     saveProjectData
   } = useProjectContext();
 
-  const {authorName, authorAvatar} =
+  const {authorName} =
     useProfileContext();
 
   // Feedback belongs to the currently open project.
@@ -104,43 +104,30 @@ export const FeedbackProvider: React.FC<
   }, [feedbacks, currentProjectId, saveProjectData]);
 
   // When the author changes, keep existing feedback and replies in sync.
-  const previousAuthor = useRef({
-    name: authorName,
-    avatar: authorAvatar
-  });
+  const previousAuthor = useRef(authorName);
 
   useEffect(() => {
-    if (
-      previousAuthor.current.name === authorName &&
-      previousAuthor.current.avatar === authorAvatar
-    ) {
+    if (previousAuthor.current === authorName) {
       return;
     }
 
-    previousAuthor.current = {
-      name: authorName,
-      avatar: authorAvatar
-    };
+    previousAuthor.current = authorName;
 
     setFeedbacks((currentFeedbacks) =>
       currentFeedbacks.map((feedback) => ({
         ...feedback,
         author:
           authorName.trim() || feedback.author,
-        authorAvatar:
-          authorAvatar || feedback.authorAvatar,
         replies: (feedback.replies ?? []).map(
           (reply) => ({
             ...reply,
             author:
-              authorName.trim() || reply.author,
-            authorAvatar:
-              authorAvatar || reply.authorAvatar
+              authorName.trim() || reply.author
           })
         )
       }))
     );
-  }, [authorName, authorAvatar]);
+  }, [authorName]);
 
   const setSelectedNode = (
     nodeId: string | null,
@@ -166,7 +153,6 @@ export const FeedbackProvider: React.FC<
       author:
         (author ?? authorName).trim() ||
         "Current User",
-      authorAvatar: authorAvatar || undefined,
       content,
       createdAt: "Just now",
       status: "open",
@@ -211,7 +197,6 @@ export const FeedbackProvider: React.FC<
       id: `reply-${Date.now()}`,
       author:
         authorName.trim() || "Current User",
-      authorAvatar: authorAvatar || undefined,
       content,
       createdAt: "Just now"
     };
