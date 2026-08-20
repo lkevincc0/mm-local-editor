@@ -19,8 +19,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({project, index, onOpen, onRena
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const startRename = () => {
-        setDraft(project.name);
-        setEditing(true);
+        setTimeout(() => {
+            setDraft(project.name);
+            setEditing(true);
+        }, 0);
     };
 
     const commitRename = () => {
