@@ -11,20 +11,10 @@ const wrapper = ({children}: PropsWithChildren) => (
 );
 
 describe("FeedbackProvider", () => {
-    it("seeds demo feedback for the Do1 node", () => {
+    it("starts with no feedback", () => {
         const {result} = renderHook(() => useFeedbackContext(), {wrapper});
 
-        expect(result.current.feedbacks).toHaveLength(3);
-        expect(
-            result.current.feedbacks.every(
-                (feedback) => feedback.nodeId === "Functional-6-1"
-            )
-        ).toBe(true);
-        expect(
-            result.current.feedbacks.every(
-                (feedback) => feedback.nodeLabel === "Do1"
-            )
-        ).toBe(true);
+        expect(result.current.feedbacks).toEqual([]);
     });
 
     it("adds a new feedback to the front", () => {
@@ -38,7 +28,7 @@ describe("FeedbackProvider", () => {
             );
         });
 
-        expect(result.current.feedbacks).toHaveLength(4);
+        expect(result.current.feedbacks).toHaveLength(1);
         expect(result.current.feedbacks[0]).toMatchObject({
             nodeId: "Functional-8-1",
             nodeLabel: "Do3",
@@ -52,15 +42,24 @@ describe("FeedbackProvider", () => {
         const {result} = renderHook(() => useFeedbackContext(), {wrapper});
 
         act(() => {
+            result.current.addFeedback(
+                "Functional-6-1",
+                "needs a clearer outcome"
+            );
+        });
+
+        const addedId = result.current.feedbacks[0].id;
+
+        act(() => {
             result.current.updateFeedbackStatus(
-                "feedback-1",
+                addedId,
                 "resolved"
             );
         });
 
         expect(
             result.current.feedbacks.find(
-                (feedback) => feedback.id === "feedback-1"
+                (feedback) => feedback.id === addedId
             )?.status
         ).toBe("resolved");
     });
@@ -69,13 +68,22 @@ describe("FeedbackProvider", () => {
         const {result} = renderHook(() => useFeedbackContext(), {wrapper});
 
         act(() => {
-            result.current.deleteFeedback("feedback-1");
+            result.current.addFeedback(
+                "Functional-6-1",
+                "needs a clearer outcome"
+            );
         });
 
-        expect(result.current.feedbacks).toHaveLength(2);
+        const addedId = result.current.feedbacks[0].id;
+
+        act(() => {
+            result.current.deleteFeedback(addedId);
+        });
+
+        expect(result.current.feedbacks).toHaveLength(0);
         expect(
             result.current.feedbacks.some(
-                (feedback) => feedback.id === "feedback-1"
+                (feedback) => feedback.id === addedId
             )
         ).toBe(false);
     });
