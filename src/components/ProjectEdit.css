@@ -93,7 +93,11 @@ html:has(.project-edit-shell) {
 	width: 100%;
 	min-height: 0;
 	flex: 1;
-	grid-template-columns: auto minmax(320px, 1fr) auto;
+	grid-template-columns:
+		auto
+		minmax(420px, 1fr)
+		clamp(280px, 20vw, 340px)
+		auto;
 	gap: 12px;
 	padding: 20px !important;
 	background: var(--paper);
@@ -119,8 +123,22 @@ html:has(.project-edit-shell) {
 	grid-row: 1;
 }
 
-.panel-dock-right {
+.editor-canvas-panel-expanded {
+	grid-column: 2 / 4;
+}
+
+.feedback-panel-column {
+	display: flex;
 	grid-column: 3;
+	grid-row: 1;
+	min-width: 0;
+	min-height: 0;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.panel-dock-right {
+	grid-column: 4;
 	grid-row: 1;
 }
 
@@ -181,6 +199,7 @@ html:has(.project-edit-shell) {
 	background: var(--hierarchy-panel) !important;
 	box-shadow: 0 8px 24px rgba(45, 57, 43, 0.055) !important;
 }
+
 
 .panel-heading {
 	display: flex;
