@@ -75,7 +75,7 @@ const Home: React.FC = () => {
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".json"
+                        accept=".json,.png,.svg,application/json,image/png,image/svg+xml"
                         style={{display: "none"}}
                         onChange={handleFileChange}
                     />
