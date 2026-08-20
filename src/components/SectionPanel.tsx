@@ -5,7 +5,7 @@ import ErrorModal from "./ErrorModal";
 import GoalList from "./GoalList";
 import Tree from "./Tree";
 import {useFileContext} from "./context/FileProvider";
-import {useFeedbackContext} from "./context/FeedbackContext";
+import {useGraph} from "./context/GraphContext";
 
 import GraphWorker from "./Graphs/GraphWorker";
 import {addGoalToTree, updateTextForGoalId} from "./context/treeDataSlice.ts";
@@ -25,6 +25,8 @@ type SectionPanelProps = {
   hierarchyDock: PanelDock;
   setHierarchyDock: (dock: PanelDock) => void;
   showGraphSection: boolean;
+  showFeedbackSection: boolean;
+  setShowFeedbackSection: (show: boolean) => void;
   paddingX: number;
 };
 
@@ -91,21 +93,15 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
   hierarchyDock,
   setHierarchyDock,
   showGraphSection,
+  showFeedbackSection,
+  setShowFeedbackSection,
   paddingX,
 }) => {
   const [draggedItem, setDraggedItem] =
     useState<TreeGoal | null>(null);
 
   const {dispatch, tree} = useFileContext();
-
-  const {
-    feedbacks,
-    selectedNodeId,
-    selectedNodeLabel,
-    addFeedback,
-    updateFeedbackStatus,
-    deleteFeedback,
-  } = useFeedbackContext();
+  const {graph} = useGraph();
 
   const [groupSelected, setGroupSelected] =
     useState<TreeGoal[]>([]);
@@ -224,6 +220,23 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         text: editedText
       })
     );
+  };
+
+  // Locate a feedback's node on the canvas: select it so it highlights and
+  // scrolls into view, which also narrows the feedback list to that node.
+  const handleSelectFeedbackNode = (nodeId: string) => {
+    if (!graph) {
+      return;
+    }
+
+    const cell = graph.getDataModel().getCell(nodeId);
+
+    if (!cell) {
+      return;
+    }
+
+    graph.setSelectionCell(cell);
+    graph.scrollCellToVisible(cell, true);
   };
 
   const closePanel = (
@@ -381,7 +394,13 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
       </div>
 
       {showGraphSection && (
-        <main className="editor-canvas-panel">
+        <main
+          className={`editor-canvas-panel ${
+            showFeedbackSection
+              ? ""
+              : "editor-canvas-panel-expanded"
+          }`}
+        >
           <div className="panel-heading canvas-panel-heading">
             <div>
               <span className="panel-eyebrow">
@@ -407,14 +426,17 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         </main>
       )}
 
-      <FeedbackPanel
-        selectedNodeId={selectedNodeId}
-        selectedNodeLabel={selectedNodeLabel ?? undefined}
-        feedbacks={feedbacks}
-        onAddFeedback={addFeedback}
-        onStatusChange={updateFeedbackStatus}
-        onDeleteFeedback={deleteFeedback}
-      />
+      {showFeedbackSection && (
+        <section
+          className="feedback-panel-column"
+          aria-label="Feedback panel"
+        >
+          <FeedbackPanel
+            onSelectNode={handleSelectFeedbackNode}
+            onClose={() => setShowFeedbackSection(false)}
+          />
+        </section>
+      )}
 
       <div className="panel-dock panel-dock-right">
         {showGoalSection &&

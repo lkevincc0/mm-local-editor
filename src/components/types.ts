@@ -161,6 +161,7 @@ export const isNonFunctionalGoal = (
 export interface Feedback {
   id: string;
   nodeId: string;
+  nodeLabel?: string;
   author: string;
   content: string;
   createdAt: string;

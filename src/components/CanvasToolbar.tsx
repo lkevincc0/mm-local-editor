@@ -13,6 +13,8 @@ interface CanvasToolbarProps {
     setShowHierarchySection: Dispatch<React.SetStateAction<boolean>>
     showGraphSection: boolean
     setShowGraphSection: Dispatch<React.SetStateAction<boolean>>
+    showFeedbackSection: boolean
+    setShowFeedbackSection: Dispatch<React.SetStateAction<boolean>>
 }
 
 // A help icon that opens a popover with usage instructions.
@@ -41,6 +43,8 @@ const CanvasToolbar = ({
                            setShowHierarchySection,
                            showGraphSection,
                            setShowGraphSection,
+                           showFeedbackSection,
+                           setShowFeedbackSection,
                        }: CanvasToolbarProps) => {
     return (
         <div className="canvas-toolbar">
@@ -64,6 +68,13 @@ const CanvasToolbar = ({
                 onClick={() => setShowHierarchySection(!showHierarchySection)}
             >
                 Hierarchy
+            </button>
+            <button
+                type="button"
+                className={`canvas-toolbar-pill ${showFeedbackSection ? "active" : ""}`}
+                onClick={() => setShowFeedbackSection(!showFeedbackSection)}
+            >
+                Feedback
             </button>
 
             <span className="canvas-toolbar-sep" />

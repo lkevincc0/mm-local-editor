@@ -9,6 +9,7 @@ const renderToolbar = () => {
     const setShowGoalSection = vi.fn();
     const setShowHierarchySection = vi.fn();
     const setShowGraphSection = vi.fn();
+    const setShowFeedbackSection = vi.fn();
     render(
         <CanvasToolbar
             showGoalSection={true}
@@ -17,9 +18,11 @@ const renderToolbar = () => {
             setShowHierarchySection={setShowHierarchySection}
             showGraphSection={true}
             setShowGraphSection={setShowGraphSection}
+            showFeedbackSection={true}
+            setShowFeedbackSection={setShowFeedbackSection}
         />
     );
-    return {setShowGoalSection, setShowHierarchySection, setShowGraphSection};
+    return {setShowGoalSection, setShowHierarchySection, setShowGraphSection, setShowFeedbackSection};
 };
 
 describe("CanvasToolbar", () => {
@@ -41,5 +44,11 @@ describe("CanvasToolbar", () => {
         const {setShowHierarchySection} = renderToolbar();
         fireEvent.click(screen.getByRole("button", {name: "Hierarchy"}));
         expect(setShowHierarchySection).toHaveBeenCalledWith(false);
+    });
+
+    it("toggles the feedback panel", () => {
+        const {setShowFeedbackSection} = renderToolbar();
+        fireEvent.click(screen.getByRole("button", {name: "Feedback"}));
+        expect(setShowFeedbackSection).toHaveBeenCalledWith(false);
     });
 });

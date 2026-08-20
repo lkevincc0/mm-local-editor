@@ -23,7 +23,8 @@ type FeedbackContextType = {
 
   addFeedback: (
     nodeId: string,
-    content: string
+    content: string,
+    nodeLabel?: string
   ) => void;
 
   updateFeedbackStatus: (
@@ -34,10 +35,6 @@ type FeedbackContextType = {
   deleteFeedback: (
     feedbackId: string
   ) => void;
-
-  getFeedbacksForNode: (
-    nodeId: string
-  ) => Feedback[];
 };
 
 const FeedbackContext =
@@ -49,44 +46,11 @@ type FeedbackProviderProps = {
   children: React.ReactNode;
 };
 
-const initialFeedbacks: Feedback[] = [
-  {
-    id: "feedback-1",
-    nodeId: "Do1",
-    author: "Kevin",
-    content:
-      "The boundary and purpose of Do1 could be clarified.",
-    createdAt: "10 min ago",
-    status: "open",
-    replyCount: 1
-  },
-  {
-    id: "feedback-2",
-    nodeId: "Do1",
-    author: "Alice",
-    content:
-      "The relationship between Do1 and Do2 could be explained more clearly.",
-    createdAt: "Yesterday",
-    status: "resolved",
-    replyCount: 2
-  },
-  {
-    id: "feedback-3",
-    nodeId: "Do1",
-    author: "Sam",
-    content:
-      "Consider adding more detail about the expected outcome of this goal.",
-    createdAt: "2 days ago",
-    status: "open",
-    replyCount: 0
-  }
-];
-
 export const FeedbackProvider: React.FC<
   FeedbackProviderProps
 > = ({children}) => {
   const [feedbacks, setFeedbacks] =
-    useState<Feedback[]>(initialFeedbacks);
+    useState<Feedback[]>([]);
 
   const [selectedNodeId, setSelectedNodeId] =
     useState<string | null>(null);
@@ -109,11 +73,13 @@ export const FeedbackProvider: React.FC<
 
   const addFeedback = (
     nodeId: string,
-    content: string
+    content: string,
+    nodeLabel?: string
   ) => {
     const newFeedback: Feedback = {
       id: `feedback-${Date.now()}`,
       nodeId,
+      nodeLabel,
       author: "Current User",
       content,
       createdAt: "Just now",
@@ -151,15 +117,6 @@ export const FeedbackProvider: React.FC<
     );
   };
 
-  const getFeedbacksForNode = (
-    nodeId: string
-  ) => {
-    return feedbacks.filter(
-      (feedback) =>
-        feedback.nodeId === nodeId
-    );
-  };
-
   const value = useMemo(
     () => ({
       feedbacks,
@@ -168,8 +125,7 @@ export const FeedbackProvider: React.FC<
       setSelectedNode,
       addFeedback,
       updateFeedbackStatus,
-      deleteFeedback,
-      getFeedbacksForNode
+      deleteFeedback
     }),
     [
       feedbacks,
