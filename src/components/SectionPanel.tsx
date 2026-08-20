@@ -5,7 +5,6 @@ import ErrorModal from "./ErrorModal";
 import GoalList from "./GoalList";
 import Tree from "./Tree";
 import {useFileContext} from "./context/FileProvider";
-import {useFeedbackContext} from "./context/FeedbackContext";
 import {useGraph} from "./context/GraphContext";
 
 import GraphWorker from "./Graphs/GraphWorker";
@@ -103,15 +102,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
 
   const {dispatch, tree} = useFileContext();
   const {graph} = useGraph();
-
-  const {
-    feedbacks,
-    selectedNodeId,
-    selectedNodeLabel,
-    addFeedback,
-    updateFeedbackStatus,
-    deleteFeedback,
-  } = useFeedbackContext();
 
   const [groupSelected, setGroupSelected] =
     useState<TreeGoal[]>([]);
@@ -442,12 +432,6 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
           aria-label="Feedback panel"
         >
           <FeedbackPanel
-            selectedNodeId={selectedNodeId}
-            selectedNodeLabel={selectedNodeLabel ?? undefined}
-            feedbacks={feedbacks}
-            onAddFeedback={addFeedback}
-            onStatusChange={updateFeedbackStatus}
-            onDeleteFeedback={deleteFeedback}
             onSelectNode={handleSelectFeedbackNode}
             onClose={() => setShowFeedbackSection(false)}
           />

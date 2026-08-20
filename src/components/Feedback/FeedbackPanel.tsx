@@ -1,14 +1,11 @@
-import React, { 
-    useMemo, 
-    useState 
+import React, {
+    useMemo,
+    useState
 } from "react";
 
 import FeedbackItem from "./FeedbackItem";
 
-import type {
-    Feedback,
-    FeedbackStatus
-} from "../types.ts";
+import {useFeedbackContext} from "../context/FeedbackContext";
 
 import "./FeedbackPanel.css";
 
@@ -19,52 +16,14 @@ type FeedbackFilter =
 
 interface FeedbackPanelProps {
     /**
-     * The id of the currently selected graph node.
-     *
-     * Later this will probably come directly from FeedbackContext.
-     */
-    selectedNodeId: string | null;
-
-    /**
-     * Human-readable label of the selected node.
-     * e.g. "Do1", "Concern", "Feel"
-     */
-    selectedNodeLabel?: string;
-
-    /**
-     * All feedback in the project.
-     *
-     * The panel will automatically filter them by selectedNodeId.
-     */
-    feedbacks: Feedback[];
-
-    /**
      * Called when the user closes the feedback panel.
      */
     onClose: () => void;
 
     /**
-     * Called when the user submits a new feedback item.
-     */
-    onAddFeedback?: (
-        nodeId: string,
-        content: string
-    ) => void;
-
-    /**
-     * Called when the status of an existing feedback changes.
-     */
-    onStatusChange?: (
-        feedbackId: string,
-        newStatus: FeedbackStatus
-    ) => void;
-
-    /**
      * Reserved for the reply feature.
      */
     onReply?: (feedbackId: string) => void;
-
-    onDeleteFeedback?: (feedbackId: string) => void;
 
     /**
      * Called when the user clicks a feedback card, to locate its node
@@ -74,16 +33,19 @@ interface FeedbackPanelProps {
 }
 
 const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
-    selectedNodeId,
-    selectedNodeLabel,
-    feedbacks,
     onClose,
-    onAddFeedback,
-    onStatusChange,
     onReply,
-    onDeleteFeedback,
     onSelectNode
 }) => {
+    const {
+        feedbacks,
+        selectedNodeId,
+        selectedNodeLabel,
+        addFeedback,
+        updateFeedbackStatus,
+        deleteFeedback
+    } = useFeedbackContext();
+
     const [activeFilter, setActiveFilter] =
         useState<FeedbackFilter>("all");
 
@@ -152,13 +114,12 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
         if (
             !selectedNodeId ||
-            !content ||
-            !onAddFeedback
+            !content
         ) {
             return;
         }
 
-        onAddFeedback(
+        addFeedback(
             selectedNodeId,
             content,
             selectedNodeLabel ?? undefined
@@ -285,8 +246,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                                 handleSubmitFeedback
                             }
                             disabled={
-                                !newFeedback.trim() ||
-                                !onAddFeedback
+                                !newFeedback.trim()
                             }
                         >
                             Add Feedback
@@ -356,9 +316,9 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                             <FeedbackItem
                                 key={feedback.id}
                                 feedback={feedback}
-                                onStatusChange={onStatusChange}
+                                onStatusChange={updateFeedbackStatus}
                                 onReply={onReply}
-                                onDelete={onDeleteFeedback}
+                                onDelete={deleteFeedback}
                                 onSelectNode={onSelectNode}
                             />
                         )
