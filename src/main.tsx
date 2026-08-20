@@ -8,15 +8,18 @@ import App from "./App.tsx";
 import "./index.css";
 import FileProvider from "./components/context/FileProvider.tsx";
 import ProjectProvider from "./components/context/ProjectProvider.tsx";
+import {ProfileProvider} from "./components/context/ProfileContext.tsx";
 import {enableMapSet} from "immer";
 
 enableMapSet();
 
 const rootContainer = document.getElementById("root");
 ReactDOM.createRoot(rootContainer!).render(
-    <ProjectProvider>
-        <FileProvider>
-            <App/>
-        </FileProvider>
-    </ProjectProvider>
+    <ProfileProvider>
+        <ProjectProvider>
+            <FileProvider>
+                <App/>
+            </FileProvider>
+        </ProjectProvider>
+    </ProfileProvider>
 );

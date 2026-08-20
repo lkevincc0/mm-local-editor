@@ -3,14 +3,24 @@
 */
 import {act, renderHook} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
-import {describe, expect, it} from "vitest";
+import {beforeEach, describe, expect, it} from "vitest";
 import {FeedbackProvider, useFeedbackContext} from "./FeedbackContext";
+import {ProfileProvider} from "./ProfileContext";
+import ProjectProvider from "./ProjectProvider";
 
 const wrapper = ({children}: PropsWithChildren) => (
-    <FeedbackProvider>{children}</FeedbackProvider>
+    <ProfileProvider>
+        <ProjectProvider>
+            <FeedbackProvider>{children}</FeedbackProvider>
+        </ProjectProvider>
+    </ProfileProvider>
 );
 
 describe("FeedbackProvider", () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
     it("starts with no feedback", () => {
         const {result} = renderHook(() => useFeedbackContext(), {wrapper});
 
