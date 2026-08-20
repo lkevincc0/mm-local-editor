@@ -1,5 +1,5 @@
 import {InitialTab, createDefaultTabData, defaultTreeData} from "../../data/initialTabs";
-import {TabContent, TreeGoal} from "../types";
+import {Feedback, TabContent, TreeGoal} from "../types";
 
 // A saved model in the local project store.
 export type Project = {
@@ -7,6 +7,7 @@ export type Project = {
     name: string;
     treeData: TreeGoal[];
     tabData: InitialTab[];
+    feedbacks?: Feedback[];
     createdAt: number;
     updatedAt: number;
 };
@@ -36,6 +37,22 @@ export const defaultProjectName = (existingNames: string[]): string => {
         i += 1;
     }
     return `Untitled ${i}`;
+};
+
+// "Name", then "Name (2)", "Name (3)", ... avoiding collisions. Used when an
+// imported project brings its own name that may clash with an existing one.
+export const uniqueProjectName = (
+    base: string,
+    existingNames: string[]
+): string => {
+    if (!existingNames.includes(base)) {
+        return base;
+    }
+    let i = 2;
+    while (existingNames.includes(`${base} (${i})`)) {
+        i += 1;
+    }
+    return `${base} (${i})`;
 };
 
 export const cardAccentColor = (index: number): string =>

@@ -7,6 +7,8 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import ErrorModal, {ErrorModalProps} from "../ErrorModal";
 import {useFileContext} from "../context/FileProvider";
+import {useProjectContext} from "../context/ProjectContext";
+import {useFeedbackContext} from "../context/FeedbackContext";
 import {useGraph} from "../context/GraphContext";
 import {returnFocusToGraph} from "../utils/GraphUtils";
 import DropdownButton from "react-bootstrap/DropdownButton";
@@ -20,6 +22,8 @@ const PNG_EXPORT_SCALE = 3;
 const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => {
     const {graph} = useGraph(); // Use the context to get the graph instance
     const {cluster, tabData, treeData} = useFileContext(); // Get goals and cluster from file context
+    const {currentProject} = useProjectContext(); // Get the project name for the embedded metadata
+    const {feedbacks} = useFeedbackContext(); // Get the feedback for the embedded metadata
     const [errorModal, setErrorModal] = useState<ErrorModalProps>({
         show: false,
         title: "",
@@ -88,7 +92,7 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         const serializer = new XMLSerializer();
         const rawSvgString = serializer.serializeToString(svgElement);
 
-        const projectData = {tabData, treeData: treeData || []};
+        const projectData = {name: currentProject?.name, feedbacks, tabData, treeData: treeData || []};
         const svgString = embedJsonInSvg(rawSvgString, projectData);
         try {
             // If chromium browser
@@ -174,7 +178,7 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         canvas.toBlob(async (blob) => {
             if (blob) {
                 try {
-                    const projectData = {tabData, treeData: treeData || []};
+                    const projectData = {name: currentProject?.name, feedbacks, tabData, treeData: treeData || []};
                     const finalBlob = await embedJsonInPng(blob, projectData);
 
                     if ('showSaveFilePicker' in self) {

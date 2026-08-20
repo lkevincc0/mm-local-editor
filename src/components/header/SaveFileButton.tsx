@@ -2,12 +2,14 @@ import {useState} from "react";
 import Button from "react-bootstrap/Button";
 import {JSONData, useFileContext} from "../context/FileProvider";
 import {useProjectContext} from "../context/ProjectContext";
+import {useFeedbackContext} from "../context/FeedbackContext";
 import ErrorModal, {ErrorModalProps} from "../ErrorModal";
 import {returnFocusToGraph} from "../utils/GraphUtils";
 
 const SaveFileButton = () => {
 	const {setJsonFileHandle, treeData, tabData, goals} = useFileContext();
 	const {currentProject} = useProjectContext();
+	const {feedbacks} = useFeedbackContext();
 
 	const [errorModal, setErrorModal] = useState<ErrorModalProps>({
 		show: false,
@@ -62,6 +64,8 @@ const SaveFileButton = () => {
 	) => {
 		try {
 			const jsonData: JSONData = {
+				name: currentProject?.name,
+				feedbacks,
 				tabData: tabData,
 				treeData: treeData || [],
 			};
