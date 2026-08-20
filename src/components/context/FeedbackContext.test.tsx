@@ -20,6 +20,11 @@ describe("FeedbackProvider", () => {
                 (feedback) => feedback.nodeId === "Functional-6-1"
             )
         ).toBe(true);
+        expect(
+            result.current.feedbacks.every(
+                (feedback) => feedback.nodeLabel === "Do1"
+            )
+        ).toBe(true);
     });
 
     it("adds a new feedback to the front", () => {
@@ -28,13 +33,15 @@ describe("FeedbackProvider", () => {
         act(() => {
             result.current.addFeedback(
                 "Functional-8-1",
-                "needs more detail"
+                "needs more detail",
+                "Do3"
             );
         });
 
         expect(result.current.feedbacks).toHaveLength(4);
         expect(result.current.feedbacks[0]).toMatchObject({
             nodeId: "Functional-8-1",
+            nodeLabel: "Do3",
             content: "needs more detail",
             status: "open",
             author: "Current User"
