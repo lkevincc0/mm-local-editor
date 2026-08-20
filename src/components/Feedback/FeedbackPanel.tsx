@@ -1,4 +1,5 @@
 import React, {
+    useEffect,
     useMemo,
     useState
 } from "react";
@@ -6,6 +7,7 @@ import React, {
 import FeedbackItem from "./FeedbackItem";
 
 import {useFeedbackContext} from "../context/FeedbackContext";
+import {useProfileContext} from "../context/ProfileContext";
 
 import "./FeedbackPanel.css";
 
@@ -21,11 +23,6 @@ interface FeedbackPanelProps {
     onClose: () => void;
 
     /**
-     * Reserved for the reply feature.
-     */
-    onReply?: (feedbackId: string) => void;
-
-    /**
      * Called when the user clicks a feedback card, to locate its node
      * on the graph canvas.
      */
@@ -34,7 +31,6 @@ interface FeedbackPanelProps {
 
 const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
     onClose,
-    onReply,
     onSelectNode
 }) => {
     const {
@@ -43,8 +39,15 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         selectedNodeLabel,
         addFeedback,
         updateFeedbackStatus,
-        deleteFeedback
+        deleteFeedback,
+        addReply
     } = useFeedbackContext();
+
+    const {
+        authorName,
+        authorAvatar,
+        updateProfile
+    } = useProfileContext();
 
     const [activeFilter, setActiveFilter] =
         useState<FeedbackFilter>("all");
@@ -53,6 +56,12 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         useState(false);
 
     const [newFeedback, setNewFeedback] =
+        useState("");
+
+    const [showAuthorPrompt, setShowAuthorPrompt] =
+        useState(false);
+
+    const [authorNameInput, setAuthorNameInput] =
         useState("");
 
     /**
@@ -109,20 +118,23 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         }
     }, [activeFilter, visibleFeedbacks]);
 
-    const handleSubmitFeedback = () => {
-        const content = newFeedback.trim();
-
-        if (
-            !selectedNodeId ||
-            !content
-        ) {
+    /**
+     * Adds the pending feedback under the given author name, then resets the
+     * composer. Extracted so the author-name prompt can submit on save too.
+     */
+    const submitFeedback = (
+        author: string,
+        content: string
+    ) => {
+        if (!selectedNodeId) {
             return;
         }
 
         addFeedback(
             selectedNodeId,
             content,
-            selectedNodeLabel ?? undefined
+            selectedNodeLabel ?? undefined,
+            author
         );
 
         setNewFeedback("");
@@ -134,6 +146,68 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
          */
         setActiveFilter("all");
     };
+
+    const handleSubmitFeedback = () => {
+        const content = newFeedback.trim();
+
+        if (
+            !selectedNodeId ||
+            !content
+        ) {
+            return;
+        }
+
+        if (!authorName.trim()) {
+            setAuthorNameInput("");
+            setShowAuthorPrompt(true);
+            return;
+        }
+
+        submitFeedback(authorName, content);
+    };
+
+    const handleAuthorSave = () => {
+        const name = authorNameInput.trim();
+
+        if (!name) {
+            return;
+        }
+
+        updateProfile(name, authorAvatar);
+        setShowAuthorPrompt(false);
+
+        const content = newFeedback.trim();
+
+        if (selectedNodeId && content) {
+            submitFeedback(name, content);
+        }
+    };
+
+    const handleAuthorCancel = () => {
+        setShowAuthorPrompt(false);
+        setAuthorNameInput("");
+    };
+
+    useEffect(() => {
+        if (!showAuthorPrompt) {
+            return;
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setShowAuthorPrompt(false);
+                setAuthorNameInput("");
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () =>
+            window.removeEventListener(
+                "keydown",
+                handleKeyDown
+            );
+    }, [showAuthorPrompt]);
 
     const handleCancelComposer = () => {
         setNewFeedback("");
@@ -317,7 +391,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                                 key={feedback.id}
                                 feedback={feedback}
                                 onStatusChange={updateFeedbackStatus}
-                                onReply={onReply}
+                                onReply={addReply}
                                 onDelete={deleteFeedback}
                                 onSelectNode={onSelectNode}
                             />
@@ -342,6 +416,88 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     </div>
                 )}
             </div>
+
+            {showAuthorPrompt && (
+                <div
+                    className="feedback-modal-overlay"
+                    onClick={handleAuthorCancel}
+                >
+                    <div
+                        className="feedback-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="feedback-author-title"
+                        onClick={(event) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        <header className="feedback-modal-header">
+                            <div>
+                                <span className="feedback-modal-eyebrow">
+                                    About you
+                                </span>
+
+                                <h3
+                                    id="feedback-author-title"
+                                    className="feedback-modal-title"
+                                >
+                                    Set your name
+                                </h3>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="feedback-modal-close"
+                                onClick={handleAuthorCancel}
+                                aria-label="Close"
+                            >
+                                ×
+                            </button>
+                        </header>
+
+                        <p className="feedback-modal-copy">
+                            How should we address you in
+                            feedback?
+                        </p>
+
+                        <input
+                            className="feedback-modal-input"
+                            value={authorNameInput}
+                            onChange={(event) =>
+                                setAuthorNameInput(
+                                    event.target.value
+                                )
+                            }
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                    handleAuthorSave();
+                                }
+                            }}
+                            placeholder="Your name"
+                            autoFocus
+                        />
+
+                        <footer className="feedback-modal-actions">
+                            <button
+                                type="button"
+                                className="feedback-modal-cancel"
+                                onClick={handleAuthorCancel}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                className="feedback-modal-save"
+                                onClick={handleAuthorSave}
+                                disabled={!authorNameInput.trim()}
+                            >
+                                Save
+                            </button>
+                        </footer>
+                    </div>
+                </div>
+            )}
         </aside>
     );
 };

@@ -5,6 +5,8 @@ import type {
     FeedbackStatus
 } from "../types.ts";
 
+import Avatar from "../Avatar";
+
 interface FeedbackItemProps {
     feedback: Feedback;
 
@@ -13,7 +15,10 @@ interface FeedbackItemProps {
         newStatus: FeedbackStatus
     ) => void;
 
-    onReply?: (feedbackId: string) => void;
+    onReply?: (
+        feedbackId: string,
+        content: string
+    ) => void;
 
     onDelete?: (feedbackId: string) => void;
 
@@ -33,9 +38,15 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
 }) => {
     const [showMenu, setShowMenu] = useState(false);
 
+    const [isReplying, setIsReplying] = useState(false);
+
+    const [replyText, setReplyText] = useState("");
+
     const isResolved = feedback.status === "resolved";
 
     const nodeLabel = feedback.nodeLabel ?? feedback.nodeId;
+
+    const replies = feedback.replies ?? [];
 
     const handleCardClick = () => {
         if (!onSelectNode) {
@@ -64,7 +75,18 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
         event.stopPropagation();
-        onReply?.(feedback.id);
+        setIsReplying((current) => !current);
+    };
+
+    const handleSubmitReply = () => {
+        const content = replyText.trim();
+
+        if (!content) {
+            return;
+        }
+
+        onReply?.(feedback.id, content);
+        setReplyText("");
     };
 
     const handleDelete = (
@@ -103,15 +125,23 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
 
             <header className="feedback-item-header">
                 <div className="feedback-author">
-                    <div
-                        className="feedback-avatar"
-                        aria-hidden="true"
-                    >
-                        {feedback.author
-                            .trim()
-                            .charAt(0)
-                            .toUpperCase()}
-                    </div>
+                    {feedback.authorAvatar ? (
+                        <Avatar
+                            avatar={feedback.authorAvatar}
+                            size={28}
+                            className="feedback-avatar"
+                        />
+                    ) : (
+                        <div
+                            className="feedback-avatar"
+                            aria-hidden="true"
+                        >
+                            {feedback.author
+                                .trim()
+                                .charAt(0)
+                                .toUpperCase()}
+                        </div>
+                    )}
 
                     <div className="feedback-author-info">
                         <strong className="feedback-author-name">
@@ -153,8 +183,9 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                     type="button"
                     className="feedback-text-button"
                     onClick={handleReplyClick}
+                    aria-expanded={isReplying}
                 >
-                    Reply
+                    {isReplying ? "Close" : "Reply"}
 
                     {(feedback.replyCount ?? 0) >
                         0 && (
@@ -198,6 +229,67 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                     )}
                 </div>
             </footer>
+
+            <div
+                className={`feedback-reply-panel ${
+                    isReplying ? "is-open" : ""
+                }`}
+                onClick={(event) =>
+                    event.stopPropagation()
+                }
+            >
+                <div className="feedback-reply-panel-inner">
+                    {replies.length > 0 && (
+                        <ul className="feedback-reply-list">
+                            {replies.map((reply) => (
+                                <li
+                                    key={reply.id}
+                                    className="feedback-reply"
+                                >
+                                    <strong
+                                        className="feedback-reply-author"
+                                    >
+                                        {reply.author}
+                                    </strong>
+
+                                    <p
+                                        className="feedback-reply-content"
+                                    >
+                                        {reply.content}
+                                    </p>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+
+                    <div className="feedback-reply-composer">
+                        <input
+                            className="feedback-reply-input"
+                            value={replyText}
+                            onChange={(event) =>
+                                setReplyText(
+                                    event.target.value
+                                )
+                            }
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                    handleSubmitReply();
+                                }
+                            }}
+                            placeholder="Write a reply..."
+                        />
+
+                        <button
+                            type="button"
+                            className="feedback-reply-submit"
+                            onClick={handleSubmitReply}
+                            disabled={!replyText.trim()}
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
         </article>
     );
 };

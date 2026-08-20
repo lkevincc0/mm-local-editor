@@ -6,17 +6,20 @@ import {MemoryRouter} from "react-router-dom";
 import {afterEach, beforeEach, describe, expect, it} from "vitest";
 import Home from "./Home";
 import FileProvider from "./context/FileProvider";
+import {ProfileProvider} from "./context/ProfileContext";
 import ProjectProvider from "./context/ProjectProvider";
 import {Project} from "./utils/projects";
 
 const renderHome = () => {
     render(
         <MemoryRouter>
-            <ProjectProvider>
-                <FileProvider>
-                    <Home/>
-                </FileProvider>
-            </ProjectProvider>
+            <ProfileProvider>
+                <ProjectProvider>
+                    <FileProvider>
+                        <Home/>
+                    </FileProvider>
+                </ProjectProvider>
+            </ProfileProvider>
         </MemoryRouter>
     );
 };
