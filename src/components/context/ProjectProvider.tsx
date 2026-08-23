@@ -17,6 +17,8 @@ export const ProjectProvider: React.FC<PropsWithChildren> = ({children}) => {
             name: name ?? defaultProjectName(projects.map((p) => p.name)),
             treeData: data?.treeData ?? defaults.treeData,
             tabData: data?.tabData ?? defaults.tabData,
+            feedbacks: data?.feedbacks ?? [],
+            sourceShareId: data?.sourceShareId,
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };

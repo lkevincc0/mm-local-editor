@@ -9,11 +9,14 @@ import {useProjectLauncher} from "./utils/useProjectLauncher";
 import ErrorModal, {ErrorModalProps} from "./ErrorModal";
 import ProjectCard from "./ProjectCard";
 import Profile from "./Profile";
+import ShareButton from "./ShareButton";
+import ShareModal from "./ShareModal";
 import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
     const {projects, renameProject, deleteProject} = useProjectContext();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [showShareModal, setShowShareModal] = useState(false);
     const [query, setQuery] = useState("");
     const [errorModal, setErrorModal] = useState<ErrorModalProps>({
         show: false,
@@ -67,6 +70,11 @@ const Home: React.FC = () => {
                             onChange={(e) => setQuery(e.target.value)}
                         />
                     </div>
+
+                    <ShareButton
+                        onClick={() => setShowShareModal(true)}
+                        disabled={projects.length === 0}
+                    />
                     <button
                         type="button"
                         className={`${styles.btn} ${styles.btnOutline}`}
@@ -160,6 +168,11 @@ const Home: React.FC = () => {
                 )}
             </main>
 
+            <ShareModal
+                show={showShareModal}
+                projects={projects}
+                onHide={() => setShowShareModal(false)}
+            />
             <ErrorModal {...errorModal}/>
         </div>
     );

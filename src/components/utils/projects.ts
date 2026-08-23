@@ -4,6 +4,7 @@ import {Feedback, TabContent, TreeGoal} from "../types";
 // A saved model in the local project store.
 export type Project = {
     id: string;
+    sourceShareId?: string;
     name: string;
     treeData: TreeGoal[];
     tabData: InitialTab[];
