@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -6,10 +7,12 @@ import Row from "react-bootstrap/Row";
 
 import SaveFileButton from "./SaveFileButton";
 import ExportFileButton from "./ExportFileButton";
+import {BsPeople} from "react-icons/bs";
 import {isChrome, isEdge, isOpera} from "react-device-detect";
 import ResetGraphButton from "../Graphs/ResetGraphButton.tsx";
 
 import HomeButton from "./HomeButton.tsx";
+import ShareModal from "../ShareModal";
 import {useProjectContext} from "../context/ProjectContext";
 
 type ProjectEditHeaderProps = {
@@ -26,6 +29,7 @@ const ProjectEditHeader: React.FC<ProjectEditHeaderProps> = ({
 	const {currentProject, renameProject} = useProjectContext();
 	const [isEditingName, setIsEditingName] = useState(false);
 	const [nameDraft, setNameDraft] = useState("");
+	const [showShareModal, setShowShareModal] = useState(false);
   
 	useEffect(() => {
 		if (isChrome || isEdge || isOpera) {
@@ -78,11 +82,27 @@ const ProjectEditHeader: React.FC<ProjectEditHeaderProps> = ({
                             {/* Pass showGraphSection to ExportFileButton to control enablement */}
                             <ExportFileButton showGraphSection={showGraphSection}/>
                             {isBrowserSupported && <SaveFileButton/>}
+                            <Button
+                                variant="dark"
+                                className="d-inline-flex align-items-center gap-2"
+                                onClick={() => setShowShareModal(true)}
+                                disabled={!currentProject}
+                            >
+                                <BsPeople/>
+                                Share
+                            </Button>
                         </ButtonGroup>
                         <HomeButton/>
                     </Col>
                 </Row>
             </Container>
+            {currentProject && (
+                <ShareModal
+                    show={showShareModal}
+                    project={currentProject}
+                    onHide={() => setShowShareModal(false)}
+                />
+            )}
         </header>
 	);
 };

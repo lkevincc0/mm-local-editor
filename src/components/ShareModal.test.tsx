@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import React from "react";
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
 import ShareModal from "./ShareModal";
@@ -40,15 +40,17 @@ describe("ShareModal", () => {
         vi.restoreAllMocks();
     });
 
-    it("generates a QR code and a copyable project link", () => {
-        render(<ShareModal show projects={[project]} onHide={vi.fn()}/>);
-
-        fireEvent.click(screen.getByRole("button", {name: "Generate QR code"}));
+    it("shows a copyable link and QR code as soon as it opens", () => {
+        render(<ShareModal show project={project} onHide={vi.fn()}/>);
 
         const input = screen.getByLabelText("Share link") as HTMLInputElement;
         expect(input.value).toContain("#share=");
-        expect(document.querySelector("svg")).not.toBeNull();
-        expect(screen.getByText("Scan this QR code or copy the link below.")).toBeTruthy();
+
+        expect(screen.getByRole("button", {name: /copy link/i})).toBeTruthy();
+        expect(screen.getByTestId("share-qr")).toBeTruthy();
+        expect(
+            screen.getByText(/Anyone with the link can open this project/i)
+        ).toBeTruthy();
     });
 
     it("shows an error instead of rendering an oversized QR code", () => {
@@ -62,13 +64,10 @@ describe("ShareModal", () => {
             tabData: [{label: "Do", icon: "", rows: [oversizedGoal]}],
         };
 
-        render(<ShareModal show projects={[oversizedProject]} onHide={vi.fn()}/>);
-        fireEvent.click(screen.getByRole("button", {name: "Generate QR code"}));
+        render(<ShareModal show project={oversizedProject} onHide={vi.fn()}/>);
 
-        expect(screen.getByText(
-            "This project is too large for a frontend-only QR code. " +
-            "Try sharing a smaller model."
-        )).toBeTruthy();
-        expect(document.querySelector("svg")).toBeNull();
+        expect(screen.getByText(/too large/i)).toBeTruthy();
+        expect(screen.queryByTestId("share-qr")).toBeNull();
+        expect(screen.queryByLabelText("Share link")).toBeNull();
     });
 });
