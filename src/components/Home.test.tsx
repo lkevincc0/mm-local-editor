@@ -67,7 +67,7 @@ describe("Home", () => {
         renderHome();
         fireEvent.click(screen.getByLabelText("Options for My Model"));
         fireEvent.click(screen.getByText("Rename"));
-        const input = screen.getByDisplayValue("My Model");
+        const input = await screen.findByDisplayValue("My Model");
         fireEvent.change(input, {target: {value: "Renamed"}});
         fireEvent.blur(input);
         await waitFor(() => expect(storedProjects()[0].name).toBe("Renamed"));
