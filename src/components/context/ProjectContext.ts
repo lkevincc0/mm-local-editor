@@ -7,6 +7,7 @@ export type ProjectData = {
     treeData: TreeGoal[];
     tabData: InitialTab[];
     feedbacks?: Feedback[];
+    sourceShareId?: string;
 };
 
 export type ProjectContextValue = {

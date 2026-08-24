@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Papers from "./components/Papers";
 import ProjectEdit from "./components/ProjectEdit";
 import Layout from "./components/Layout";
+import SharedProjectLoader from "./components/SharedProjectLoader";
 import {getBasename} from "./components/utils/basename";
 
 const basename = getBasename();
@@ -11,6 +12,7 @@ const basename = getBasename();
 const App = () => {
 	return (
 		<BrowserRouter basename={basename}>
+			<SharedProjectLoader/>
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Welcome />} />

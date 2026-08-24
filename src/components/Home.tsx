@@ -67,6 +67,7 @@ const Home: React.FC = () => {
                             onChange={(e) => setQuery(e.target.value)}
                         />
                     </div>
+
                     <button
                         type="button"
                         className={`${styles.btn} ${styles.btnOutline}`}
