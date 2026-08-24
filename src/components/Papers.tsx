@@ -1,19 +1,20 @@
 import {useState} from "react";
 import {BsArrowLeft, BsArrowUpRight} from "react-icons/bs";
 import {Link} from "react-router-dom";
-import LeonIcon from "/leon.png";
+import {assetUrl} from "./utils/basename";
 import {papers} from "../data/papers";
 import PaperReferenceList, {Reference} from "./PaperReferenceList";
 import styles from "./Papers.module.css";
 
 const Papers = () => {
     const [selectedPaper, setSelectedPaper] = useState<Reference>(papers[0]);
+    const selectedPaperUrl = assetUrl(selectedPaper.link);
 
     return (
         <div className={styles.page}>
             <header className={styles.header}>
                 <Link to="/" className={styles.brand} aria-label="AMMBER home">
-                    <img src={LeonIcon} alt="AMMBER logo"/>
+                    <img src={assetUrl("/leon.png")} alt="AMMBER logo"/>
                     <span>AMMBER</span>
                 </Link>
                 <Link to="/" className={styles.backLink}><BsArrowLeft/> Back home</Link>
@@ -46,13 +47,13 @@ const Papers = () => {
                             <span>Previewing</span>
                             <strong>{selectedPaper.title}</strong>
                         </div>
-                        <a href={selectedPaper.link} target="_blank" rel="noreferrer">
+                        <a href={selectedPaperUrl} target="_blank" rel="noreferrer">
                             Open PDF <BsArrowUpRight/>
                         </a>
                     </div>
                     <iframe
                         key={selectedPaper.link}
-                        src={`${selectedPaper.link}#view=FitH`}
+                        src={`${selectedPaperUrl}#view=FitH`}
                         title={`Preview of ${selectedPaper.title}`}
                     />
                 </section>

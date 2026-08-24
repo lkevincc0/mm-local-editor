@@ -3,8 +3,10 @@
 */
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {useEffect, useRef} from "react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {FeedbackProvider, useFeedbackContext} from "../context/FeedbackContext";
+import {ProfileProvider} from "../context/ProfileContext";
+import ProjectProvider from "../context/ProjectProvider";
 import FeedbackPanel from "./FeedbackPanel";
 
 type Seed = {
@@ -55,10 +57,14 @@ const renderPanel = (options: {
     const onSelectNode = vi.fn();
 
     render(
-        <FeedbackProvider>
-            <Harness seed={options.seed ?? []} selected={options.selected} />
-            <FeedbackPanel onClose={onClose} onSelectNode={onSelectNode} />
-        </FeedbackProvider>
+        <ProfileProvider>
+            <ProjectProvider>
+                <FeedbackProvider>
+                    <Harness seed={options.seed ?? []} selected={options.selected} />
+                    <FeedbackPanel onClose={onClose} onSelectNode={onSelectNode} />
+                </FeedbackProvider>
+            </ProjectProvider>
+        </ProfileProvider>
     );
 
     return {onClose, onSelectNode};
@@ -66,6 +72,10 @@ const renderPanel = (options: {
 
 describe("FeedbackPanel", () => {
     afterEach(cleanup);
+
+    beforeEach(() => {
+        localStorage.clear();
+    });
 
     it("lists all feedback when no node is selected", async () => {
         renderPanel({

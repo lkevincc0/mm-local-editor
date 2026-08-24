@@ -1,7 +1,9 @@
 import React, {ChangeEvent, useRef, useState} from "react";
 import {BsUpload} from "react-icons/bs";
 import {Link} from "react-router-dom";
-import LeonIcon from "/leon.png";
+import {assetUrl} from "./utils/basename";
+
+const LeonIcon = assetUrl("/leon.png");
 import ErrorModal, {ErrorModalProps} from "./ErrorModal";
 import {useProjectLauncher} from "./utils/useProjectLauncher";
 import styles from "./Welcome.module.css";

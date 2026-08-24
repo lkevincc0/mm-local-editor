@@ -1,11 +1,14 @@
 import React, {ChangeEvent, useRef, useState} from "react";
 import {BsFileEarmarkPlus, BsPlus, BsSearch, BsUpload} from "react-icons/bs";
 import {Link} from "react-router-dom";
-import LeonIcon from "/leon.png";
+import {assetUrl} from "./utils/basename";
+
+const LeonIcon = assetUrl("/leon.png");
 import {useProjectContext} from "./context/ProjectContext";
 import {useProjectLauncher} from "./utils/useProjectLauncher";
 import ErrorModal, {ErrorModalProps} from "./ErrorModal";
 import ProjectCard from "./ProjectCard";
+import Profile from "./Profile";
 import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
@@ -64,14 +67,15 @@ const Home: React.FC = () => {
                             onChange={(e) => setQuery(e.target.value)}
                         />
                     </div>
-                    {/* <button
+                    <button
                         type="button"
                         className={`${styles.btn} ${styles.btnOutline}`}
                         onClick={() => fileInputRef.current?.click()}
                     >
                         <BsUpload/>
                         Import
-                    </button> */}
+                    </button>
+                    <Profile/>
                     <input
                         ref={fileInputRef}
                         type="file"

@@ -1,14 +1,19 @@
 import React, {
   createContext,
   useContext,
-  useMemo,
+  useEffect,
+  useRef,
   useState
 } from "react";
 
 import type {
   Feedback,
+  FeedbackReply,
   FeedbackStatus
 } from "../types.ts";
+
+import {useProfileContext} from "./ProfileContext";
+import {useProjectContext} from "./ProjectContext";
 
 type FeedbackContextType = {
   feedbacks: Feedback[];
@@ -24,7 +29,8 @@ type FeedbackContextType = {
   addFeedback: (
     nodeId: string,
     content: string,
-    nodeLabel?: string
+    nodeLabel?: string,
+    author?: string
   ) => void;
 
   updateFeedbackStatus: (
@@ -34,6 +40,11 @@ type FeedbackContextType = {
 
   deleteFeedback: (
     feedbackId: string
+  ) => void;
+
+  addReply: (
+    feedbackId: string,
+    content: string
   ) => void;
 };
 
@@ -49,8 +60,20 @@ type FeedbackProviderProps = {
 export const FeedbackProvider: React.FC<
   FeedbackProviderProps
 > = ({children}) => {
+  const {
+    currentProject,
+    currentProjectId,
+    saveProjectData
+  } = useProjectContext();
+
+  const {authorName} =
+    useProfileContext();
+
+  // Feedback belongs to the currently open project.
   const [feedbacks, setFeedbacks] =
-    useState<Feedback[]>([]);
+    useState<Feedback[]>(
+      currentProject?.feedbacks ?? []
+    );
 
   const [selectedNodeId, setSelectedNodeId] =
     useState<string | null>(null);
@@ -59,6 +82,52 @@ export const FeedbackProvider: React.FC<
     selectedNodeLabel,
     setSelectedNodeLabel
   ] = useState<string | null>(null);
+
+  // Load the newly opened project's feedback when switching projects.
+  const previousProjectId = useRef(currentProjectId);
+
+  useEffect(() => {
+    if (previousProjectId.current === currentProjectId) {
+      return;
+    }
+
+    previousProjectId.current = currentProjectId;
+    setFeedbacks(currentProject?.feedbacks ?? []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProjectId]);
+
+  // Persist feedback edits into the currently open project.
+  useEffect(() => {
+    if (currentProjectId) {
+      saveProjectData(currentProjectId, {feedbacks});
+    }
+  }, [feedbacks, currentProjectId, saveProjectData]);
+
+  // When the author changes, keep existing feedback and replies in sync.
+  const previousAuthor = useRef(authorName);
+
+  useEffect(() => {
+    if (previousAuthor.current === authorName) {
+      return;
+    }
+
+    previousAuthor.current = authorName;
+
+    setFeedbacks((currentFeedbacks) =>
+      currentFeedbacks.map((feedback) => ({
+        ...feedback,
+        author:
+          authorName.trim() || feedback.author,
+        replies: (feedback.replies ?? []).map(
+          (reply) => ({
+            ...reply,
+            author:
+              authorName.trim() || reply.author
+          })
+        )
+      }))
+    );
+  }, [authorName]);
 
   const setSelectedNode = (
     nodeId: string | null,
@@ -74,13 +143,16 @@ export const FeedbackProvider: React.FC<
   const addFeedback = (
     nodeId: string,
     content: string,
-    nodeLabel?: string
+    nodeLabel?: string,
+    author?: string
   ) => {
     const newFeedback: Feedback = {
       id: `feedback-${Date.now()}`,
       nodeId,
       nodeLabel,
-      author: "Current User",
+      author:
+        (author ?? authorName).trim() ||
+        "Current User",
       content,
       createdAt: "Just now",
       status: "open",
@@ -117,22 +189,45 @@ export const FeedbackProvider: React.FC<
     );
   };
 
-  const value = useMemo(
-    () => ({
-      feedbacks,
-      selectedNodeId,
-      selectedNodeLabel,
-      setSelectedNode,
-      addFeedback,
-      updateFeedbackStatus,
-      deleteFeedback
-    }),
-    [
-      feedbacks,
-      selectedNodeId,
-      selectedNodeLabel
-    ]
-  );
+  const addReply = (
+    feedbackId: string,
+    content: string
+  ) => {
+    const reply: FeedbackReply = {
+      id: `reply-${Date.now()}`,
+      author:
+        authorName.trim() || "Current User",
+      content,
+      createdAt: "Just now"
+    };
+
+    setFeedbacks((currentFeedbacks) =>
+      currentFeedbacks.map((feedback) =>
+        feedback.id === feedbackId
+          ? {
+              ...feedback,
+              replies: [
+                ...(feedback.replies ?? []),
+                reply
+              ],
+              replyCount:
+                (feedback.replyCount ?? 0) + 1
+            }
+          : feedback
+      )
+    );
+  };
+
+  const value = {
+    feedbacks,
+    selectedNodeId,
+    selectedNodeLabel,
+    setSelectedNode,
+    addFeedback,
+    updateFeedbackStatus,
+    deleteFeedback,
+    addReply
+  };
 
   return (
     <FeedbackContext.Provider value={value}>

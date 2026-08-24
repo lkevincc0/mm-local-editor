@@ -59,6 +59,11 @@ jobs:
     
     runs-on: ubuntu-latest
 
+    # The deploy step pushes the built site to the gh-pages branch, so the
+    # job's GITHUB_TOKEN needs write access to repository contents.
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
