@@ -53,14 +53,7 @@ const CanvasToolbar = ({
                 className={`canvas-toolbar-pill ${showGoalSection ? "active" : ""}`}
                 onClick={() => setShowGoalSection(!showGoalSection)}
             >
-                Goal list
-            </button>
-            <button
-                type="button"
-                className={`canvas-toolbar-pill ${showGraphSection ? "active" : ""}`}
-                onClick={() => setShowGraphSection(!showGraphSection)}
-            >
-                Canvas
+                Goal
             </button>
             <button
                 type="button"
@@ -68,6 +61,13 @@ const CanvasToolbar = ({
                 onClick={() => setShowHierarchySection(!showHierarchySection)}
             >
                 Hierarchy
+            </button>
+            <button
+                type="button"
+                className={`canvas-toolbar-pill ${showGraphSection ? "active" : ""}`}
+                onClick={() => setShowGraphSection(!showGraphSection)}
+            >
+                Model
             </button>
             <button
                 type="button"
