@@ -30,13 +30,13 @@ describe("CanvasToolbar", () => {
 
     it("toggles the goal list panel", () => {
         const {setShowGoalSection} = renderToolbar();
-        fireEvent.click(screen.getByRole("button", {name: "Goal list"}));
+        fireEvent.click(screen.getByRole("button", {name: "Goal"}));
         expect(setShowGoalSection).toHaveBeenCalledWith(false);
     });
 
     it("toggles the canvas panel", () => {
         const {setShowGraphSection} = renderToolbar();
-        fireEvent.click(screen.getByRole("button", {name: "Canvas"}));
+        fireEvent.click(screen.getByRole("button", {name: "Model"}));
         expect(setShowGraphSection).toHaveBeenCalledWith(false);
     });
 
