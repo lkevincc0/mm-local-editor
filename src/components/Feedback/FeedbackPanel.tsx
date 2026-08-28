@@ -5,6 +5,7 @@ import React, {
 } from "react";
 
 import FeedbackItem from "./FeedbackItem";
+import FeedbackAuthor from "./FeedbackAuthor";
 
 import {useFeedbackContext} from "../context/FeedbackContext";
 import {useProfileContext} from "../context/ProfileContext";
@@ -233,6 +234,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     ×
                 </button>
             </header>
+
+            <FeedbackAuthor />
 
             {selectedNodeId ? (
                 <section className="feedback-node-context">

@@ -8,6 +8,7 @@ import "./Profile.css";
 const Profile: React.FC = () => {
     const {
         authorName,
+        avatarSeed,
         updateProfile
     } = useProfileContext();
 
@@ -37,7 +38,7 @@ const Profile: React.FC = () => {
                 aria-label="Edit profile"
             >
                 <Avatar
-                    seed={authorName}
+                    seed={avatarSeed || authorName}
                     size={34}
                     className="avatar"
                 />
