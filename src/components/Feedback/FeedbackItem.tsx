@@ -6,6 +6,7 @@ import type {
 } from "../types.ts";
 
 import Avatar from "../Avatar";
+import {useProfileContext} from "../context/ProfileContext";
 
 interface FeedbackItemProps {
     feedback: Feedback;
@@ -37,6 +38,17 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
     onSelectNode
 }) => {
     const [showMenu, setShowMenu] = useState(false);
+
+    const {
+        authorName,
+        avatarSeed
+    } = useProfileContext();
+
+    // Keep the card avatar in sync with the profile header's chosen seed.
+    const authorSeed =
+        feedback.author === authorName
+            ? avatarSeed.trim() || feedback.author
+            : feedback.author;
 
     const [isReplying, setIsReplying] = useState(false);
 
@@ -126,7 +138,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
             <header className="feedback-item-header">
                 <div className="feedback-author">
                     <Avatar
-                        seed={feedback.author}
+                        seed={authorSeed}
                         size={28}
                         className="feedback-avatar"
                     />
