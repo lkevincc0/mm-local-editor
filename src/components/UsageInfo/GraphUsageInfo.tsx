@@ -4,11 +4,6 @@ export const GraphUsageInfo = () => {
 
     return (
         <>
-            <strong>General Instructions:</strong>
-            <br />
-            • Drag the divider between the two panels to the left or right to adjust the panel width
-            <br />
-            <br />
             <strong>Hierarchy Panel:</strong>
             <br />
             • Drag a goal within the cluster to the left or right to adjust the hierarchical structure.

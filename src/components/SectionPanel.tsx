@@ -263,7 +263,7 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
   const renderGoalPanel = () => (
     <section
       className="dock-panel goal-library-panel"
-      aria-label="Goal library panel"
+      aria-label="Goal List panel"
     >
       <GoalList
         ref={goalListRef}
@@ -287,7 +287,7 @@ const SectionPanel: React.FC<SectionPanelProps> = ({
         panelActions={
           <PanelControls
             dock={goalDock}
-            label="Goal library"
+            label="Goal List"
             onDock={setGoalDock}
             onClose={(event) =>
               closePanel(

@@ -85,7 +85,7 @@ const GoalList = React.forwardRef<HTMLDivElement, GoalListProps>(({setDraggedIte
             <div className={styles.tabContainer} ref={ref}>
                 <div className={styles.sectionHeading}>
                     <div>
-                        <span className={styles.eyebrow}>Goal library</span>
+                        <span className={styles.eyebrow}>Goal List</span>
                         <strong>Define your model</strong>
                     </div>
                     <div className={styles.headingMeta}>
