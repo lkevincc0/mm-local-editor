@@ -50,3 +50,11 @@
 .canvas-toolbar-help:hover {
     color: #11110f;
 }
+
+/* The help popover lists instructions for every panel; cap its height and
+   scroll inside the body instead of overflowing the viewport. The scroll
+   container is the body so the popover arrow is never clipped. */
+.canvas-toolbar-help-popover .popover-body {
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+}

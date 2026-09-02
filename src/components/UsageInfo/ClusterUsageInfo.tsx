@@ -4,11 +4,6 @@ import {BsFillTrash3Fill, BsPlus, BsPencilSquare} from "react-icons/bs";
 export const ClusterUsageInfo = () => {
     return (
         <>
-            <strong>General Instructions:</strong>
-            <br />
-            • Drag the divider between the two panels to the left or right to adjust the panel width
-            <br />
-            <br />
             <strong>Goal List Panel:</strong>
             <br />
             • There are five types of entities that can be added to the goal list: Do, Be, Feel, Concern, and Who.

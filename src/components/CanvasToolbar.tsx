@@ -4,6 +4,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import {GraphUsageInfo} from "./UsageInfo/GraphUsageInfo";
 import {ClusterUsageInfo} from "./UsageInfo/ClusterUsageInfo";
+import {GeneralUsageInfo} from "./UsageInfo/GeneralUsageInfo";
 import {BsInfoCircleFill} from "react-icons/bs";
 
 interface CanvasToolbarProps {
@@ -24,7 +25,7 @@ const HelpIcon = ({title, content}: {title: string; content: React.ReactNode}) =
         placement="bottom"
         rootClose
         overlay={
-            <Popover>
+            <Popover className="canvas-toolbar-help-popover">
                 <Popover.Body>{content}</Popover.Body>
             </Popover>
         }
@@ -53,7 +54,7 @@ const CanvasToolbar = ({
                 className={`canvas-toolbar-pill ${showGoalSection ? "active" : ""}`}
                 onClick={() => setShowGoalSection(!showGoalSection)}
             >
-                Goal
+                Goal List
             </button>
             <button
                 type="button"
@@ -83,6 +84,8 @@ const CanvasToolbar = ({
                 title="Editor help"
                 content={
                     <>
+                        <GeneralUsageInfo />
+                        <hr />
                         <ClusterUsageInfo />
                         <hr />
                         <GraphUsageInfo />
