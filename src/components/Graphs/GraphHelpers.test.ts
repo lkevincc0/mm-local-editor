@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import {Graph} from "@maxgraph/core";
 import {describe, it, expect, vi} from "vitest";
 import {makeLabelForGoalType} from "../utils/GraphUtils";
