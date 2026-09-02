@@ -25,7 +25,7 @@ const HelpIcon = ({title, content}: {title: string; content: React.ReactNode}) =
         placement="bottom"
         rootClose
         overlay={
-            <Popover>
+            <Popover className="canvas-toolbar-help-popover">
                 <Popover.Body>{content}</Popover.Body>
             </Popover>
         }
