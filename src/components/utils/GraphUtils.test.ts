@@ -1,5 +1,24 @@
-import {describe, expect, it} from "vitest";
-import {parseFuncGoalRefId, parseGoalRefId, parseNonFuncGoalRefId} from "./GraphUtils.tsx";
+/**
+ * @vitest-environment jsdom
+ */
+import {CellEditorHandler, Graph} from "@maxgraph/core";
+import {describe, expect, it, vi} from "vitest";
+import {fixEditorPosition, parseFuncGoalRefId, parseGoalRefId, parseNonFuncGoalRefId} from "./GraphUtils.tsx";
+
+describe('fixEditorPosition', () => {
+    it('commits graph edits when the editor loses focus', () => {
+        const cellEditor = {blurEnabled: false};
+        const graph = {
+            container: document.createElement('div'),
+            getPlugin: vi.fn(() => cellEditor),
+        } as unknown as Graph;
+
+        fixEditorPosition(graph);
+
+        expect(graph.getPlugin).toHaveBeenCalledWith(CellEditorHandler.pluginId);
+        expect(cellEditor.blurEnabled).toBe(true);
+    });
+});
 
 describe('parseGoalRefId', () => {
     it('should raise an exception for an empty refId', () => {

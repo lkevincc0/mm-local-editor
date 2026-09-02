@@ -1,6 +1,6 @@
 import {ClusterGoal, GoalBase, TreeGoal, InstanceId} from '../types';
 import {SYMBOL_CONFIGS, SymbolKey, SymbolConfig} from './GraphConstants';
-import {Graph, Cell} from '@maxgraph/core';
+import {Cell, CellEditorHandler, Graph} from '@maxgraph/core';
 
 // Finds the symbol key (e.g. 'STAKEHOLDER') based on the type
 export function getSymbolKeyByType(type: string): SymbolKey | undefined {
@@ -53,6 +53,11 @@ export const returnFocusToGraph = () => {
 export function fixEditorPosition(graph: Graph) {
     const container = graph.container as HTMLElement;
     container.style.position = 'relative';
+
+    // Commit the in-place edit before controls outside the graph (for example,
+    // the feedback panel) handle the click that moved focus away from it.
+    const cellEditor = graph.getPlugin<CellEditorHandler>(CellEditorHandler.pluginId);
+    cellEditor.blurEnabled = true;
 
     // Apply the correct position to the text editor element
     const updateEditor = (el: HTMLElement) => {
