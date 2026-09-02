@@ -186,7 +186,7 @@ export const renderFunction = (
 ) => {
     const config = SYMBOL_CONFIGS.FUNCTIONAL;
 
-    const arr = goal.GoalContent.split(" ");
+    const lines = goal.GoalContent.split("\n");
 
     // Dynamically set size, based on source (parent) size
     let width = SYMBOL_WIDTH;
@@ -220,7 +220,7 @@ export const renderFunction = (
     const node = graph.insertVertex(
         null,
         generateCellId("Functional", goal.instanceId),
-        arr.join("\n"),
+        goal.GoalContent,
         DEFAULT_ROOT_GOAL_COORD.x,
         DEFAULT_ROOT_GOAL_COORD.y,
         width,
@@ -252,7 +252,7 @@ export const renderFunction = (
     const node_geo = node.getGeometry();
     const preferred = graph.getPreferredSizeForCell(node); //getPreferredSizeForCell only works for width
     if (node_geo && preferred) {
-        node_geo.height = arr.length * VERTEX_FONT.size * VERTEX_FONT.scaleHeight; //get height base on the number of lines in goal text and font size
+        node_geo.height = lines.length * VERTEX_FONT.size * VERTEX_FONT.scaleHeight; //get height base on the number of lines in goal text and font size
         node_geo.width = Math.max(
             node_geo.height,
             preferred.width * config.scale.width,
