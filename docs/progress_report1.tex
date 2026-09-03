@@ -1,0 +1,166 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{accent}{HTML}{25213E}
+\definecolor{purple}{HTML}{6B51C9}
+\definecolor{muted}{HTML}{6D6C66}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+\setlist{nosep,leftmargin=1.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.15}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}COMP30022 IT Project --- Team Deepsick}
+\fancyhead[R]{\small\color{muted}Progress Report, Weeks 1--6}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---- Evidence hyperlinks ----
+\newcommand{\ghbase}{https://github.com/lkevincc0/mm-local-editor}
+\newcommand{\repo}{\href{\ghbase}{\nolinkurl{github.com/lkevincc0/mm-local-editor}}}
+\newcommand{\PR}[1]{\href{\ghbase/pull/#1}{\##1}}
+\newcommand{\jirabase}{https://student-team-zvzgb5e3.atlassian.net}
+\newcommand{\JIRA}[1]{\href{\jirabase/browse/KAN-#1}{KAN-#1}}
+\newcommand{\ghpath}[2]{\href{\ghbase/#1}{\texttt{#2}}}
+\hypersetup{colorlinks=true, linkcolor=purple, urlcolor=purple}
+
+\begin{document}
+
+%==================== HEADER ====================
+\begin{center}
+{\LARGE\bfseries\color{accent} AMMBER --- Motivational Modelling Local Editor}\\[2pt]
+{\normalsize Progress Report --- Weeks 1--6 (27 Jul -- 6 Sep 2026)}\\[2pt]
+{\small\color{muted} Team Deepsick \quad$\cdot$\quad Client: Leon Sterling \quad$\cdot$\quad Tutor: Kerr Yuan}
+\end{center}
+\vspace{-4pt}
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Member} & \textbf{GitHub} & \textbf{Role}\\
+\midrule
+Jinbao Liu & \href{https://github.com/lkevincc0}{lkevincc0} & Tech Lead / Full-stack Developer (architecture, CI/CD, repo strategy, client liaison)\\
+Zihan Xie & \href{https://github.com/photozity-a11y}{photozity-a11y} & Frontend Developer (canvas UI, image export/import)\\
+Huimin Peng & \href{https://github.com/ViolaHM-14}{ViolaHM-14} & Frontend Developer (feedback drawer/panel, node binding)\\
+Zecheng Huang & \href{https://github.com/ZechengHuang-unimelb}{ZechengHuang-unimelb} & QA / Test Lead / Developer (test plan, Vitest suites, bug triage, share feature)\\
+Yuhao Xu & \href{https://github.com/yuhaox5}{yuhaox5} & DevOps \& Tooling / Developer (CI pipeline, lint, lockfiles, Docker)\\
+\bottomrule
+\end{tabularx}
+}
+
+%==================== 1. OVERVIEW ====================
+\section{Project Overview}
+
+AMMBER is a web-based motivational modelling tool used in teaching and research for roughly fifteen years. We are extending the existing React/TypeScript editor (fork: \repo) so that lecturers and reviewers can give \emph{structured, element-level feedback} on motivational models, and so that models can be shared and carried as portable files. A Week~3 client scope change (\emph{no cloud hosting or shared database}) was absorbed within the same week by pivoting to a fully local architecture --- with zero sprint disruption.
+
+\textbf{Delivered in Weeks 1--6} (all via reviewed PRs, continuously deployed to \href{https://lkevincc0.github.io/mm-local-editor/}{GitHub Pages}):
+\begin{itemize}
+  \item \textbf{Local project workspace} --- create/open/rename/delete projects persisted in-browser, no server (PR \PR{3}).
+  \item \textbf{Unified editorial theme \& dockable canvas editor} --- consistent visual identity; canvas fits and centres the model on load (PRs \PR{3}, \PR{4}).
+  \item \textbf{Feedback feature end-to-end} --- closable draw.io-style side panel, node-bound comments with click-to-locate, authoring, nested replies, editable profile header, generated avatars (PRs \PR{5}, \PR{6}, \PR{9}, \PR{11}, \PR{19}).
+  \item \textbf{Image-only project import/export} --- project JSON (name + feedback) embedded invisibly into exported PNG/SVG, so one image is a full portable backup (PR \PR{7}); compact share links via deflate compression (PR \PR{20}).
+  \item \textbf{QR-code project sharing} --- modernised share dialog inside the editor (PR \PR{15}).
+  \item \textbf{Deployment \& robustness} --- adaptive router basename, GitHub Pages asset paths, deploy permissions (PRs \PR{2}, \PR{12}, \PR{13}).
+  \item \textbf{Quality pipeline} --- \href{\ghbase/tree/develop/src}{20 Vitest test files} plus \href{\ghbase/tree/develop/cypress}{Cypress E2E}, all run by GitHub Actions on every push and PR; four reported bugs triaged and fixed with regression coverage (PRs \PR{14}, \PR{17}, \PR{18}, \PR{23}).
+\end{itemize}
+
+%==================== 2. PROCESS ====================
+\section{Process}
+
+\subsection{Agile Ceremonies}
+Two-week sprints after a kick-off Sprint~0; every ceremony produces a written artefact in the team's \href{\jirabase/jira/software/projects/KAN/boards/1}{\textbf{Jira project}} (37 tickets to date: 18 user stories, 18 tasks, subtasks; sprint backlogs, bug tickets, retrospectives and decision records) and every outcome is traceable to \href{\ghbase/commits/develop}{the repository}.
+
+\begin{itemize}
+  \item \textbf{Weekly team meeting} (every Wednesday, W3--W12, full attendance to date): standing agenda (review merged PRs $\to$ sprint check $\to$ planning $\to$ impediments), minutes with action items, owners and due dates.
+  \item \textbf{Sprint planning \& retrospective} at every sprint boundary. Retrospective actions are adopted and verified next sprint: after S1, a $\sim$400-line PR size cap, clarified QA-vs-tooling role boundary, and a CI check against stray submodules; after S2, a 24-hour PR review SLA, a rendering regression test, and earlier test-plan execution.
+  \item \textbf{Client consultation} at least fortnightly; every request is logged and re-prioritises the backlog (\S2.3).
+  \item \textbf{Sprints:} S0 (W1--2) kick-off; S1 (W3--4) Git workflow + first vertical slice --- completed; S2 (W5--6) feedback end-to-end, image import/export, QR sharing --- completed; S3 (W7--8) quality hardening, S4 (W9--10) Docker + docs, S5 (W11--12) release v1.0 --- planned.
+\end{itemize}
+
+\subsection{Decision Making, Meetings \& Internal Communication}
+Options are listed with rationale, every member is consulted, and the outcome is recorded in a \textbf{decision log} (9 decisions to date, tracked in Jira). Key in-period decisions: evolve the existing React/Vite editor rather than rebuild on Next.js (consensus 5/5); GitFlow-lite branching with PR reviews; feature-ownership work allocation; feedback as a closable side panel (team vote 4/5); drop the database for fully local persistence; embed project JSON in exported images (proposed by Tech Lead, feasibility validated, consensus). The Week~3 client constraint triggered an immediate re-evaluation before any sunk cost accrued.
+
+Communication runs through four mutually reinforcing channels: \textbf{Slack} for day-to-day coordination; \href{\ghbase/pulls?q=is:pr}{\textbf{GitHub PR reviews}} as the archived record of technical discussion; the \href{\jirabase/jira/software/projects/KAN/boards/1}{\textbf{Jira project}} as a single source of truth (backlog, sprint boards, bug tickets \JIRA{21}--\JIRA{23}, decision log), reconciled against git history weekly; and \textbf{pair collaboration} (the frontend pair cross-review each other's PRs; QA and DevOps coordinate on test plan and CI). Issues surface and resolve fast: the stray nested submodule breaking fresh clones was fixed the same week it was raised (PR \PR{8}); the Sprint-2 re-render regression was fixed within days with a regression test added (PR \PR{6}).
+
+\subsection{Communication with the Client}
+Fortnightly check-ins and demos, in motivational-modelling vocabulary (goals, stakeholders, feedback on elements) rather than implementation detail. All client feedback to date has been actioned:
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l X l@{}}
+\toprule
+\textbf{Week} & \textbf{Client feedback} & \textbf{Impact} & \textbf{Status}\\
+\midrule
+W3 & No cloud hosting / shared database & Backend scope dropped; local workspace promoted to top priority; two roles re-scoped to QA and DevOps & Actioned (S1)\\
+W4 & Prioritise feedback workflow over extra export formats & Feedback moved to top of S2 backlog & Actioned (S2)\\
+W6 & S2 demo accepted; wants packaged deployment \& user docs & Docker packaging + user manual scheduled as S4 high priority & Scheduled (S4)\\
+\bottomrule
+\end{tabularx}
+}
+
+%==================== 3. ARTEFACTS ====================
+\section{Artefacts}
+
+\subsection{Requirements}
+Elicited with the Do/Be/Feel method into a motivational model, personas and user stories (three epics: Give feedback, Manage feedback, Share \& collaborate); maintained as a living artefact (\ghpath{blob/develop/Requirements.xlsx}{Requirements.xlsx} in the repo root, mirrored as Jira stories \JIRA{6}--\JIRA{20}) where every requirement carries a user story, acceptance criteria, MoSCoW priority, source, and traceability to its implementing PR. The team contributed significantly to scoping: seven requirements go beyond the original brief (e.g.\ image-embedded project JSON, proposed by the team and client-approved in W4); the W3 scope change is traced to FR-03/10/11 and NFR-01. Of 18 requirements, 14 are \textbf{Done} (each with PR evidence), FR-15 partially delivered (QR sharing live, scan-to-import in S3), and 3 planned for S3/S4 (accessibility pass, Docker, user manual).
+
+\subsection{Frontend \& Architectural Design}
+The UI follows a documented design language --- warm, minimal editorial theme (warm paper \texttt{\#f7f6f0}, deep purple \texttt{\#25213e}, accent \texttt{\#6b51c9}) --- recorded in the repository guidelines and enforced in PR review. Key UX decisions came from evaluated alternatives: the feedback interface is a closable side panel (team vote) so reviewers never leave the canvas; clicking a comment highlights and navigates to its node; the editor is a dockable canvas workspace; image-only import restores a full project from a single dragged-in image.
+
+Architecture is a \textbf{local-first SPA}: React 18 + TypeScript + Vite, maxGraph canvas engine, Redux Toolkit slices, React Router with an \ghpath{blob/develop/src/components/utils/basename.ts}{adaptive basename} (same build runs on localhost and under the GitHub Pages sub-path), persistence via localStorage/idb-keyval, portability via image-embedded JSON (compressed, hardened against special characters). An optional SQLite/PostgreSQL path is preserved behind a documented abstraction for future growth at near-zero cost. Quality gates are part of the architecture: only green CI builds reach \texttt{develop}.
+
+\subsection{Coding, Testing, Deployment \& Repository}
+\begin{itemize}
+  \item \textbf{Coding standards} are documented in the repository and enforced by automation plus review: ESLint zero-warning policy, Stylelint, conventional commit prefixes (\texttt{feat:/fix:/test:/chore:/doc:}), branch naming by work type, no direct commits to \texttt{develop}/\texttt{main} --- every change lands via a \href{\ghbase/pulls?q=is:pr+is:merged}{reviewed PR} ($\geq$1 approval).
+  \item \textbf{Testing:} QA-owned versioned test plan (v0.1 $\to$ v0.9 covering all merged user stories; v1.0 in S3). \href{\ghbase/tree/develop/src}{20 Vitest unit/component test files} co-located with the code; \href{\ghbase/tree/develop/cypress}{Cypress E2E specs} run in CI; every feature ships with tests in the same PR. All four reported bugs --- logged as Jira tasks \JIRA{21}--\JIRA{23} and \JIRA{37} --- (feedback persistence \PR{17}, project rename \PR{14}, Do3 task bug \PR{18}, node-edit/feedback loss on redraw \PR{23}) are fixed with regression tests.
+  \item \textbf{Deployment:} any push to \texttt{develop} that passes CI is automatically built and published by the \ghpath{blob/develop/.github/workflows/ci-cd.yml}{CD job} to GitHub Pages --- live at \url{https://lkevincc0.github.io/mm-local-editor/}. Three robustness fixes (PRs \PR{2}, \PR{12}, \PR{13}) make it work from anywhere; single-container Docker packaging is scheduled for S4 at the client's W6 request.
+  \item \textbf{Repository:} documented GitFlow-lite model; \href{\ghbase/pulls?q=is:pr+is:merged}{21 PRs (\#2--\#23)} merged during W3--W6, each traceable to a backlog item, bug or client request; hygiene actively maintained (stray submodule removed \PR{8}, lockfiles current, \texttt{.env} template, CI submodule check added after the S1 retro).
+\end{itemize}
+
+%==================== 4. MAINTENANCE & FEEDBACK ====================
+\section{Maintenance of Artefacts \& Response to Feedback}
+
+All artefacts are living documents with dated, owned updates: requirements updated on every merged PR and on the W3 scope change; decision log (9 entries); contribution log reconciled weekly with \href{\ghbase/commits/develop}{git history}; bug log (all reported bugs closed with PR evidence); meeting minutes W3--W6; sprint plans/retros at every boundary; repo docs kept current as conventions evolved.
+
+Feedback is logged, impact-assessed and actioned within the following sprint. Supervisor feedback (12 Aug: architecture finalised and agreed) was followed by detailed implementation through 19--26 Aug. Client feedback at the 27 Aug meeting (D3 feedback-system bug; make commenter-name editing, an ``overall feedback'' summary, and feedback image export more visible) was actioned in full --- bug fixed, name-edit and overall-feedback features implemented with image export (PRs \PR{17}--\PR{20}, \PR{23}).
+
+\textbf{Special circumstances handled:} (i) the W3 client scope pivot removed all backend scope --- Sprint 1 was re-planned the same week and the two affected members re-scoped to QA/Test Lead and DevOps, converting a scope loss into a quality investment; (ii) the Sprint-1 submodule incident broke fresh clones --- root-caused and fixed the same week (PR \PR{8}), with a CI check added to prevent recurrence; (iii) five client-task follow-ups were re-allocated across all five members mid-sprint in W5 and all completed with PR evidence.
+
+%==================== 5. NEXT ====================
+\section{Plan for Weeks 7--12}
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Sprint} & \textbf{Goal} & \textbf{Key deliverables}\\
+\midrule
+S3 (W7--8) & Quality hardening & Test plan v1.0 (all user stories); CI lint gate + branch protection; coverage expansion; accessibility \& responsive pass; QR scan-to-import\\
+S4 (W9--10) & Deployment \& polish & Single-container Docker image + compose; deployment guide; user manual + quick-start; UX polish from client notes\\
+S5 (W11--12) & Final release & Feature freeze; full regression; client acceptance; v1.0 from \texttt{main}; artefact audit; handover pack\\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{4pt}
+{\small\color{muted}\sloppy
+\textbf{Evidence index:} \href{\ghbase}{repository} $\cdot$ \href{\ghbase/pulls?q=is:pr+is:merged}{merged PRs} $\cdot$ \href{\ghbase/commits/develop}{commit history} $\cdot$ \href{\ghbase/actions}{CI/CD runs} $\cdot$ \ghpath{blob/develop/.github/workflows/ci-cd.yml}{CI/CD workflow} $\cdot$ \href{https://lkevincc0.github.io/mm-local-editor/}{live deployment} $\cdot$ \href{\jirabase/jira/software/projects/KAN/boards/1}{Jira board} / \href{\jirabase/jira/software/projects/KAN/list}{Jira issue list} (stories \JIRA{6}--\JIRA{20}, bugs \JIRA{21}--\JIRA{23}, sprint history \JIRA{24}--\JIRA{37}) $\cdot$ \ghpath{blob/develop/Requirements.xlsx}{Requirements.xlsx}
+}
+
+\end{document}
