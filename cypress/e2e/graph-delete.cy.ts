@@ -6,6 +6,8 @@ describe('Graph Deletion UI Tests', () => {
     cy.visit('/');
     cy.contains("Get started").click();
     cy.contains("New project").click();
+    // Default UI is classic mode: switch to the model step to reveal the canvas
+    cy.contains("Render Model").click({force: true});
     cy.get('[data-cy="graph-canvas"]').should('be.visible');
   });
 

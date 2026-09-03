@@ -8,6 +8,7 @@ import Home from "./Home";
 import FileProvider from "./context/FileProvider";
 import {ProfileProvider} from "./context/ProfileContext";
 import ProjectProvider from "./context/ProjectProvider";
+import {ThemeProvider} from "./context/ThemeContext";
 import {Project} from "./utils/projects";
 
 const renderHome = () => {
@@ -16,7 +17,9 @@ const renderHome = () => {
             <ProfileProvider>
                 <ProjectProvider>
                     <FileProvider>
-                        <Home/>
+                        <ThemeProvider>
+                            <Home/>
+                        </ThemeProvider>
                     </FileProvider>
                 </ProjectProvider>
             </ProfileProvider>

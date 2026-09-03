@@ -1,5 +1,5 @@
 .backdrop {
-    background: #25213e;
+    background: var(--backdrop);
 }
 
 .dialog {
@@ -10,10 +10,10 @@
 
 .content {
     overflow: hidden;
-    border: 1px solid #deddd6;
+    border: 1px solid var(--page-line);
     border-radius: 14px;
-    color: #11110f;
-    background: #f7f6f0;
+    color: var(--page-ink);
+    background: var(--page-paper);
     box-shadow: 0 24px 80px rgba(17, 17, 15, 0.22);
 }
 
@@ -44,13 +44,13 @@
     width: 34px;
     height: 34px;
     border-radius: 9px;
-    color: #6b51c9;
-    background: rgba(107, 81, 201, 0.1);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .iconDanger {
-    color: #9f352d;
-    background: rgba(159, 53, 45, 0.1);
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
 }
 
 .title {
@@ -66,20 +66,20 @@
     padding: 0;
     border: 0;
     border-radius: 8px;
-    color: #6d6c66;
+    color: var(--page-muted);
     background: transparent;
     font-size: 23px;
     cursor: pointer;
 }
 
 .closeButton:hover {
-    color: #11110f;
+    color: var(--page-ink);
     background: rgba(17, 17, 15, 0.06);
 }
 
 .body {
     padding: 8px 24px 24px;
-    color: #6d6c66;
+    color: var(--page-muted);
     font-size: 14px;
     line-height: 1.55;
 }
@@ -87,7 +87,7 @@
 .footer {
     gap: 10px;
     padding: 16px 24px 22px;
-    border-top: 1px solid #deddd6;
+    border-top: 1px solid var(--page-line);
 }
 
 .cancelButton,
@@ -101,19 +101,19 @@
 }
 
 .cancelButton {
-    border: 1px solid #cac8be;
-    color: #11110f;
+    border: 1px solid var(--page-line-strong);
+    color: var(--page-ink);
     background: transparent;
 }
 
 .cancelButton:hover {
-    border-color: #11110f;
+    border-color: var(--page-ink);
 }
 
 .confirmButton {
-    border: 1px solid #11110f;
-    color: #fff;
-    background: #11110f;
+    border: 1px solid var(--page-ink);
+    color: var(--accent-contrast);
+    background: var(--page-ink);
 }
 
 .confirmButton:hover {
@@ -121,6 +121,6 @@
 }
 
 .confirmDanger {
-    border-color: #9f352d;
-    background: #9f352d;
+    border-color: var(--danger);
+    background: var(--danger);
 }

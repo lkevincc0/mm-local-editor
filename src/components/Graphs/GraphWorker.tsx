@@ -38,6 +38,8 @@ import {parseGoalRefId} from "../utils/GraphUtils";
 import {fixEditorPosition, returnFocusToGraph} from "../utils/GraphUtils.tsx";
 
 import {useFeedbackContext} from "../context/FeedbackContext";
+import {useTheme} from "../context/ThemeContext";
+import {themeTokens} from "../utils/themeTokens";
 
 //Graph id & Side bar id
 const GRAPH_DIV_ID = "graphContainer";
@@ -56,6 +58,7 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
     const {cluster, dispatch, treeIds, showLineBetweenNonFunctionalGoals} = useFileContext();
     const {graph, setGraph} = useGraph();
     const {setSelectedNode} = useFeedbackContext();
+    const {theme} = useTheme();
 
     // Keep the latest context function available to maxGraph listeners without
     // forcing the graph setup effect to re-run whenever the context re-renders.
@@ -206,6 +209,8 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
     };
 
     const setGraphStyle = (graph: Graph) => {
+        const graphTokens = themeTokens[theme].graph;
+
         // config: permit vertices to be connected by edges
         //graph.setConnectable(true);
         graph.setCellsEditable(true);
@@ -217,8 +222,8 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
 
         // config: set default style for edges inserted into graph
         const edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
-        edgeStyle.strokeColor = "black";
-        edgeStyle.fontColor = "black";
+        edgeStyle.strokeColor = graphTokens.vertexStroke;
+        edgeStyle.fontColor = graphTokens.fontColor;
         edgeStyle.endArrow = "none";
         edgeStyle.strokeWidth = 2;
         edgeStyle.editable = true;
@@ -227,8 +232,8 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
 
         // config: set default style for vertices inserted into graph
         const nodeStyle = graph.getStylesheet().getDefaultVertexStyle();
-        nodeStyle.fillColor = "#ffffff";
-        nodeStyle.strokeColor = "#000000";
+        nodeStyle.fillColor = graphTokens.vertexFill;
+        nodeStyle.strokeColor = graphTokens.vertexStroke;
         nodeStyle.strokeWidth = 2;
         nodeStyle.autoSize = false;
         nodeStyle.resizable = true;
@@ -583,20 +588,42 @@ const GraphWorker: React.FC<{ showGraphSection?: boolean }> = ({showGraphSection
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [graphListener, setGraph]);
 
+    // Re-apply the theme-dependent default stylesheet when the theme changes.
+    useEffect(() => {
+        // Skip destroyed graphs: switching UI modes unmounts this component and
+        // destroys the graph, but a queued state update can still run this
+        // effect with the old instance (its drawPane is null by then).
+        if (graph && graph.view?.drawPane) {
+            setGraphStyle(graph);
+            graph.refresh();
+        }
+    // setGraphStyle reads theme tokens; it is recreated every render, so only
+    // re-run when the theme or graph instance actually changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [theme, graph]);
+
     // Render graph changes.
     useEffect(() => {
+        let innerFrame: number | null = null;
+        let outerFrame: number | null = null;
+
         if (graph) {
             // If user has goals defined, draw the graph
             if (cluster.ClusterGoals.length > 0) {
                 renderGraph();
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => recentreView(graph));
+                outerFrame = requestAnimationFrame(() => {
+                    innerFrame = requestAnimationFrame(() => recentreView(graph));
                 });
             }
             else {
                 graph.getDataModel().clear();
             }
         }
+
+        return () => {
+            if (outerFrame !== null) cancelAnimationFrame(outerFrame);
+            if (innerFrame !== null) cancelAnimationFrame(innerFrame);
+        };
     }, [cluster, graph, renderGraph]);
 
     // Recenter after canvas resizes.

@@ -1,0 +1,114 @@
+.classic-progress-bar {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  /* Flex item of the column shell: never shrink below content height. */
+  flex: 0 0 auto;
+}
+
+.classic-progress-bar .arrow-steps {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.25rem;
+}
+
+.classic-progress-bar .arrow-steps .step {
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: center;
+  color: var(--muted, #666);
+  cursor: pointer;
+  margin: 0 3px;
+  padding: 10px 10px 10px 30px;
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  background-color: var(--step-arrow);
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.classic-progress-bar .arrow-steps .step:after,
+.classic-progress-bar .arrow-steps .step:before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  right: -17px;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 17px solid var(--step-arrow);
+  z-index: 2;
+  transition: border-color 0.2s ease;
+}
+
+.classic-progress-bar .arrow-steps .step:before {
+  right: auto;
+  left: 0;
+  border-left: 17px solid var(--paper, #fff);
+  z-index: 0;
+}
+
+.classic-progress-bar .arrow-steps .step:first-child:before {
+  border: none;
+}
+
+.classic-progress-bar .arrow-steps .step:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.classic-progress-bar .arrow-steps .step > span {
+  position: relative;
+}
+
+.classic-progress-bar .arrow-steps .step.current {
+  color: #fff;
+  background-color: var(--step-arrow-active);
+}
+
+.classic-progress-bar .arrow-steps .step.current:after {
+  border-left: 17px solid var(--step-arrow-active);
+}
+
+.classic-progress-bar .classic-step-help {
+  cursor: help;
+}
+
+.classic-progress-bar .classic-feedback-toggle {
+  appearance: none;
+  border: 1px solid var(--line, #dee2e6);
+  border-radius: 6px;
+  background-color: var(--surface, #fff);
+  color: var(--ink, #212529);
+  font-family: inherit;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  /* The preceding step's arrow tip protrudes 17px past its box; clear it
+     with extra margin so the toggle reads as a separate button. */
+  margin: 4px 4px 4px 36px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.classic-progress-bar .classic-feedback-toggle:hover {
+  border-color: var(--step-arrow-active);
+  color: var(--step-arrow-active);
+}
+
+.classic-progress-bar .classic-feedback-toggle.active {
+  background-color: var(--step-arrow-active);
+  border-color: var(--step-arrow-active);
+  color: #fff;
+}

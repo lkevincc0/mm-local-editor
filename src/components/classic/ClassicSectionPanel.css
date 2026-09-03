@@ -1,0 +1,16 @@
+/* Model step: let the graph section flex to fill the row instead of relying
+   on the computed pixel budget, which goes stale when the feedback column
+   or steps toggle. */
+.classic-graph-fill {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.classic-feedback-column {
+    flex: 0 0 clamp(280px, 20vw, 340px);
+    width: clamp(280px, 20vw, 340px);
+    align-self: stretch;
+    overflow-y: auto;
+    border-left: 1px solid var(--line);
+    background: var(--surface);
+}

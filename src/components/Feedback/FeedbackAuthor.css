@@ -27,14 +27,14 @@
     justify-content: center;
     border: 1px solid #d5d1c8;
     border-radius: 50%;
-    background: #f1efe9;
+    background: var(--control-bg-subtle);
     overflow: hidden;
 }
 
 .feedback-author-display-name {
     min-width: 0;
     overflow: hidden;
-    color: var(--ink, #1f1f1b);
+    color: var(--ink);
     font-size: 12px;
     font-weight: 700;
     text-overflow: ellipsis;
@@ -53,14 +53,14 @@
     border: 0;
     border-radius: 7px;
     background: transparent;
-    color: #8a877f;
+    color: var(--faint);
     font-size: 13px;
     cursor: pointer;
     transition: color 120ms ease, background 120ms ease;
 }
 
 .feedback-author-edit-button:hover {
-    color: var(--ink, #1f1f1b);
+    color: var(--ink);
     background: #efece6;
 }
 
@@ -91,7 +91,7 @@
     padding: 0;
     border: 1px solid #c8c4bb;
     border-radius: 50%;
-    background: #fff;
+    background: var(--canvas);
     color: #55524b;
     font-size: 11px;
     cursor: pointer;
@@ -99,7 +99,7 @@
 }
 
 .feedback-author-shuffle:hover {
-    border-color: #6f5b8a;
+    border-color: var(--plum);
     background: #f3f1ef;
 }
 
@@ -112,7 +112,7 @@
 }
 
 .feedback-author-field-label {
-    color: #77736b;
+    color: var(--eyebrow);
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -126,16 +126,16 @@
     border: 1px solid #d9d5cc;
     border-radius: 8px;
     outline: none;
-    background: #fff;
-    color: var(--ink, #1f1f1b);
+    background: var(--canvas);
+    color: var(--ink);
     font-family: inherit;
     font-size: 12px;
     transition: border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .feedback-author-name-input:focus {
-    border-color: #6f5b8a;
-    box-shadow: 0 0 0 3px rgba(111, 91, 138, 0.16);
+    border-color: var(--plum);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--plum) 16%, transparent);
 }
 
 .feedback-author-name-input::placeholder {
@@ -161,7 +161,7 @@
 
 .feedback-author-cancel {
     border: 1px solid #d9d5cc;
-    background: #fff;
+    background: var(--canvas);
     color: #5f5c55;
 }
 
@@ -171,13 +171,13 @@
 }
 
 .feedback-author-save {
-    border: 1px solid #6f5b8a;
-    background: #6f5b8a;
-    color: #fff;
+    border: 1px solid var(--plum);
+    background: var(--plum);
+    color: var(--accent-contrast);
 }
 
 .feedback-author-save:hover:not(:disabled) {
-    background: #5d4b73;
+    background: var(--plum-strong);
 }
 
 .feedback-author-save:disabled {
@@ -185,4 +185,77 @@
     background: #e7e4de;
     color: #a9a69e;
     cursor: not-allowed;
+}
+
+/* Classic theme overrides: flat bootstrap look (see FeedbackPanel.css). */
+
+[data-theme='classic'] .feedback-author-profile {
+    border-bottom-color: var(--line);
+    background: var(--tools-bg);
+}
+
+[data-theme='classic'] .feedback-author-avatar {
+    border-color: var(--page-line-strong);
+}
+
+[data-theme='classic'] .feedback-author-edit-button {
+    border-radius: 4px;
+}
+
+[data-theme='classic'] .feedback-author-edit-button:hover {
+    background: var(--control-bg-subtle);
+}
+
+[data-theme='classic'] .feedback-author-shuffle {
+    border-color: var(--line-strong);
+}
+
+[data-theme='classic'] .feedback-author-shuffle:hover {
+    border-color: var(--accent);
+    background: var(--link-soft);
+}
+
+[data-theme='classic'] .feedback-author-name-input {
+    border-color: var(--page-line-strong);
+    border-radius: 4px;
+}
+
+[data-theme='classic'] .feedback-author-name-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+[data-theme='classic'] .feedback-author-name-input::placeholder {
+    color: var(--muted);
+}
+
+[data-theme='classic'] .feedback-author-cancel,
+[data-theme='classic'] .feedback-author-save {
+    border-radius: 4px;
+}
+
+[data-theme='classic'] .feedback-author-cancel {
+    border-color: var(--page-line-strong);
+    color: var(--ink);
+}
+
+[data-theme='classic'] .feedback-author-cancel:hover {
+    border-color: var(--line-strong);
+    background: var(--control-bg-subtle);
+}
+
+[data-theme='classic'] .feedback-author-save {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+[data-theme='classic'] .feedback-author-save:hover:not(:disabled) {
+    border-color: var(--link-strong);
+    background: var(--link-strong);
+}
+
+[data-theme='classic'] .feedback-author-save:disabled {
+    border-color: var(--line);
+    background: var(--control-bg-subtle);
+    color: var(--muted);
 }

@@ -1,5 +1,5 @@
 .backdrop {
-    background: #25213e;
+    background: var(--backdrop);
 }
 
 .dialog {
@@ -10,10 +10,10 @@
 
 .content {
     overflow: hidden;
-    border: 1px solid #deddd6;
+    border: 1px solid var(--page-line);
     border-radius: 16px;
-    color: #11110f;
-    background: #f7f6f0;
+    color: var(--page-ink);
+    background: var(--page-paper);
     box-shadow: 0 24px 80px rgba(17, 17, 15, 0.22);
 }
 
@@ -40,8 +40,8 @@
     width: 40px;
     height: 40px;
     border-radius: 11px;
-    color: #6b51c9;
-    background: rgba(107, 81, 201, 0.12);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
     font-size: 18px;
 }
 
@@ -54,12 +54,12 @@
     font-size: 19px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: #11110f;
+    color: var(--page-ink);
 }
 
 .subtitle {
     margin: 3px 0 0;
-    color: #6d6c66;
+    color: var(--page-muted);
     font-size: 12.5px;
 }
 
@@ -73,14 +73,14 @@
     padding: 0;
     border: 0;
     border-radius: 8px;
-    color: #6d6c66;
+    color: var(--page-muted);
     background: transparent;
     font-size: 23px;
     cursor: pointer;
 }
 
 .closeButton:hover {
-    color: #11110f;
+    color: var(--page-ink);
     background: rgba(17, 17, 15, 0.06);
 }
 
@@ -90,7 +90,7 @@
 
 .projectName {
     margin: 0 0 14px;
-    color: #11110f;
+    color: var(--page-ink);
     font-size: 15px;
     font-weight: 600;
 }
@@ -106,18 +106,18 @@
     min-width: 0;
     height: 46px;
     padding: 0 14px;
-    border: 1px solid #cac8be;
+    border: 1px solid var(--page-line-strong);
     border-radius: 11px;
-    color: #11110f;
-    background: #fff;
+    color: var(--page-ink);
+    background: var(--canvas);
     font-family: inherit;
     font-size: 13px;
 }
 
 .linkInput:focus {
     outline: none;
-    border-color: #6b51c9;
-    box-shadow: 0 0 0 3px rgba(107, 81, 201, 0.16);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .copyButton {
@@ -128,10 +128,10 @@
     flex: none;
     height: 46px;
     padding: 0 20px;
-    border: 1px solid #11110f;
+    border: 1px solid var(--page-ink);
     border-radius: 11px;
-    color: #fff;
-    background: #11110f;
+    color: var(--accent-contrast);
+    background: var(--page-ink);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
@@ -143,8 +143,8 @@
 }
 
 .copyButtonCopied {
-    border-color: #6b51c9;
-    background: #6b51c9;
+    border-color: var(--accent);
+    background: var(--accent);
 }
 
 .qrSection {
@@ -153,28 +153,28 @@
     align-items: center;
     margin-top: 22px;
     padding-top: 18px;
-    border-top: 1px solid #deddd6;
+    border-top: 1px solid var(--page-line);
 }
 
 .qrLabel {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    color: #6d6c66;
+    color: var(--page-muted);
     font-size: 13px;
 }
 
 .qrBox {
     flex: none;
     padding: 10px;
-    border: 1px solid #deddd6;
+    border: 1px solid var(--page-line);
     border-radius: 12px;
-    background: #fff;
+    background: var(--canvas);
 }
 
 .error {
     margin: 0;
-    color: #9f352d;
+    color: var(--danger);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -186,9 +186,9 @@
 }
 
 .errorSmall {
-    color: #9f352d;
+    color: var(--danger);
 }
 
 .warning {
-    color: #b7771e;
+    color: var(--warning);
 }

@@ -7,6 +7,10 @@ import CanvasToolbar from "./CanvasToolbar";
 
 import {GraphProvider} from "./context/GraphContext";
 import {FeedbackProvider} from "./context/FeedbackContext";
+import {useTheme} from "./context/ThemeContext";
+
+import ClassicProgressBar, {ClassicStep} from "./classic/ClassicProgressBar";
+import ClassicSectionPanel from "./classic/ClassicSectionPanel";
 
 export type PanelDock = "left" | "right";
 
@@ -30,10 +34,18 @@ const readPanelDock = (
 };
 
 const ProjectEdit: React.FC = () => {
+    const {mode} = useTheme();
+
     const [showGoalSection, setShowGoalSection] = useState(true);
     const [showHierarchySection, setShowHierarchySection] = useState(true);
     const [showGraphSection, setShowGraphSection] = useState(true);
-    const [showFeedbackSection, setShowFeedbackSection] = useState(true);
+    // The original classic UI had no feedback panel: keep it off by default
+    // in classic mode so the canvas gets the full width.
+    const [showFeedbackSection, setShowFeedbackSection] = useState(mode !== "classic");
+
+    // Classic mode: which workflow step (goal list+hierarchy vs rendered
+    // model) the arrow-steps breadcrumb is on.
+    const [classicStep, setClassicStep] = useState<ClassicStep>("goals");
 
     const [goalDock, setGoalDock] = useState<PanelDock>(() =>
         readPanelDock("goal", "left")
@@ -53,6 +65,42 @@ const ProjectEdit: React.FC = () => {
             })
         );
     }, [goalDock, hierarchyDock]);
+
+    if (mode === "classic") {
+        const classicShowGoals = classicStep === "goals";
+        const classicShowGraph = classicStep === "model";
+
+        return (
+            <GraphProvider>
+                <FeedbackProvider>
+                    <div className="project-edit-shell">
+                        <ProjectEditHeader
+                            showGoalSection={classicShowGoals}
+                            setShowGoalSection={setShowGoalSection}
+                            showGraphSection={classicShowGraph}
+                        />
+
+                        <ClassicProgressBar
+                            activeStep={classicStep}
+                            onStepChange={setClassicStep}
+                            showFeedbackSection={showFeedbackSection}
+                            onToggleFeedback={() =>
+                                setShowFeedbackSection(!showFeedbackSection)
+                            }
+                        />
+
+                        <ClassicSectionPanel
+                            showGoalSection={classicShowGoals}
+                            showGraphSection={classicShowGraph}
+                            showFeedbackSection={showFeedbackSection}
+                            onCloseFeedback={() => setShowFeedbackSection(false)}
+                            paddingX={20}
+                        />
+                    </div>
+                </FeedbackProvider>
+            </GraphProvider>
+        );
+    }
 
     return (
         <GraphProvider>

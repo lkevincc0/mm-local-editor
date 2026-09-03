@@ -4,6 +4,7 @@
 // --- Default Element Dimensions ---
 import {CellStateStyle} from "@maxgraph/core";
 import {assetUrl} from "./basename";
+import {getThemeTokens} from "./themeTokens";
 
 const BeIcon = assetUrl("/img/Cloud.png");
 const DoIcon = assetUrl("/img/Function.png");
@@ -19,7 +20,7 @@ export const SYMBOL_HEIGHT = 110;        // Base height of a symbol node
 // --- Vertex Font Styling ---
 export const VERTEX_FONT = {
     size: 16,                              // Font size for text labels inside nodes
-    color: "black",                        // Default font color
+    color: getThemeTokens().graph.fontColor, // Default font color
     scaleHeight: 2.375,                    //scale factor for height base on font size
 } as const;
 
@@ -64,7 +65,7 @@ export const SYMBOL_CONFIGS: Record<SymbolKey, SymbolConfig> = {
         imagePath: ConcernIcon,
         scale: {width: 0.9, height: 0.96},
         shapeStyle: {
-            fillColor: 'grey',
+            fillColor: getThemeTokens().graph.negativeFill,
         },
         label: "Concern",
     },

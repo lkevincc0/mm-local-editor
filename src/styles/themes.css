@@ -1,0 +1,105 @@
+:root[data-theme='modern'] {
+	--ink: #1f1f1b;
+	--muted: #6f6d66;
+	--line: #d8d6cf;
+	--paper: #efeee9;
+	--surface: #fbfaf7;
+	--canvas: #fff;
+	--goal-panel: #f7f3eb;
+	--hierarchy-panel: #eef2eb;
+	--accent: #6b51c9;
+	--accent-contrast: #fff;
+	--step-arrow: #d9d2f2;
+	--step-arrow-active: #6b51c9;
+	--app-font: Arial, Helvetica, sans-serif;
+	--header-bg-image: none;
+
+	/* Public pages (Home / Welcome / Papers / modals) */
+	--page-ink: #11110f;
+	--page-muted: #6d6c66;
+	--page-muted-2: #74716a;
+	--page-line: #deddd6;
+	--page-line-strong: #cac8be;
+	--page-paper: #f7f6f0;
+	--deep: #25213e;
+	--backdrop: #25213e;
+
+	/* Project edit shell */
+	--ink-deep: #11110f;
+	--ink-strong: #1d1d1a;
+	--line-strong: #b9b6ae;
+	--canvas-border: #d5d3cc;
+	--goal-panel-border: #d8d1c6;
+	--hierarchy-panel-border: #ccd6c9;
+	--hierarchy-heading-line: #d4ddd1;
+	--hierarchy-eyebrow: #667260;
+	--heading-line: #dedbd4;
+	--eyebrow: #77736b;
+	--panel-action: #777268;
+	--faint: #8a877f;
+	--control-bg: #faf9f5;
+	--control-bg-subtle: #f1efe9;
+	--tools-bg: #f7f6f2;
+	--dot: #deddd8;
+	--danger: #9f352d;
+	--danger-soft-text: #98575b;
+	--warning: #b7771e;
+	--plum: #6f5b8a;
+	--plum-strong: #5d4b73;
+	--link: #245cab;
+	--link-strong: #3674c9;
+	--link-soft: #f3f7fd;
+}
+
+:root[data-theme='classic'] {
+	--ink: #212529;
+	--muted: #6c757d;
+	--line: #dee2e6;
+	--paper: #ffffff;
+	--surface: #ffffff;
+	--canvas: #ffffff;
+	--goal-panel: rgb(236, 244, 244);
+	--hierarchy-panel: rgb(236, 244, 244);
+	--accent: #0d6efd;
+	--accent-contrast: #fff;
+	--step-arrow: #d9e3f7;
+	--step-arrow-active: #23468c;
+	--app-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--header-bg-image: url(/img/profile-background.jpg);
+
+	/* Public pages (Home / Welcome / Papers / modals) */
+	--page-ink: #212529;
+	--page-muted: #6c757d;
+	--page-muted-2: #6c757d;
+	--page-line: #dee2e6;
+	--page-line-strong: #ced4da;
+	--page-paper: #ffffff;
+	--deep: #212529;
+	--backdrop: rgba(0, 0, 0, 0.5);
+
+	/* Project edit shell */
+	--ink-deep: #212529;
+	--ink-strong: #212529;
+	--line-strong: #adb5bd;
+	--canvas-border: #dee2e6;
+	--goal-panel-border: #dee2e6;
+	--hierarchy-panel-border: #dee2e6;
+	--hierarchy-heading-line: #dee2e6;
+	--hierarchy-eyebrow: #6c757d;
+	--heading-line: #dee2e6;
+	--eyebrow: #6c757d;
+	--panel-action: #6c757d;
+	--faint: #6c757d;
+	--control-bg: #ffffff;
+	--control-bg-subtle: #e9ecef;
+	--tools-bg: #f8f9fa;
+	--dot: #dee2e6;
+	--danger: #dc3545;
+	--danger-soft-text: #dc3545;
+	--warning: #856404;
+	--plum: #0d6efd;
+	--plum-strong: #0a58ca;
+	--link: #0d6efd;
+	--link-strong: #0b5ed7;
+	--link-soft: #e7f1ff;
+}

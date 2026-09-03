@@ -6,6 +6,10 @@ import {assetUrl} from "./utils/basename";
 const LeonIcon = assetUrl("/leon.png");
 import ErrorModal, {ErrorModalProps} from "./ErrorModal";
 import {useProjectLauncher} from "./utils/useProjectLauncher";
+import {useTheme} from "./context/ThemeContext";
+import {DetailCarousel} from "./DetailCarousel";
+import WelcomeHeader from "./WelcomeHeader";
+import WelcomeFooter from "./WelcomeFooter";
 import styles from "./Welcome.module.css";
 
 const Welcome: React.FC = () => {
@@ -26,6 +30,7 @@ const Welcome: React.FC = () => {
         });
 
     const {importProjectFile} = useProjectLauncher(showError);
+    const {theme} = useTheme();
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -42,6 +47,36 @@ const Welcome: React.FC = () => {
             await importProjectFile(file);
         }
     };
+
+    if (theme === "classic") {
+        return (
+            <div className={styles.classicPage} onDragOver={(event) => event.preventDefault()} onDrop={handleDrop}>
+                <WelcomeHeader/>
+                <div>
+                    <DetailCarousel/>
+                    <div className={styles.classicActions}>
+                        <Link to="/projects" className="btn btn-primary btn-lg" data-cy="get-started">
+                            Get started
+                        </Link>
+                        <button type="button" className="btn btn-primary btn-lg" onClick={() => fileInputRef.current?.click()}>
+                            <BsUpload/> Import project
+                        </button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".json,.png,.svg,application/json,image/png,image/svg+xml"
+                            className={styles.fileInput}
+                            onChange={handleFileChange}
+                        />
+                    </div>
+                </div>
+                <div className={styles.classicFooter}>
+                    <WelcomeFooter destination="papers" name="Papers"/>
+                </div>
+                <ErrorModal {...errorModal}/>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page} onDragOver={(event) => event.preventDefault()} onDrop={handleDrop}>

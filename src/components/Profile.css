@@ -26,13 +26,13 @@
 }
 
 .profile-trigger:hover {
-    border-color: #deddd6;
+    border-color: var(--page-line);
 
     background: rgba(255, 255, 255, 0.5);
 }
 
 .profile-name {
-    color: #11110f;
+    color: var(--page-ink);
 
     font-size: 13px;
     font-weight: 700;
@@ -92,7 +92,7 @@
         #e4e0d8;
     border-radius: 14px;
 
-    background: #fbfaf7;
+    background: var(--surface);
 
     box-shadow:
         0 24px 60px
@@ -126,7 +126,7 @@
 .profile-modal-title {
     margin: 3px 0 0;
 
-    color: #1f1f1b;
+    color: var(--ink);
 
     font-size: 17px;
     font-weight: 650;
@@ -164,7 +164,7 @@
 }
 
 .profile-modal-close:hover {
-    color: #1f1f1b;
+    color: var(--ink);
     background: #eceae4;
 }
 
@@ -199,9 +199,9 @@
 
     outline: none;
 
-    background: #fff;
+    background: var(--canvas);
 
-    color: #1f1f1b;
+    color: var(--ink);
 
     font-family: inherit;
     font-size: 13px;
@@ -212,11 +212,11 @@
 }
 
 .profile-name-input:focus {
-    border-color: #6f5b8a;
+    border-color: var(--plum);
 
     box-shadow:
         0 0 0 3px
-        rgba(111, 91, 138, 0.16);
+        color-mix(in srgb, var(--plum) 16%, transparent);
 }
 
 .profile-name-input::placeholder {
@@ -291,7 +291,7 @@
         1px solid
         #d9d5cc;
 
-    background: #fff;
+    background: var(--canvas);
 
     color: #5f5c55;
 }
@@ -305,15 +305,15 @@
 .profile-save {
     border:
         1px solid
-        #6f5b8a;
+        var(--plum);
 
-    background: #6f5b8a;
+    background: var(--plum);
 
-    color: #fff;
+    color: var(--accent-contrast);
 }
 
 .profile-save:hover:not(:disabled) {
-    background: #5d4b73;
+    background: var(--plum-strong);
 }
 
 .profile-save:disabled {

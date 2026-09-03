@@ -1,0 +1,23 @@
+.settings-menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--page-line);
+    background: var(--control-bg);
+    color: var(--page-ink);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.settings-menu-button:hover {
+    background: var(--control-bg-subtle);
+    border-color: var(--page-line-strong);
+}
+
+.settings-menu-label {
+    font-weight: 600;
+}

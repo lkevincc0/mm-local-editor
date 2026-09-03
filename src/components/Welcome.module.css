@@ -1,12 +1,8 @@
 .page {
-    --ink: #11110f;
-    --muted: #6d6c66;
-    --line: #deddd6;
-    --paper: #f7f6f0;
     min-height: 100vh;
-    color: var(--ink);
-    background: var(--paper);
-    font-family: Arial, Helvetica, sans-serif;
+    color: var(--page-ink);
+    background: var(--page-paper);
+    font-family: var(--app-font);
 }
 
 .header {
@@ -15,7 +11,7 @@
     justify-content: space-between;
     min-height: 88px;
     padding: 16px clamp(24px, 4vw, 68px);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--page-line);
 }
 
 .brand,
@@ -28,7 +24,7 @@
 
 .brand {
     gap: 12px;
-    color: var(--ink);
+    color: var(--page-ink);
     font-size: 16px;
     font-weight: 800;
     letter-spacing: 0.13em;
@@ -46,7 +42,7 @@
 }
 
 .nav a {
-    color: var(--ink);
+    color: var(--page-ink);
     font-size: 14px;
     text-decoration: none;
 }
@@ -71,7 +67,7 @@
 }
 
 .eyebrow {
-    color: #6b51c9;
+    color: var(--accent);
     font-size: clamp(11px, 0.7vw, 14px);
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -91,7 +87,7 @@
 .summary {
     max-width: 520px;
     margin: 26px 0 0;
-    color: var(--muted);
+    color: var(--page-muted);
     font-size: clamp(18px, 1.35vw, 26px);
     line-height: 1.55;
 }
@@ -117,20 +113,20 @@
 }
 
 .primaryAction {
-    border: 1px solid var(--ink);
-    color: #fff;
-    background: var(--ink);
+    border: 1px solid var(--page-ink);
+    color: var(--accent-contrast);
+    background: var(--page-ink);
 }
 
 .importAction {
-    border: 1px solid #cac8be;
-    color: var(--ink);
+    border: 1px solid var(--page-line-strong);
+    color: var(--page-ink);
     background: transparent;
     cursor: pointer;
 }
 
 .primaryAction:hover {
-    color: #fff;
+    color: var(--accent-contrast);
 }
 
 .fileInput {
@@ -149,7 +145,7 @@
     overflow: hidden;
     border: 1px solid #bcb9af;
     border-radius: 14px;
-    background: #fff;
+    background: var(--canvas);
     box-shadow: 0 24px 65px rgba(28, 25, 40, 0.15);
 }
 
@@ -159,8 +155,8 @@
     justify-content: space-between;
     height: 64px;
     padding: 0 22px;
-    color: #fff;
-    background: #25213e;
+    color: var(--accent-contrast);
+    background: var(--deep);
 }
 
 .windowBrand {
@@ -174,7 +170,7 @@
     height: 28px;
     padding: 3px;
     border-radius: 6px;
-    background: #fff;
+    background: var(--canvas);
     object-fit: contain;
 }
 
@@ -190,7 +186,7 @@
     position: relative;
     height: clamp(390px, 28vw, 540px);
     overflow: hidden;
-    background-color: #faf9f5;
+    background-color: var(--control-bg);
     background-image: radial-gradient(#d8d5cb 0.8px, transparent 0.8px);
     background-size: 18px 18px;
 }
@@ -217,7 +213,7 @@
     padding: 14px 15px;
     border: 1px solid #d0cdc2;
     border-radius: 9px;
-    background: #fff;
+    background: var(--canvas);
     box-shadow: 0 8px 18px rgba(47, 43, 63, 0.08);
     transform: translateY(-50%);
 }
@@ -258,7 +254,7 @@
     overflow: hidden;
     border: 1px solid #d8d5cb;
     border-radius: 7px;
-    background: #fff;
+    background: var(--canvas);
 }
 
 .canvasControls i,
@@ -342,4 +338,72 @@
         display: none;
     }
 
+}
+
+/* ============================================
+   Classic theme hero (original landing page)
+   Rendered only by the classic branch of Welcome.tsx
+   ============================================ */
+
+.classicPage {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 1rem;
+    background-image: url(/img/home-background.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+}
+
+.classicPage h1 {
+    text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9,
+        0 5px 0 #aaa, 0 6px 1px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.2),
+        0 5px 10px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.2),
+        0 20px 20px rgba(0, 0, 0, 0.15);
+}
+
+.classicPage :global(.carousel-item) {
+    height: 40vh;
+    overflow: auto;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 40px;
+}
+
+.classicPage :global(.content) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: 80%;
+    transform: translate(-50%, -50%);
+}
+
+.classicPage :global(.carousel-control-prev-icon) {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+}
+
+.classicPage :global(.carousel-control-next-icon) {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+}
+
+.classicActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 1rem;
+}
+
+.classicFooter {
+    margin-top: auto;
+}
+
+.classicFooter a {
+    color: var(--page-ink);
+    font-weight: 700;
+    text-decoration: none;
 }
