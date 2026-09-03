@@ -226,9 +226,8 @@ input[type="checkbox"]:hover {
 :global([data-theme='classic']) .tabContainer {
   background-color: var(--goal-panel);
 }
-
 :global([data-theme='classic']) .contentArea {
-  background-color: #f8f9fa;
+  background-color: var(--tools-bg);
   border: none;
   border-radius: 0 0 0.25rem 0.25rem;
   margin-top: -1px;
