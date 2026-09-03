@@ -88,11 +88,35 @@
     padding: 4px 24px 24px;
 }
 
-.projectName {
+.projectTitleSection {
     margin: 0 0 14px;
+}
+
+.projectTitleLabel {
+    display: block;
+    margin-bottom: 6px;
+    color: #6d6c66;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.projectTitleInput {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #cac8be;
+    border-radius: 10px;
     color: #11110f;
+    background: #fff;
+    font-family: inherit;
     font-size: 15px;
     font-weight: 600;
+}
+
+.projectTitleInput:focus {
+    outline: none;
+    border-color: #6b51c9;
+    box-shadow: 0 0 0 3px rgba(107, 81, 201, 0.16);
 }
 
 .linkRow {
@@ -191,4 +215,38 @@
 
 .warning {
     color: #b7771e;
+}
+
+.footer {
+    display: block;
+    padding: 18px 24px 22px;
+    border-top: 1px solid #deddd6;
+    background: #f7f6f0;
+}
+
+.exportSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.exportTitle {
+    color: #11110f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.exportDescription {
+    margin-top: 2px;
+    color: #6d6c66;
+    font-size: 12px;
+}
+
+@media (max-width: 480px) {
+    .exportSection {
+        align-items: stretch;
+        flex-direction: column;
+    }
 }

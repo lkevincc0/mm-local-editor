@@ -6,7 +6,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 
 import SaveFileButton from "./SaveFileButton";
-import ExportFileButton from "./ExportFileButton";
 import {BsPeople} from "react-icons/bs";
 import {isChrome, isEdge, isOpera} from "react-device-detect";
 import ResetGraphButton from "../Graphs/ResetGraphButton.tsx";
@@ -79,8 +78,6 @@ const ProjectEditHeader: React.FC<ProjectEditHeaderProps> = ({
                     </Col>
                     <Col className="d-flex flex-column flex-sm-row gap-2 justify-content-end align-items-center">
                         <ButtonGroup>
-                            {/* Pass showGraphSection to ExportFileButton to control enablement */}
-                            <ExportFileButton showGraphSection={showGraphSection}/>
                             {isBrowserSupported && <SaveFileButton/>}
                             <Button
                                 variant="dark"
@@ -100,6 +97,10 @@ const ProjectEditHeader: React.FC<ProjectEditHeaderProps> = ({
                 <ShareModal
                     show={showShareModal}
                     project={currentProject}
+                    showGraphSection={showGraphSection}
+                    onRenameProject={(name) => {
+                        renameProject(currentProject.id, name);
+                    }}
                     onHide={() => setShowShareModal(false)}
                 />
             )}
