@@ -14,6 +14,16 @@ import {returnFocusToGraph} from "../utils/GraphUtils";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import {embedJsonInPng, embedJsonInSvg} from "../utils/imageMetadata";
+import {
+    calculateFeedbackPanelLayout,
+    calculatePngExportDimensions,
+    createSvgToCanvasPointConverter,
+    drawFeedbackNodeBadges,
+    drawFeedbackPanel,
+    getFeedbackNodeBadges,
+    groupFeedbackByNode,
+    PNG_FEEDBACK_PANEL_GAP
+} from "./pngFeedbackAnnotations";
 
 const PNG_EXPORT_SCALE = 3;
 
@@ -152,6 +162,8 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         // Serialize the SVG element to a string
         const serializer = new XMLSerializer();
         const svgString = serializer.serializeToString(svgCopy);
+        const graphWidth = svgElement.clientWidth;
+        const graphHeight = svgElement.clientHeight;
 
         // Create a canvas element
         const canvas = document.createElement('canvas');
@@ -174,11 +186,107 @@ const ExportFileButton = ({showGraphSection}: { showGraphSection: boolean }) => 
         // Render SVG onto the canvas
         await v.render();
 
+        let exportCanvas = canvas;
+
+        if (feedbacks.length > 0) {
+            const graphModel = graph.getDataModel();
+            const groups = groupFeedbackByNode(feedbacks, (nodeId) => {
+                const cell = graphModel.getCell(nodeId);
+
+                if (!cell) {
+                    return undefined;
+                }
+
+                const value = cell.getValue();
+
+                if (typeof value === "string" && value.trim()) {
+                    return value;
+                }
+
+                return graph.getLabel(cell);
+            });
+            const panelLayout = calculateFeedbackPanelLayout(context, groups);
+            const dimensions = calculatePngExportDimensions(
+                graphWidth,
+                graphHeight,
+                panelLayout
+            );
+            const finalCanvas = document.createElement("canvas");
+            finalCanvas.width = Math.round(dimensions.width * PNG_EXPORT_SCALE);
+            finalCanvas.height = Math.round(dimensions.height * PNG_EXPORT_SCALE);
+
+            const finalContext = finalCanvas.getContext("2d");
+
+            if (!finalContext) {
+                console.error("Failed to get final canvas context.");
+                return;
+            }
+
+            finalContext.scale(PNG_EXPORT_SCALE, PNG_EXPORT_SCALE);
+            finalContext.fillStyle = "white";
+            finalContext.fillRect(0, 0, dimensions.width, dimensions.height);
+            finalContext.drawImage(
+                canvas,
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+                0,
+                0,
+                graphWidth,
+                graphHeight
+            );
+
+            const drawPane = graph.getView().getDrawPane();
+            const coordinateElement = drawPane instanceof SVGGraphicsElement
+                ? drawPane
+                : svgElement;
+            const convertPoint = createSvgToCanvasPointConverter(
+                svgElement,
+                graphWidth,
+                graphHeight,
+                coordinateElement
+            );
+            const badges = getFeedbackNodeBadges(
+                groups,
+                (nodeId) => {
+                    const cell = graphModel.getCell(nodeId);
+                    const state = cell ? graph.getView().getState(cell) : null;
+
+                    if (!state) {
+                        return undefined;
+                    }
+
+                    return {
+                        x: state.x,
+                        y: state.y,
+                        width: state.width,
+                        height: state.height
+                    };
+                },
+                convertPoint
+            );
+
+            drawFeedbackNodeBadges(finalContext, badges);
+            drawFeedbackPanel(
+                finalContext,
+                panelLayout,
+                graphWidth + PNG_FEEDBACK_PANEL_GAP,
+                dimensions.height
+            );
+            exportCanvas = finalCanvas;
+        }
+
         // Convert the canvas content to a Blob (PNG format)
-        canvas.toBlob(async (blob) => {
+        exportCanvas.toBlob(async (blob) => {
             if (blob) {
                 try {
-                    const projectData = {name: currentProject?.name, feedbacks, tabData, treeData: treeData || []};
+                    const projectData = {
+                        name: currentProject?.name,
+                        feedbacks,
+                        tabData,
+                        treeData: treeData || []
+                    };
                     const finalBlob = await embedJsonInPng(blob, projectData);
 
                     if ('showSaveFilePicker' in self) {
