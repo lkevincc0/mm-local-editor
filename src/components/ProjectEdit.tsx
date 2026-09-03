@@ -66,6 +66,14 @@ const ProjectEdit: React.FC = () => {
         );
     }, [goalDock, hierarchyDock]);
 
+    // Reset the feedback panel to the current mode's default when the UI mode
+    // is switched at runtime. The useState initializer only runs once, so it
+    // would otherwise keep the previous mode's feedback state (e.g. leaving
+    // feedback open after switching modern -> classic).
+    useEffect(() => {
+        setShowFeedbackSection(mode !== "classic");
+    }, [mode]);
+
     if (mode === "classic") {
         const classicShowGoals = classicStep === "goals";
         const classicShowGraph = classicStep === "model";

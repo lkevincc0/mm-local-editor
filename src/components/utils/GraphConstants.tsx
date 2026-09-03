@@ -20,7 +20,10 @@ export const SYMBOL_HEIGHT = 110;        // Base height of a symbol node
 // --- Vertex Font Styling ---
 export const VERTEX_FONT = {
     size: 16,                              // Font size for text labels inside nodes
-    color: getThemeTokens().graph.fontColor, // Default font color
+    // Read the theme at access time rather than module load so the graph text
+    // colour follows runtime theme/mode switches (module evaluation would
+    // otherwise freeze it on the initial theme).
+    get color(): string { return getThemeTokens().graph.fontColor; },
     scaleHeight: 2.375,                    //scale factor for height base on font size
 } as const;
 
