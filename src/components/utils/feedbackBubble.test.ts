@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import {describe, expect, it} from "vitest";
 
 import type {OverallFeedback} from "../types";
@@ -5,6 +8,7 @@ import {
     BUBBLE_MIN_WIDTH,
     BUBBLE_PADDING,
     drawOverallFeedbackBubble,
+    injectOverallFeedbackBubble,
     measureOverallFeedbackBubble,
     wrapBubbleText
 } from "./feedbackBubble";
@@ -29,6 +33,9 @@ const createMockContext = () => {
         },
         beginPath: () => {
             calls.push({method: "beginPath", args: []});
+        },
+        arc: (...args: unknown[]) => {
+            calls.push({method: "arc", args});
         },
         moveTo: (...args: unknown[]) => {
             calls.push({method: "moveTo", args});
@@ -129,7 +136,64 @@ describe("feedbackBubble", () => {
         const fillTexts = calls.filter((call) => call.method === "fillText");
         const {lines} = measureOverallFeedbackBubble(ctx, feedback, 400);
 
-        // author + optional date stamp + one call per content line
-        expect(fillTexts.length - drawCallsBefore).toBe(lines.length + 2);
+        // avatar initial + author + optional date stamp + one call per content line
+        expect(fillTexts.length - drawCallsBefore).toBe(lines.length + 3);
+    });
+
+    it("injects the feedback bubble as vector SVG below the graph", () => {
+        const svgString =
+            `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="white"/></svg>`;
+
+        const fakeCtx = {
+            font: "",
+            fillStyle: "",
+            strokeStyle: "",
+            lineWidth: 0,
+            textBaseline: "",
+            textAlign: "",
+            measureText: (text: string) => ({width: text.length * 7}),
+            fillText: () => undefined,
+            beginPath: () => undefined,
+            moveTo: () => undefined,
+            lineTo: () => undefined,
+            closePath: () => undefined,
+            arc: () => undefined,
+            fill: () => undefined,
+            stroke: () => undefined,
+            rect: () => undefined,
+            roundRect: () => undefined,
+            save: () => undefined,
+            restore: () => undefined
+        };
+
+        const originalCreate = document.createElement;
+
+        (document as unknown as {createElement: typeof document.createElement}).createElement =
+            ((tag: string) => {
+                if (tag === "canvas") {
+                    return {getContext: () => fakeCtx};
+                }
+
+                return originalCreate.call(document, tag) as HTMLElement;
+            }) as typeof document.createElement;
+
+        try {
+            const result = injectOverallFeedbackBubble(
+                svgString,
+                400,
+                300,
+                feedback
+            );
+
+            expect(result).toContain("<g");
+            expect(result).toContain("<circle");
+            expect(result).toContain("Reviewer");
+
+            const heightMatch = result.match(/<svg[^>]*height="(\d+(?:\.\d+)?)"/);
+            expect(Number(heightMatch![1])).toBeGreaterThan(300);
+        } finally {
+            (document as unknown as {createElement: typeof document.createElement}).createElement =
+                originalCreate;
+        }
     });
 });

@@ -9,6 +9,7 @@ import {embedJsonInPng, embedJsonInSvg} from "./imageMetadata";
 import {
     BUBBLE_PADDING,
     drawOverallFeedbackBubble,
+    injectOverallFeedbackBubble,
     measureOverallFeedbackBubble
 } from "./feedbackBubble";
 
@@ -141,11 +142,29 @@ export const exportGraphAsSVG = async (
         return;
     }
 
-    const svgString = embedJsonInSvg(serialized.svgString, projectData);
+    const {svgString, width: graphWidth, height: graphHeight} =
+        serialized;
+    const overallFeedback =
+        projectData.overallFeedback?.content.trim()
+            ? projectData.overallFeedback
+            : undefined;
+
+    // The SVG export has no "include feedback" toggle, so it mirrors the PNG
+    // default: include the overall-feedback bubble whenever one is present.
+    const svgWithBubble = overallFeedback
+        ? injectOverallFeedbackBubble(
+              svgString,
+              graphWidth,
+              graphHeight,
+              overallFeedback
+          )
+        : svgString;
+
+    const finalSvg = embedJsonInSvg(svgWithBubble, projectData);
 
     try {
         await saveBlob(
-            new Blob([svgString], {type: "image/svg+xml;charset=utf-8"}),
+            new Blob([finalSvg], {type: "image/svg+xml;charset=utf-8"}),
             "Graph.svg",
             "SVG Image",
             {"image/svg+xml": [".svg"]}
@@ -216,6 +235,13 @@ export const exportGraphAsPNG = async (
         const bandHeight =
             BUBBLE_PADDING + bubble.height + BUBBLE_PADDING;
 
+        // Centre the bubble in the free band below the graph instead of
+        // leaving it cramped in the bottom-left corner.
+        const bubbleX = Math.max(
+            BUBBLE_PADDING,
+            (graphWidth - bubble.width) / 2
+        );
+
         exportWidth = graphWidth;
         exportHeight = graphHeight + bandHeight;
 
@@ -248,7 +274,7 @@ export const exportGraphAsPNG = async (
         drawOverallFeedbackBubble(
             finalContext,
             overallFeedback,
-            BUBBLE_PADDING,
+            bubbleX,
             graphHeight + BUBBLE_PADDING,
             bubbleMaxWidth
         );
