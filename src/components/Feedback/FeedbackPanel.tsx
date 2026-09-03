@@ -36,6 +36,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 }) => {
     const {
         feedbacks,
+        overallFeedback,
+        setOverallFeedback,
         selectedNodeId,
         selectedNodeLabel,
         addFeedback,
@@ -57,6 +59,18 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
     const [newFeedback, setNewFeedback] =
         useState("");
+
+    const [overallDraft, setOverallDraft] =
+        useState(overallFeedback?.content ?? "");
+
+    // Keep the draft in sync when switching projects or external edits.
+    useEffect(() => {
+        setOverallDraft(overallFeedback?.content ?? "");
+    }, [overallFeedback]);
+
+    const overallDirty =
+        overallDraft.trim() !==
+        (overallFeedback?.content ?? "").trim();
 
     const [showAuthorPrompt, setShowAuthorPrompt] =
         useState(false);
@@ -214,6 +228,18 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         setIsComposerOpen(false);
     };
 
+    const handleSaveOverall = () => {
+        if (!overallDirty) {
+            return;
+        }
+
+        setOverallFeedback(overallDraft);
+    };
+
+    const handleCancelOverall = () => {
+        setOverallDraft(overallFeedback?.content ?? "");
+    };
+
     return (
         <aside className="feedback-panel">
             <header className="feedback-panel-header">
@@ -236,6 +262,63 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             </header>
 
             <FeedbackAuthor />
+
+            <section className="feedback-overall">
+                <div className="feedback-overall-head">
+                    <span className="feedback-overall-label">
+                        Overall Feedback
+                    </span>
+
+                    <span className="feedback-overall-hint">
+                        Added to the exported PNG
+                    </span>
+                </div>
+
+                <textarea
+                    id="feedback-overall-content"
+                    className="feedback-overall-textarea"
+                    value={overallDraft}
+                    onChange={(event) =>
+                        setOverallDraft(event.target.value)
+                    }
+                    placeholder="Feedback about the model as a whole..."
+                    rows={3}
+                />
+
+                {overallDirty && (
+                    <div className="feedback-overall-actions">
+                        <button
+                            type="button"
+                            className="feedback-overall-cancel"
+                            onClick={handleCancelOverall}
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            className="feedback-overall-save"
+                            onClick={handleSaveOverall}
+                            disabled={!overallDraft.trim() && !overallFeedback?.content}
+                        >
+                            Save
+                        </button>
+                    </div>
+                )}
+
+                {!overallDirty && overallFeedback && (
+                    <div className="feedback-overall-meta">
+                        Saved by {overallFeedback.author}
+                        {overallFeedback.updatedAt &&
+                            ` · ${new Date(
+                                overallFeedback.updatedAt
+                            ).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric"
+                            })}`}
+                    </div>
+                )}
+            </section>
 
             {selectedNodeId ? (
                 <section className="feedback-node-context">

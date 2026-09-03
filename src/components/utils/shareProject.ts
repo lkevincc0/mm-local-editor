@@ -3,7 +3,7 @@ import {decompressFromEncodedURIComponent} from "lz-string";
 import {z} from "zod";
 
 import {getBasename} from "./basename";
-import type {Feedback, TreeGoal} from "../types";
+import type {Feedback, OverallFeedback, TreeGoal} from "../types";
 import type {Project} from "./projects";
 
 // Shares a project by embedding a compressed, URL-safe snapshot in the URL
@@ -25,6 +25,7 @@ export type SharedProjectPayload = Pick<
     version: number;
     shareId: string;
     feedbacks: Feedback[];
+    overallFeedback?: OverallFeedback;
 };
 
 // --- base64url helpers (URL-safe, no padding) ---
@@ -94,11 +95,18 @@ const FeedbackSchema = z.object({
     replies: z.array(FeedbackReplySchema).optional(),
 });
 
+const OverallFeedbackSchema = z.object({
+    author: z.string(),
+    content: z.string(),
+    updatedAt: z.string(),
+});
+
 const PayloadBaseSchema = z.object({
     shareId: z.string().min(1).max(200),
     name: z.string().max(200),
     treeData: z.array(TreeGoalSchema),
     feedbacks: z.array(FeedbackSchema),
+    overallFeedback: OverallFeedbackSchema.optional(),
 });
 
 // v2: each tab references its rows by goal id instead of embedding them.
@@ -182,6 +190,7 @@ const normalizeV2 = (
                 .filter((goal): goal is TreeGoal => goal !== undefined),
         })),
         feedbacks: payload.feedbacks,
+        overallFeedback: payload.overallFeedback,
     };
 };
 
@@ -264,6 +273,7 @@ export const encodeSharedProject = (project: Project): string => {
             rows: tab.rows.map((goal) => goal.id),
         })),
         feedbacks: project.feedbacks ?? [],
+        overallFeedback: project.overallFeedback,
     };
 
     const compressed = deflate(encodeUtf8(JSON.stringify(payload)), {

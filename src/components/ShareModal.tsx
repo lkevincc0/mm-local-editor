@@ -4,7 +4,7 @@ import {BsCheck, BsPeople, BsQrCode, BsX} from "react-icons/bs";
 import {QRCodeSVG} from "qrcode.react";
 
 import type {Project} from "./utils/projects";
-import ExportFileButton from "./header/ExportFileButton";
+import ShareExportSection from "./ShareExportSection";
 import {
     createProjectShareUrl,
     getShareUrlByteLength,
@@ -22,7 +22,7 @@ type ShareModalProps = {
 
 type CopyStatus = "idle" | "copied" | "error";
 
-const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection, onRenameProject,onHide}) => {
+const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection, onRenameProject, onHide}) => {
     const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
 
     const shareUrl = useMemo(() => createProjectShareUrl(project), [project]);
@@ -77,17 +77,16 @@ const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection,
             </Modal.Header>
 
             <Modal.Body className={styles.body}>
-                <div className={styles.projectTitleSection}>
+                <div className={styles.titleSection}>
                     <label
                         htmlFor="share-project-title"
-                        className={styles.projectTitleLabel}
+                        className={styles.titleLabel}
                     >
-                        Project Title
+                        Project title
                     </label>
-
                     <input
                         id="share-project-title"
-                        className={styles.projectTitleInput}
+                        className={styles.titleInput}
                         value={project.name}
                         maxLength={200}
                         onChange={(event) => {
@@ -157,22 +156,7 @@ const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection,
             </Modal.Body>
 
             <Modal.Footer className={styles.footer}>
-                <div className={styles.exportSection}>
-                    <div>
-                        <div className={styles.exportTitle}>
-                            Export Your Project
-                        </div>
-                        <div className={styles.exportDescription}>
-                            Download as PNG or SVG
-                        </div>
-                    </div>
-
-                    {showGraphSection !== undefined && (
-                        <ExportFileButton
-                            showGraphSection={showGraphSection}
-                        />
-                    )}
-                </div>
+                <ShareExportSection showGraphSection={showGraphSection}/>
             </Modal.Footer>
         </Modal>
     );
