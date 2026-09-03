@@ -24,7 +24,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({className}) => {
     return (
         <button
             type="button"
-            className={className ?? "settings-menu-button"}
+            className={["settings-menu-button", className].filter(Boolean).join(" ")}
             onClick={handleSwitch}
             aria-label={`Switch to ${target} UI`}
             title={`Switch to ${target} UI`}
