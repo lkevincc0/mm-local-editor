@@ -3,7 +3,7 @@
 }
 
 .dialog {
-    width: min(calc(100% - 32px), 520px);
+    width: min(calc(100% - 32px), 540px);
     margin-right: auto;
     margin-left: auto;
 }
@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 22px 24px 18px;
+    padding: 22px 24px 16px;
     border: 0;
 }
 
@@ -85,20 +85,48 @@
 }
 
 .body {
-    padding: 4px 24px 24px;
+    padding: 0 24px 24px;
 }
 
-.projectName {
-    margin: 0 0 14px;
-    color: var(--page-ink);
-    font-size: 15px;
+/* --- Project title --- */
+.titleSection {
+    margin: 0 0 18px;
+}
+
+.titleLabel {
+    display: block;
+    margin: 0 0 7px;
+    color: #6d6c66;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.titleInput {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #cac8be;
+    border-radius: 11px;
+    color: #11110f;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
     font-weight: 600;
 }
 
+.titleInput:focus {
+    outline: none;
+    border-color: #6b51c9;
+    box-shadow: 0 0 0 3px rgba(107, 81, 201, 0.16);
+}
+
+/* --- Share link row --- */
 .linkRow {
     display: flex;
     gap: 10px;
-    align-items: center;
+    align-items: stretch;
 }
 
 .linkInput {
@@ -147,13 +175,15 @@
     background: var(--accent);
 }
 
+/* --- QR section --- */
 .qrSection {
     display: flex;
-    gap: 18px;
+    flex-direction: column;
     align-items: center;
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px solid var(--page-line);
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #deddd6;
 }
 
 .qrLabel {
@@ -162,6 +192,7 @@
     gap: 7px;
     color: var(--page-muted);
     font-size: 13px;
+    font-weight: 600;
 }
 
 .qrBox {
@@ -172,6 +203,7 @@
     background: var(--canvas);
 }
 
+/* --- Messages --- */
 .error {
     margin: 0;
     color: var(--danger);
@@ -179,16 +211,175 @@
     line-height: 1.5;
 }
 
-.errorSmall,
-.warning {
+.errorSmall {
     margin: 10px 0 0;
+    color: #9f352d;
     font-size: 12.5px;
 }
 
-.errorSmall {
-    color: var(--danger);
+.warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 10px 12px;
+    border: 1px solid #ecdfc0;
+    border-radius: 10px;
+    background: #fbf6e9;
+    color: #8a6211;
+    font-size: 12.5px;
+    line-height: 1.4;
 }
 
-.warning {
-    color: var(--warning);
+/* --- Footer / export --- */
+.footer {
+    display: block;
+    margin: 0;
+    padding: 18px 24px 22px;
+    border-top: 1px solid #deddd6;
+    border-radius: 0;
+    background: #fbfaf7;
+}
+
+.exportSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.exportHeader {
+    display: flex;
+    align-items: flex-start;
+}
+
+.exportTitle {
+    color: #11110f;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.exportDescription {
+    margin-top: 2px;
+    color: #6d6c66;
+    font-size: 12.5px;
+}
+
+/* --- Overall feedback toggle --- */
+.feedbackToggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.feedbackToggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.toggleTrack {
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 22px;
+    margin-top: 1px;
+    border: 1px solid #cac8be;
+    border-radius: 999px;
+    background: #fff;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.toggleThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #b8b4aa;
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+}
+
+.feedbackToggle input:checked + .toggleTrack {
+    border-color: #6b51c9;
+    background: #6b51c9;
+}
+
+.feedbackToggle input:checked + .toggleTrack .toggleThumb {
+    transform: translateX(18px);
+    background: #fff;
+}
+
+.feedbackToggle input:focus-visible + .toggleTrack {
+    box-shadow: 0 0 0 3px rgba(107, 81, 201, 0.16);
+}
+
+.feedbackToggleDisabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.toggleLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #11110f;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.toggleHint {
+    color: #6d6c66;
+    font-size: 11.5px;
+    font-weight: 400;
+}
+
+/* --- Export buttons --- */
+.exportButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.exportButtonWrap {
+    display: inline-flex;
+}
+
+.exportButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #cac8be;
+    border-radius: 10px;
+    color: #11110f;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.exportButton:hover:not(:disabled) {
+    border-color: #6b51c9;
+    color: #6b51c9;
+    background: #f4f1fb;
+}
+
+.exportButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

@@ -1,7 +1,7 @@
 import React, {createContext, PropsWithChildren, useContext, useEffect, useReducer, useRef, useState} from "react";
 import {createInitialState, treeDataSlice} from "./treeDataSlice.ts";
 import {initialTabs} from "../../data/initialTabs.ts";
-import {Cluster, ClusterGoal, Feedback, GoalType, InstanceId, Label, TabContent, TreeGoal} from "../types.ts";
+import {Cluster, ClusterGoal, Feedback, GoalType, InstanceId, Label, OverallFeedback, TabContent, TreeGoal} from "../types.ts";
 import useLocalStorage from "../utils/useLocalStorage.tsx"
 import {useProjectContext} from "./ProjectContext";
 
@@ -24,6 +24,7 @@ import {useProjectContext} from "./ProjectContext";
 export type JSONData = {
     name?: string;
     feedbacks?: Feedback[];
+    overallFeedback?: OverallFeedback;
     tabData: TabContent[];
     treeData: TreeGoal[];
 };

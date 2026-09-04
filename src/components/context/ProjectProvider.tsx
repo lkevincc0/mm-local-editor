@@ -18,6 +18,7 @@ export const ProjectProvider: React.FC<PropsWithChildren> = ({children}) => {
             treeData: data?.treeData ?? defaults.treeData,
             tabData: data?.tabData ?? defaults.tabData,
             feedbacks: data?.feedbacks ?? [],
+            overallFeedback: data?.overallFeedback,
             sourceShareId: data?.sourceShareId,
             createdAt: Date.now(),
             updatedAt: Date.now(),

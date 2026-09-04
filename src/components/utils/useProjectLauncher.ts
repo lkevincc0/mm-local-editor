@@ -40,7 +40,12 @@ export const useProjectLauncher = (showError: ShowError) => {
             : defaultProjectName(existingNames);
 
         // Restore feedback into the store the FeedbackProvider reads on mount.
-        openEditor(createProject(name, {treeData: jsonData.treeData, tabData, feedbacks:jsonData.feedbacks ?? []}));
+        openEditor(createProject(name, {
+            treeData: jsonData.treeData,
+            tabData,
+            feedbacks: jsonData.feedbacks ?? [],
+            overallFeedback: jsonData.overallFeedback,
+        }));
     };
 
     const importProjectFile = async (file: File) => {

@@ -1,5 +1,5 @@
 import {InitialTab, createDefaultTabData, defaultTreeData} from "../../data/initialTabs";
-import {Feedback, TabContent, TreeGoal} from "../types";
+import {Feedback, OverallFeedback, TabContent, TreeGoal} from "../types";
 
 // A saved model in the local project store.
 export type Project = {
@@ -9,6 +9,7 @@ export type Project = {
     treeData: TreeGoal[];
     tabData: InitialTab[];
     feedbacks?: Feedback[];
+    overallFeedback?: OverallFeedback;
     createdAt: number;
     updatedAt: number;
 };
