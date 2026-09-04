@@ -9,7 +9,8 @@ import React, {
 import type {
   Feedback,
   FeedbackReply,
-  FeedbackStatus
+  FeedbackStatus,
+  OverallFeedback
 } from "../types.ts";
 
 import {useProfileContext} from "./ProfileContext";
@@ -17,6 +18,10 @@ import {useProjectContext} from "./ProjectContext";
 
 type FeedbackContextType = {
   feedbacks: Feedback[];
+
+  overallFeedback: OverallFeedback | undefined;
+
+  setOverallFeedback: (content: string) => void;
 
   selectedNodeId: string | null;
   selectedNodeLabel: string | null;
@@ -75,6 +80,13 @@ export const FeedbackProvider: React.FC<
       currentProject?.feedbacks ?? []
     );
 
+  const [
+    overallFeedback,
+    setOverallFeedbackState
+  ] = useState<OverallFeedback | undefined>(
+    currentProject?.overallFeedback
+  );
+
   const [selectedNodeId, setSelectedNodeId] =
     useState<string | null>(null);
 
@@ -93,15 +105,26 @@ export const FeedbackProvider: React.FC<
 
     previousProjectId.current = currentProjectId;
     setFeedbacks(currentProject?.feedbacks ?? []);
+    setOverallFeedbackState(
+      currentProject?.overallFeedback
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProjectId]);
 
   // Persist feedback edits into the currently open project.
   useEffect(() => {
     if (currentProjectId) {
-      saveProjectData(currentProjectId, {feedbacks});
+      saveProjectData(currentProjectId, {
+        feedbacks,
+        overallFeedback
+      });
     }
-  }, [feedbacks, currentProjectId, saveProjectData]);
+  }, [
+    feedbacks,
+    overallFeedback,
+    currentProjectId,
+    saveProjectData
+  ]);
 
   // When the author changes, keep existing feedback and replies in sync.
   const previousAuthor = useRef(authorName);
@@ -127,6 +150,16 @@ export const FeedbackProvider: React.FC<
         )
       }))
     );
+
+    setOverallFeedbackState((current) =>
+      current
+        ? {
+            ...current,
+            author:
+              authorName.trim() || current.author
+          }
+        : current
+    );
   }, [authorName]);
 
   const setSelectedNode = (
@@ -138,6 +171,24 @@ export const FeedbackProvider: React.FC<
     setSelectedNodeLabel(
       nodeLabel ?? nodeId ?? null
     );
+  };
+
+  const setOverallFeedback = (content: string) => {
+    const trimmed = content.trim();
+
+    if (!trimmed) {
+      setOverallFeedbackState(undefined);
+      return;
+    }
+
+    setOverallFeedbackState((current) => ({
+      author:
+        current?.author?.trim() ||
+        authorName.trim() ||
+        "Current User",
+      content: trimmed,
+      updatedAt: new Date().toISOString()
+    }));
   };
 
   const addFeedback = (
@@ -220,6 +271,8 @@ export const FeedbackProvider: React.FC<
 
   const value = {
     feedbacks,
+    overallFeedback,
+    setOverallFeedback,
     selectedNodeId,
     selectedNodeLabel,
     setSelectedNode,

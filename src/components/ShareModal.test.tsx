@@ -8,6 +8,8 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import ShareModal from "./ShareModal";
 import type {Project} from "./utils/projects";
 
+vi.mock("./ShareExportSection", () => ({default: () => null}));
+
 const goal = {
     id: 1,
     content: "Share this goal",
@@ -41,7 +43,7 @@ describe("ShareModal", () => {
     });
 
     it("shows a copyable link and QR code as soon as it opens", () => {
-        render(<ShareModal show project={project} onHide={vi.fn()}/>);
+        render(<ShareModal show project={project} showGraphSection={false} onHide={vi.fn()}/>);
 
         const input = screen.getByLabelText("Share link") as HTMLInputElement;
         expect(input.value).toContain("#share=");
@@ -64,7 +66,7 @@ describe("ShareModal", () => {
             tabData: [{label: "Do", icon: "", rows: [oversizedGoal]}],
         };
 
-        render(<ShareModal show project={oversizedProject} onHide={vi.fn()}/>);
+        render(<ShareModal show project={oversizedProject} showGraphSection={false} onHide={vi.fn()}/>);
 
         expect(screen.getByText(/too large/i)).toBeTruthy();
         expect(screen.queryByTestId("share-qr")).toBeNull();

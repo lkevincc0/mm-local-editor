@@ -176,3 +176,11 @@ export interface Feedback {
   replyCount?: number;
   replies?: FeedbackReply[];
 }
+
+// Feedback about the model as a whole, not tied to any single node. Shown in
+// the feedback panel and optionally rendered onto the exported PNG.
+export interface OverallFeedback {
+  author: string;
+  content: string;
+  updatedAt: string;
+}

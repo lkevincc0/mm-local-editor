@@ -76,6 +76,11 @@ const richProject: Project = {
             status: "open",
         },
     ],
+    overallFeedback: {
+        author: "Reviewer",
+        content: "Overall the model reads well.",
+        updatedAt: "2026-09-03T12:00:00.000Z",
+    },
     createdAt: 1,
     updatedAt: 5,
 };
@@ -126,6 +131,7 @@ describe("frontend project sharing", () => {
             treeData: richTree,
             tabData: richProject.tabData,
             feedbacks: richProject.feedbacks,
+            overallFeedback: richProject.overallFeedback,
         });
     });
 

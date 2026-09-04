@@ -670,10 +670,115 @@
    New feedback composer
    ============================================ */
 
+.feedback-overall {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 8px;
+
+    margin: 10px 12px 0;
+    padding: 12px;
+
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--canvas);
+}
+
+.feedback-overall-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.feedback-overall-label {
+    color: var(--ink);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.feedback-overall-hint {
+    color: var(--muted);
+
+    font-size: 10.5px;
+}
+
+.feedback-overall-textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 9px 10px;
+
+    resize: vertical;
+
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+
+    background: var(--surface);
+    color: var(--ink);
+
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.feedback-overall-textarea:focus {
+    outline: none;
+
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.feedback-overall-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.feedback-overall-cancel,
+.feedback-overall-save {
+    padding: 6px 12px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.feedback-overall-cancel {
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--ink);
+}
+
+.feedback-overall-save {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.feedback-overall-save:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.feedback-overall-meta {
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
 .feedback-composer {
     display: flex;
     flex: 0 0 auto;
-
     flex-direction: column;
 
     gap: 8px;

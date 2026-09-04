@@ -4,6 +4,7 @@ import {BsCheck, BsPeople, BsQrCode, BsX} from "react-icons/bs";
 import {QRCodeSVG} from "qrcode.react";
 
 import type {Project} from "./utils/projects";
+import ShareExportSection from "./ShareExportSection";
 import {
     createProjectShareUrl,
     getShareUrlByteLength,
@@ -14,12 +15,14 @@ import styles from "./ShareModal.module.css";
 type ShareModalProps = {
     show: boolean;
     project: Project;
+    showGraphSection: boolean;
+    onRenameProject?: (name: string) => void;
     onHide: () => void;
 };
 
 type CopyStatus = "idle" | "copied" | "error";
 
-const ShareModal: React.FC<ShareModalProps> = ({show, project, onHide}) => {
+const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection, onRenameProject, onHide}) => {
     const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
 
     const shareUrl = useMemo(() => createProjectShareUrl(project), [project]);
@@ -74,7 +77,28 @@ const ShareModal: React.FC<ShareModalProps> = ({show, project, onHide}) => {
             </Modal.Header>
 
             <Modal.Body className={styles.body}>
-                <div className={styles.projectName}>{project.name}</div>
+                <div className={styles.titleSection}>
+                    <label
+                        htmlFor="share-project-title"
+                        className={styles.titleLabel}
+                    >
+                        Project title
+                    </label>
+                    <input
+                        id="share-project-title"
+                        className={styles.titleInput}
+                        value={project.name}
+                        maxLength={200}
+                        onChange={(event) => {
+                            onRenameProject?.(event.target.value);
+                        }}
+                        onBlur={(event) => {
+                            const name = event.target.value.trim();
+                            onRenameProject?.(name || "Untitled");
+                        }}
+                        aria-label="Project title"
+                    />
+                </div>
 
                 {tooLarge ? (
                     <p className={styles.error}>
@@ -130,6 +154,10 @@ const ShareModal: React.FC<ShareModalProps> = ({show, project, onHide}) => {
                     </>
                 )}
             </Modal.Body>
+
+            <Modal.Footer className={styles.footer}>
+                <ShareExportSection showGraphSection={showGraphSection}/>
+            </Modal.Footer>
         </Modal>
     );
 };
