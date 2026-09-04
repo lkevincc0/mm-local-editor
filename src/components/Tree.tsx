@@ -16,6 +16,8 @@ import {
 import {BsCheckCircle, BsFillTrash3Fill, BsGripVertical, BsPencilSquare, BsXCircle} from "react-icons/bs";
 import {InstanceId, Label, TreeGoal, isNonFunctionalGoal} from "../components/types.ts";
 import {useFileContext} from "./context/FileProvider";
+import {useTheme} from "./context/ThemeContext";
+import {themeTokens, getThemeTokens} from "./utils/themeTokens";
 import ConfirmModal from "./ConfirmModal";
 import {
     handleContentSave,
@@ -33,7 +35,7 @@ const treeListStyle: React.CSSProperties = {
     position: "relative",
     background: "white",
     display: "flex",
-    border: "1px solid #deddd6",
+    border: `1px solid ${getThemeTokens().tree.rowBorder}`,
     borderRadius: "8px",
     alignItems: "center",
     padding: "0.35rem 0.5rem",
@@ -189,6 +191,8 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
     const treeItem = item as SortableTreeGoal;
     const isEditing = editingItemId === treeItem.instanceId;
     const iconSize = 25;
+    const {theme} = useTheme();
+    const treeTokens = themeTokens[theme].tree;
     const isReference = existingGoalReferenceInstanceId.some(
       (itemRef) => itemRef.goalId === treeItem.id && itemRef.instanceId === treeItem.instanceId
     );
@@ -283,10 +287,11 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
         <div
           style={{
             ...treeListStyle,
+            border: `1px solid ${treeTokens.rowBorder}`,
             backgroundColor: isEditing
-              ? "#e0e0e0"
+              ? treeTokens.selectedBg
               : isReference
-                ? "#FF474C"
+                ? treeTokens.dangerColor
                 : "white",
             boxShadow: clone ? "0 8px 24px rgba(0, 0, 0, 0.18)" : undefined,
             opacity: ghost ? 0.55 : 1,
@@ -339,7 +344,7 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
               style={{
                 display: "flex",
                 alignItems: "center",
-                color: "#666",
+                color: treeTokens.mutedText,
                 cursor: disableSorting ? "default" : "grab",
               }}
               onClick={(event) => event.stopPropagation()}

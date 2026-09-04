@@ -58,7 +58,7 @@
 }
 
 .hierarchy-panel .tree-list {
-	background: #fff !important;
+	background: var(--canvas) !important;
 }
 
 input:focus {

@@ -16,6 +16,7 @@ import {
 } from "../utils/GraphConstants.tsx";
 
 import {getSymbolKeyByType, formatFunGoalRefId, generateCellId, getNonFunctionalGoalColor, makeLabelForGoalType, isTypeAdjustableByText} from "../utils/GraphUtils";
+import {getThemeTokens} from "../utils/themeTokens";
 
 // ---------------------------------------------------------------------------
 // some image path
@@ -471,7 +472,7 @@ export const renderNonFunction = (
         style.verticalAlign = "top";
         style.verticalLabelPosition = "bottom";
     } else if (type === SYMBOL_CONFIGS.NEGATIVE.type) {
-        style.fillColor = "grey";
+        style.fillColor = getThemeTokens().graph.negativeFill;
     }
 
     // Set the pre-defined color instead of default
@@ -570,7 +571,7 @@ export const renderLegend = (graph: Graph): Cell => {
         startY,
         fWidth * 1.5,
         fHeight * legendTypes.length * 1.5,
-        {shape: "rect", strokeColor: "black", fillColor: "transparent"}
+        {shape: "rect", strokeColor: getThemeTokens().graph.vertexStroke, fillColor: "transparent"}
     );
 
     legendTypes.forEach((symbolKey, index) => {

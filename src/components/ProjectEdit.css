@@ -5,7 +5,7 @@ body {
 body:has(.project-edit-shell) {
 	margin: 0;
 	overflow: hidden;
-	background: #efeee9;
+	background: var(--paper);
 }
 
 html:has(.project-edit-shell) {
@@ -13,14 +13,6 @@ html:has(.project-edit-shell) {
 }
 
 .project-edit-shell {
-	--ink: #1f1f1b;
-	--muted: #6f6d66;
-	--line: #d8d6cf;
-	--paper: #efeee9;
-	--surface: #fbfaf7;
-	--canvas: #fff;
-	--goal-panel: #f7f3eb;
-	--hierarchy-panel: #eef2eb;
 	display: flex;
 	height: 100vh;
 	min-height: 0;
@@ -28,7 +20,7 @@ html:has(.project-edit-shell) {
 	overflow: hidden;
 	color: var(--ink);
 	background: var(--paper);
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--app-font);
 	-webkit-user-select: none;
 	user-select: none;
 }
@@ -64,7 +56,7 @@ html:has(.project-edit-shell) {
 }
 
 .projectEditHeader input {
-	border: 1px solid #b9b6ae;
+	border: 1px solid var(--line-strong);
 	border-radius: 7px;
 	padding: 5px 9px;
 	background: var(--canvas);
@@ -78,13 +70,13 @@ html:has(.project-edit-shell) {
 }
 
 .project-edit-shell .btn-outline-primary {
-	border-color: #b9b6ae;
+	border-color: var(--line-strong);
 	color: var(--ink);
 }
 
 .project-edit-shell .btn-outline-primary:hover {
 	border-color: var(--ink);
-	color: #fff;
+	color: var(--accent-contrast);
 	background: var(--ink);
 }
 
@@ -183,19 +175,19 @@ html:has(.project-edit-shell) {
 	min-height: 0;
 	flex-direction: column;
 	overflow: hidden;
-	border: 1px solid #d5d3cc;
+	border: 1px solid var(--canvas-border);
 	border-radius: 10px;
 	background: var(--canvas);
 	box-shadow: 0 8px 24px rgba(42, 40, 35, 0.06);
 }
 
 .goal-library-panel {
-	border-color: #d8d1c6 !important;
+	border-color: var(--goal-panel-border) !important;
 	background: var(--goal-panel) !important;
 }
 
 .hierarchy-panel {
-	border-color: #ccd6c9 !important;
+	border-color: var(--hierarchy-panel-border) !important;
 	background: var(--hierarchy-panel) !important;
 	box-shadow: 0 8px 24px rgba(45, 57, 43, 0.055) !important;
 }
@@ -209,7 +201,7 @@ html:has(.project-edit-shell) {
 	justify-content: space-between;
 	gap: 12px;
 	padding: 12px 16px;
-	border-bottom: 1px solid #dedbd4;
+	border-bottom: 1px solid var(--heading-line);
 }
 
 .panel-heading > div {
@@ -227,7 +219,7 @@ html:has(.project-edit-shell) {
 }
 
 .panel-eyebrow {
-	color: #77736b;
+	color: var(--eyebrow);
 	font-size: 9px;
 	font-weight: 800;
 	letter-spacing: 0.14em;
@@ -235,7 +227,7 @@ html:has(.project-edit-shell) {
 }
 
 .panel-status {
-	color: #8a877f;
+	color: var(--faint);
 	font-size: 9px;
 	white-space: nowrap;
 }
@@ -264,7 +256,7 @@ html:has(.project-edit-shell) {
 	padding: 0;
 	border: 1px solid transparent;
 	border-radius: 5px;
-	color: #777268;
+	color: var(--panel-action);
 	background: transparent;
 	cursor: pointer;
 	transition: color 130ms ease, background-color 130ms ease, border-color 130ms ease, transform 130ms ease;
@@ -272,9 +264,9 @@ html:has(.project-edit-shell) {
 
 .panel-action:hover,
 .panel-action:focus-visible {
-	border-color: #b9b5ac;
+	border-color: var(--line-strong);
 	color: var(--ink);
-	background: #fff;
+	background: var(--canvas);
 	outline: none;
 	transform: translateY(-1px);
 }
@@ -286,7 +278,7 @@ html:has(.project-edit-shell) {
 
 .panel-close:hover,
 .panel-close:focus-visible {
-	color: #98575b;
+	color: var(--danger-soft-text);
 }
 
 .canvas-panel-body {
@@ -318,12 +310,12 @@ html:has(.project-edit-shell) {
 	top: 0;
 	z-index: 2;
 	margin-bottom: 10px;
-	border-bottom-color: #d4ddd1;
-	background: rgba(238, 242, 235, 0.97);
+	border-bottom-color: var(--hierarchy-heading-line);
+	background: color-mix(in srgb, var(--hierarchy-panel) 97%, transparent);
 }
 
 .hierarchy-panel .panel-eyebrow {
-	color: #667260;
+	color: var(--hierarchy-eyebrow);
 }
 
 .hierarchy-panel .panel-action.active {
@@ -343,7 +335,7 @@ html:has(.project-edit-shell) {
 .section-panel .table {
 	--bs-table-bg: transparent;
 	--bs-table-striped-bg: transparent;
-	--bs-table-hover-bg: #f7f6f0;
+	--bs-table-hover-bg: var(--page-paper);
 	margin-bottom: 0;
 	font-size: 13px;
 }
@@ -354,7 +346,7 @@ html:has(.project-edit-shell) {
 }
 
 .section-panel .table thead th {
-	color: #6d6c66;
+	color: var(--page-muted);
 	font-size: 11px;
 	font-weight: 800;
 	letter-spacing: 0.08em;
@@ -362,37 +354,37 @@ html:has(.project-edit-shell) {
 }
 
 .section-panel .form-control {
-	border-color: #deddd6;
+	border-color: var(--page-line);
 	border-radius: 6px !important;
-	background: #faf9f5;
+	background: var(--control-bg);
 	font-size: 13px;
 }
 
 .section-panel .form-control.bg-secondary-subtle {
-	background: #f1efe9 !important;
+	background: var(--control-bg-subtle) !important;
 }
 
 .section-panel .form-check-input:checked {
-	border-color: #1d1d1a;
-	background-color: #1d1d1a;
+	border-color: var(--ink-strong);
+	background-color: var(--ink-strong);
 }
 
 .section-panel .form-control:focus {
-	border-color: #1d1d1a;
-	box-shadow: 0 0 0 3px rgba(29, 29, 26, 0.09);
+	border-color: var(--ink-strong);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink-strong) 9%, transparent);
 }
 
 .section-panel .btn-primary,
 .section-panel .btn-primary:hover,
 .section-panel .btn-primary:focus {
-	border-color: #1d1d1a;
-	background: #1d1d1a;
+	border-color: var(--ink-strong);
+	background: var(--ink-strong);
 	box-shadow: none;
 }
 
 .canvas-panel-body #graphContainer {
-	background-color: #fff;
-	background-image: radial-gradient(#deddd8 0.65px, transparent 0.65px);
+	background-color: var(--canvas);
+	background-image: radial-gradient(var(--dot) 0.65px, transparent 0.65px);
 	background-size: 20px 20px;
 }
 
@@ -402,7 +394,7 @@ html:has(.project-edit-shell) {
 
 .graph-tools-column {
 	padding: 12px !important;
-	background: #f7f6f2;
+	background: var(--tools-bg);
 }
 
 .graph-sidebar {
@@ -420,7 +412,7 @@ html:has(.project-edit-shell) {
 	overflow: hidden;
 	border: 1px solid #d9d7d0;
 	border-radius: 9px;
-	background: #fff;
+	background: var(--canvas);
 }
 
 .graph-tool-card {
@@ -457,12 +449,12 @@ html:has(.project-edit-shell) {
 	margin: 0 !important;
 	padding: 8px !important;
 	border-top: 1px solid #f0ede6;
-	background: #f7f6f2;
+	background: var(--tools-bg);
 }
 
 .graph-tool-content .btn-light {
 	border: 0;
-	color: #11110f;
+	color: var(--ink-deep);
 	background: transparent;
 }
 
@@ -479,6 +471,24 @@ html:has(.project-edit-shell) {
 .graph-sidebar-items img:hover {
 	opacity: 1;
 	transform: translateY(-1px);
+}
+
+/* Classic theme: restore the original header look (photo banner + shadow,
+   bold 35px wordmark) and the original's tinted panel background. */
+[data-theme='classic'] .projectEditHeader {
+	background-color: var(--surface) !important;
+	background-image: var(--header-bg-image) !important;
+	box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme='classic'] .projectEditHeader strong {
+	font-size: 35px !important;
+	font-weight: bold !important;
+	letter-spacing: normal;
+}
+
+[data-theme='classic'] .editor-canvas-panel {
+	background: var(--hierarchy-panel);
 }
 
 @media (prefers-reduced-motion: reduce) {

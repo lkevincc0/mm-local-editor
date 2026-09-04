@@ -4,6 +4,10 @@ import type {Graph} from "@maxgraph/core";
 // The math follows maxGraph's convention: screen = (model + translate) * scale,
 // so translate is expressed in model units.
 export const recentreView = (graphInstance: Graph) => {
+    // A destroyed graph (e.g. after a UI-mode switch) has no drawPane; any
+    // view mutation on it revalidates a dead view and crashes.
+    if (!graphInstance.view?.drawPane) return;
+
     const container = graphInstance.container;
     const bounds = graphInstance.getGraphBounds();
     if (!container || !bounds || bounds.width <= 0 || bounds.height <= 0) return;

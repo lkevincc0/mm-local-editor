@@ -6,6 +6,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 import ColorPicker from "./ColorPicker.tsx";
 import {useFileContext} from "../../context/FileProvider.tsx";
+import {useTheme} from "../../context/ThemeContext";
+import {themeTokens} from "../../utils/themeTokens";
 import {parseFuncGoalRefId, parseGoalRefId} from "../../utils/GraphUtils.tsx";
 import {updateColorForInstanceId} from "../../context/treeDataSlice.ts";
 
@@ -16,6 +18,8 @@ type ColorButtonsProps = {
 const ColorButtons = ({graph}: ColorButtonsProps) => {
     const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
     const {dispatch} = useFileContext();
+    const {theme} = useTheme();
+    const [dangerPreset, warningPreset, successPreset] = themeTokens[theme].colorButtons.presets;
     const setColor = (color: string) => {
         graph.getDataModel().beginUpdate();
         try {
@@ -41,15 +45,15 @@ const ColorButtons = ({graph}: ColorButtonsProps) => {
         <>
             <ButtonGroup vertical className="w-100">
                 <Button variant="danger"
-                        onClick={() => setColor("#DB3545")}>
+                        onClick={() => setColor(dangerPreset)}>
                     High
                 </Button>
                 <Button variant="warning"
-                        onClick={() => setColor("#FFC107")}>
+                        onClick={() => setColor(warningPreset)}>
                     Medium
                 </Button>
                 <Button variant="success"
-                        onClick={() => setColor("#198754")}>
+                        onClick={() => setColor(successPreset)}>
                     Low
                 </Button>
             </ButtonGroup>

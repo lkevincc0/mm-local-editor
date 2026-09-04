@@ -5,8 +5,8 @@
 	gap: 6px;
 	min-height: 44px;
 	padding: 5px 20px;
-	background: #fbfaf7;
-	border-bottom: 1px solid #d8d6cf;
+	background: var(--surface);
+	border-bottom: 1px solid var(--line);
 }
 
 .canvas-toolbar-pill {
@@ -22,12 +22,12 @@
 
 .canvas-toolbar-pill:hover {
     border-color: #a9a399;
-    color: #11110f;
+    color: var(--ink-deep);
 }
 
 .canvas-toolbar-pill.active {
-	background: #fff;
-	color: #1f1f1b;
+	background: var(--canvas);
+	color: var(--ink);
 	border-color: #aaa79f;
 	box-shadow: inset 0 -2px 0 #2b2a26;
 }
@@ -35,7 +35,7 @@
 .canvas-toolbar-sep {
     width: 1px;
     height: 20px;
-	background: #d8d6cf;
+	background: var(--line);
     margin: 0 6px;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .canvas-toolbar-help:hover {
-    color: #11110f;
+    color: var(--ink-deep);
 }
 
 /* The help popover lists instructions for every panel; cap its height and

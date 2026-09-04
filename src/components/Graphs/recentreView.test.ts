@@ -16,6 +16,7 @@ const makeGraph = (bounds: GraphBounds, clientWidth: number, clientHeight: numbe
             scale: 1,
             translate: {x: 0, y: 0},
             scaleAndTranslate,
+            drawPane: {},
         },
     };
     return {graph, scaleAndTranslate};
@@ -43,6 +44,14 @@ describe("recentreView", () => {
 
     it("does nothing when the container has no size yet", () => {
         const {graph, scaleAndTranslate} = makeGraph({x: 0, y: 0, width: 100, height: 100}, 0, 0);
+        recentreView(graph as never);
+
+        expect(scaleAndTranslate).not.toHaveBeenCalled();
+    });
+
+    it("does nothing on a destroyed graph (no drawPane)", () => {
+        const {graph, scaleAndTranslate} = makeGraph({x: 0, y: 0, width: 100, height: 100}, 1000, 700);
+        graph.view.drawPane = null as never;
         recentreView(graph as never);
 
         expect(scaleAndTranslate).not.toHaveBeenCalled();

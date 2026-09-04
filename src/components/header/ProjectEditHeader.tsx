@@ -11,6 +11,7 @@ import {isChrome, isEdge, isOpera} from "react-device-detect";
 import ResetGraphButton from "../Graphs/ResetGraphButton.tsx";
 
 import HomeButton from "./HomeButton.tsx";
+import SettingsMenu from "../SettingsMenu";
 import ShareModal from "../ShareModal";
 import {useProjectContext} from "../context/ProjectContext";
 
@@ -90,6 +91,7 @@ const ProjectEditHeader: React.FC<ProjectEditHeaderProps> = ({
                             </Button>
                         </ButtonGroup>
                         <HomeButton/>
+                        <SettingsMenu className="btn btn-outline-secondary d-inline-flex align-items-center"/>
                     </Col>
                 </Row>
             </Container>

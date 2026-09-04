@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles/themes.css";
 import "@maxgraph/core/css/common.css";
 import "react-nestable/dist/styles/index.css";
 
@@ -9,6 +10,7 @@ import "./index.css";
 import FileProvider from "./components/context/FileProvider.tsx";
 import ProjectProvider from "./components/context/ProjectProvider.tsx";
 import {ProfileProvider} from "./components/context/ProfileContext.tsx";
+import {ThemeProvider} from "./components/context/ThemeContext.tsx";
 import {enableMapSet} from "immer";
 
 enableMapSet();
@@ -18,7 +20,9 @@ ReactDOM.createRoot(rootContainer!).render(
     <ProfileProvider>
         <ProjectProvider>
             <FileProvider>
-                <App/>
+                <ThemeProvider>
+                    <App/>
+                </ThemeProvider>
             </FileProvider>
         </ProjectProvider>
     </ProfileProvider>

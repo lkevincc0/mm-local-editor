@@ -9,6 +9,7 @@ import {useProjectLauncher} from "./utils/useProjectLauncher";
 import ErrorModal, {ErrorModalProps} from "./ErrorModal";
 import ProjectCard from "./ProjectCard";
 import Profile from "./Profile";
+import SettingsMenu from "./SettingsMenu";
 import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
@@ -76,6 +77,7 @@ const Home: React.FC = () => {
                         <BsUpload/>
                         Import
                     </button>
+                    <SettingsMenu className={`${styles.btn} ${styles.btnOutline}`}/>
                     <Profile/>
                     <input
                         ref={fileInputRef}
