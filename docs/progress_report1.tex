@@ -1,126 +1,147 @@
-%!TEX program = pdflatex
-\documentclass[9pt]{article}
+\documentclass[10pt,a4paper]{article}
 
-\usepackage[a4paper,margin=1.7cm]{geometry}
+\usepackage[margin=1.8cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{newtxtext,newtxmath}
-\usepackage{microtype}
-\linespread{0.95}
-\usepackage{enumitem}
 \usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
 \usepackage{titlesec}
-\titlespacing*{\section}{0pt}{8pt}{3pt}
-\titlespacing*{\subsection}{0pt}{5pt}{2pt}
-\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
 
-\setlist[itemize]{topsep=0pt,itemsep=0pt,parsep=0pt,leftmargin=1.4em}
+\definecolor{accent}{HTML}{25213E}
+\definecolor{purple}{HTML}{6B51C9}
+\definecolor{muted}{HTML}{6D6C66}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+\setlist{nosep,leftmargin=1.4em}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.1em}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{0.95}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.15}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}COMP30022 IT Project --- Team Deepsick}
+\fancyhead[R]{\small\color{muted}Progress Report, Weeks 1--6}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---- Evidence hyperlinks ----
+\newcommand{\ghbase}{https://github.com/lkevincc0/mm-local-editor}
+\newcommand{\repo}{\href{\ghbase}{\nolinkurl{github.com/lkevincc0/mm-local-editor}}}
+\newcommand{\PR}[1]{\href{\ghbase/pull/#1}{\##1}}
+\newcommand{\jirabase}{https://student-team-zvzgb5e3.atlassian.net}
+\newcommand{\JIRA}[1]{\href{\jirabase/browse/KAN-#1}{KAN-#1}}
+\newcommand{\ghpath}[2]{\href{\ghbase/#1}{\texttt{#2}}}
+\newcommand{\wikibase}{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/}
+\newcommand{\wpage}[2]{\href{\wikibase#1}{#2}}
+\hypersetup{colorlinks=true, linkcolor=purple, urlcolor=purple}
 
 \begin{document}
 
+%==================== HEADER ====================
 \begin{center}
-  {\Large\bfseries AMMER - Motivational Modelling Local Editor\par}
-  \vspace{0.15em}
-  {\normalsize Progress Report - Weeks 1-6 (27 Jul - 6 Sep 2026)\par}
-  \vspace{0.1em}
-  {\small Team Deepsick \quad$\cdot$\quad Client: Leon Sterling \quad$\cdot$\quad Tutor: Kerr Yuan\par}
+{\LARGE\bfseries\color{accent} AMMBER - Motivational Modelling Local Editor}\\[2pt]
+{\normalsize Progress Report - Weeks 1-6 (27 Jul - 6 Sep 2026)}\\[2pt]
+{\small\color{muted} Team Deepsick \quad$\cdot$\quad Client: Leon Sterling \quad$\cdot$\quad Tutor: Kerr Yuan}
 \end{center}
-
-\smallskip
+\vspace{-4pt}
 
 {\small
-\begin{tabular}{@{}l p{3.2cm} p{8.8cm}@{}}
-  \toprule
-  \textbf{Member} & \textbf{GitHub} & \textbf{Role} \\
-  \midrule
-  Jinbao Liu & \href{https://github.com/lkevincc0}{lkevincc0} & Tech Lead / Full-stack Developer (architecture, CI/CD, integration, client liaison) \\
-  Zihan Xie & \href{https://github.com/photozity-a11y}{photozity-a11y} & Frontend Developer (canvas UI, image import/export, feedback integration) \\
-  Huimin Peng & \href{https://github.com/ViolaHM-14}{ViolaHM-14} & Frontend Developer (feedback panel, node binding, profile/replies) \\
-  Zecheng Huang & \href{https://github.com/ZechengHuang-unimelb}{ZechengHuang-unimelb} & QA / Test Lead / Developer (tests, bug triage, Jira and documentation records, sharing) \\
-  Yuhao Xu & \href{https://github.com/yuhaox5}{yuhaox5} & DevOps \& Tooling / Developer (CI/CD, dependencies and deployment tooling) \\
-  \bottomrule
-\end{tabular}}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Member} & \textbf{GitHub} & \textbf{Role}\\
+\midrule
+Jinbao Liu & \href{https://github.com/lkevincc0}{lkevincc0} & Tech Lead / Full-stack Developer (architecture, CI/CD, integration, client liaison)\\
+Zihan Xie & \href{https://github.com/photozity-a11y}{photozity-a11y} (zihxie1) & Frontend Developer (canvas UI, image import/export, feedback integration)\\
+Huimin Peng & \href{https://github.com/ViolaHM-14}{ViolaHM-14} & Frontend Developer (feedback panel, node binding, profile/replies)\\
+Zecheng Huang & \href{https://github.com/ZechengHuang-unimelb}{ZechengHuang-unimelb} & QA / Test Lead / Developer (tests, bug triage, Jira and documentation records, sharing)\\
+Yuhao Xu & \href{https://github.com/yuhaox5}{yuhaox5} & DevOps \& Tooling / Developer (CI/CD, dependencies and deployment tooling)\\
+\bottomrule
+\end{tabularx}
+}
 
+%==================== 1. PROJECT OVERVIEW ====================
 \section{Project Overview}
 
-AMMBER is a web-based motivational modelling tool used in teaching and research for roughly fifteen years. We are extending the existing React/TypeScript editor (fork: \href{https://github.com/lkevincc0/mm-local-editor}{github.com/lkevincc0/mm-local-editor}) so that lecturers and reviewers can give structured feedback on motivational models, and so that models can be shared as portable files. In Week 3, the client confirmed that neither a cloud service nor a shared database was required. The team therefore removed the backend from scope and adopted local browser storage.
+AMMBER is a web-based motivational modelling tool used in teaching and research for roughly fifteen years. We are extending the existing React/TypeScript editor (fork: \repo) so that lecturers and reviewers can give structured feedback on motivational models, and so that models can be shared as portable files. In Week 3, the client confirmed that neither a cloud service nor a shared database was required. The team therefore removed the backend from scope and adopted local browser storage.
 
 Delivered in Weeks 1--6 (implementation evidence below; the develop branch is continuously deployed to \href{https://lkevincc0.github.io/mm-local-editor/}{GitHub Pages}):
-
 \begin{itemize}
-  \item \textbf{Local project workspace} - create/open/rename/delete projects persisted in-browser, no server (PR \href{https://github.com/lkevincc0/mm-local-editor/pull/3}{\#3}).
-  \item \textbf{Unified editorial theme \& dockable canvas editor} - consistent visual identity; canvas fits and centres the model on load (PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/3}{\#3}, \href{https://github.com/lkevincc0/mm-local-editor/pull/4}{\#4}).
-  \item \textbf{Feedback feature end-to-end} - closable draw.io-style side panel, node-bound comments with click-to-locate, authoring, nested replies, editable profile header, generated avatars (PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/5}{\#5}, \href{https://github.com/lkevincc0/mm-local-editor/pull/6}{\#6}, \href{https://github.com/lkevincc0/mm-local-editor/pull/9}{\#9}, \href{https://github.com/lkevincc0/mm-local-editor/pull/11}{\#11}, \href{https://github.com/lkevincc0/mm-local-editor/pull/19}{\#19}).
-  \item \textbf{Image-only project import/export} - project JSON (name + feedback) embedded invisibly into exported PNG/SVG, so one image is a full portable backup (PR \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{\#7}); compact share links via deflate compression (PR \href{https://github.com/lkevincc0/mm-local-editor/pull/20}{\#20}).
-  \item \textbf{QR-code project sharing} - modernised share dialog inside the editor (PR \href{https://github.com/lkevincc0/mm-local-editor/pull/15}{\#15}).
-  \item \textbf{Deployment \& robustness} - adaptive router basename, GitHub Pages asset paths, deploy permissions (PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/2}{\#2}, \href{https://github.com/lkevincc0/mm-local-editor/pull/12}{\#12}, \href{https://github.com/lkevincc0/mm-local-editor/pull/13}{\#13}).
-  \item \textbf{Quality pipeline} -- 20 Vitest unit/component test files and one Cypress E2E specification, all run by GitHub Actions; four reported issues fixed with regression coverage (PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/14}{\#14}, \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{\#17}, \href{https://github.com/lkevincc0/mm-local-editor/pull/18}{\#18}, \href{https://github.com/lkevincc0/mm-local-editor/pull/23}{\#23}).
+  \item \textbf{Local project workspace} - create/open/rename/delete projects persisted in-browser, no server (PR \PR{3}).
+  \item \textbf{Unified editorial theme \& dockable canvas editor} - consistent visual identity; canvas fits and centres the model on load (PRs \PR{3}, \PR{4}).
+  \item \textbf{Feedback feature end-to-end} - closable draw.io-style side panel, node-bound comments with click-to-locate, authoring, nested replies, editable profile header, generated avatars (PRs \PR{5}, \PR{6}, \PR{9}, \PR{11}, \PR{19}).
+  \item \textbf{Image-only project import/export} - project JSON (name + feedback) embedded invisibly into exported PNG/SVG, so one image is a full portable backup (PR \PR{7}); compact share links via deflate compression (PR \PR{20}).
+  \item \textbf{QR-code project sharing} - modernised share dialog inside the editor (PR \PR{15}).
+  \item \textbf{Deployment \& robustness} - adaptive router basename, GitHub Pages asset paths, deploy permissions (PRs \PR{2}, \PR{12}, \PR{13}).
+  \item \textbf{Quality pipeline} -- 20 Vitest unit/component test files and one Cypress E2E specification, all run by GitHub Actions; four reported issues fixed with regression coverage (PRs \PR{14}, \PR{17}, \PR{18}, \PR{23}).
 \end{itemize}
 
+%==================== 2. PROCESS ====================
 \section{Process}
 
 \subsection{Agile Ceremonies}
-
-After an initial Sprint 0 for project setup, the team worked in two-week sprints. Dated sprint plans, weekly minutes, retrospectives and decisions are published in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458754}{Confluence evidence index}; Jira is the executable record, where stories, tasks and bugs carry owners, acceptance criteria and implementation evidence.
+After an initial Sprint 0 for project setup, the team worked in two-week sprints. Dated sprint plans, weekly minutes, retrospectives and decisions are published in the \wpage{458754}{Confluence evidence index}; Jira is the executable record, where stories, tasks and bugs carry owners, acceptance criteria and implementation evidence.
 
 \begin{itemize}
-  \item Weekly team meetings during Weeks 3--6, with attendance, agenda, outcomes and owned action items recorded in the minutes: \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458771}{W3}, \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557224}{W4}, \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557269}{W5} and \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557316}{W6}.
-  \item Direct ceremony records: \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/524291}{Sprint 1 planning}, \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557355}{Sprint 1 retrospective}, \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458808}{Sprint 2 planning} and \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458855}{Sprint 2 retrospective}. The Sprint 1 actions on PR size, role clarity and fresh-clone verification were adopted during Sprint 2.
-  \item Client consultation at least fortnightly; requests, resulting Jira work and implementation status are recorded in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/524330}{client-feedback log} (Section 2.3).
-  \item Sprints: S0 (W1--2) kick-off -- completed; S1 (W3--4) Git workflow and first vertical slice -- completed; S2 (W5--6) feedback, image portability and sharing -- current, with the overall-feedback/export change still under review in \href{https://github.com/lkevincc0/mm-local-editor/pull/27}{PR \#27}.
+  \item Weekly team meetings during Weeks 3--6, with attendance, agenda, outcomes and owned action items recorded in the minutes: \wpage{458771}{W3}, \wpage{557224}{W4}, \wpage{557269}{W5} and \wpage{557316}{W6}.
+  \item Direct ceremony records: \wpage{524291}{Sprint 1 planning}, \wpage{557355}{Sprint 1 retrospective}, \wpage{458808}{Sprint 2 planning} and \wpage{458855}{Sprint 2 retrospective}. The Sprint 1 actions on PR size, role clarity and fresh-clone verification were adopted during Sprint 2.
+  \item Client consultation at least fortnightly; requests, resulting Jira work and implementation status are recorded in the \wpage{524330}{client-feedback log} (Section 2.3).
+  \item Sprints: S0 (W1--2) kick-off -- completed; S1 (W3--4) Git workflow and first vertical slice -- completed; S2 (W5--6) feedback, image portability and sharing -- current, with the overall-feedback/export change still under review in PR \PR{27}.
 \end{itemize}
 
 \subsection{Decision Making, Meetings and Internal Communication}
+Major decisions are discussed by the team, with options, rationale and outcome recorded in the \wpage{557378}{decision log}. Seven decisions fall within Weeks 1--6. Their implemented outcomes are independently visible in Jira and GitHub: the local-only architecture (\JIRA{18}), closable feedback panel (\JIRA{12}), node-bound feedback (\JIRA{13}), and portable image data (\JIRA{15}).
 
-Major decisions are discussed by the team, with options, rationale and outcome recorded in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557378}{decision log}. Seven decisions fall within Weeks 1--6. Their implemented outcomes are independently visible in Jira and GitHub: the local-only architecture (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18}), closable feedback panel (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-12}{KAN-12}), node-bound feedback (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-13}{KAN-13}), and portable image data (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-15}{KAN-15}).
-
-Communication uses Slack for daily coordination, \href{https://github.com/lkevincc0/mm-local-editor/pulls?q=is:pr}{GitHub PR reviews} for technical discussion, and \href{https://student-team-zvzgb5e3.atlassian.net/jira/software/projects/KAN/boards/1}{Jira} for executable work records. Git history provides concrete co-authored collaboration evidence: \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{PR \#7} combines Zihan's image-metadata work with Jinbao's integration commit; the \href{https://github.com/lkevincc0/mm-local-editor/commit/054878f16a4fb59cdbfc4fe5028ce4c008b360e9}{PR \#13 deployment fix} credits Jinbao, Zecheng and Yuhao; \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{PR \#17} combines Yuhao's import fix with Jinbao's regression test; and \href{https://github.com/lkevincc0/mm-local-editor/pull/23}{PR \#23} combines Zecheng's implementation/tests with Yuhao co-credit. These records support co-authored collaboration and cross-review, not a claim of continuous pair programming.
+Communication uses Slack for daily coordination, \href{\ghbase/pulls?q=is:pr}{GitHub PR reviews} for technical discussion, and \href{\jirabase/jira/software/projects/KAN/boards/1}{Jira} for executable work records. Git history provides concrete co-authored collaboration evidence: PR \PR{7} combines Zihan's image-metadata work with Jinbao's integration commit; the \href{https://github.com/lkevincc0/mm-local-editor/commit/054878f16a4fb59cdbfc4fe5028ce4c008b360e9}{PR \#13 deployment fix} credits Jinbao, Zecheng and Yuhao; PR \PR{17} combines Yuhao's import fix with Jinbao's regression test; and PR \PR{23} combines Zecheng's implementation/tests with Yuhao co-credit. These records support co-authored collaboration and cross-review, not a claim of continuous pair programming.
 
 \subsection{Communication with the Client}
-
 {\small
-\begin{tabular}{@{}c p{4.4cm} p{6.8cm} l@{}}
-  \toprule
-  \textbf{Week} & \textbf{Client feedback} & \textbf{Impact} & \textbf{Status} \\
-  \midrule
-  W3 & No cloud service or shared database required & Backend removed from scope; local browser storage prioritised; QA/testing and DevOps/tooling responsibilities expanded & Actioned (S1) \\
-  W4 & Prioritise feedback workflow over extra export formats & Feedback moved to top of S2 backlog & Actioned (S2) \\
-  W5 & Persistence, identity, sharing and feedback export & Jira tasks; PRs \#17/\#19/\#20/\#23 merged; \#27 open & Partly actioned \\
-  W6 & S2 demo accepted; packaged deployment and user documentation requested & Deployment and documentation work recorded in the backlog & Recorded \\
-  \bottomrule
-\end{tabular}}
+\begin{tabularx}{\textwidth}{@{}l X X l@{}}
+\toprule
+\textbf{Week} & \textbf{Client feedback} & \textbf{Impact} & \textbf{Status}\\
+\midrule
+W3 & No cloud service or shared database required & Backend removed from scope; local browser storage prioritised; QA/testing and DevOps/tooling responsibilities expanded & Actioned (S1)\\
+W4 & Prioritise feedback workflow over extra export formats & Feedback moved to top of S2 backlog & Actioned (S2)\\
+W5 & Persistence, identity, sharing and feedback export & Jira tasks; PRs \#17/\#19/\#20/\#23 merged; \#27 open & Partly actioned\\
+W6 & S2 demo accepted; packaged deployment and user documentation requested & Deployment and documentation work recorded in the backlog & Recorded\\
+\bottomrule
+\end{tabularx}
+}
 
+%==================== 3. ARTEFACTS ====================
 \section{Artefacts}
 
 \subsection{Requirements}
-
-Requirements are recorded as Jira user stories with acceptance criteria and implementation evidence. The reviewer workflow is traceable from requirement to code: a closable canvas feedback panel (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-12}{KAN-12} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/5}{PR \#5} and \href{https://github.com/lkevincc0/mm-local-editor/pull/6}{PR \#6}), node-bound comments with click-to-locate (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-13}{KAN-13} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/6}{PR \#6}), and authoring, replies and profiles (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-14}{KAN-14} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/9}{PR \#9} and \href{https://github.com/lkevincc0/mm-local-editor/pull/11}{PR \#11}). Portable feedback is specified in \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-15}{KAN-15}--\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-16}{KAN-16} and implemented in \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{PR \#7}; the feedback-restoration bug is tracked in \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-21}{KAN-21} and fixed with regression coverage in \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{PR \#17}. The local-only constraint is recorded in \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18}.
+Requirements are recorded as Jira user stories with acceptance criteria and implementation evidence. The reviewer workflow is traceable from requirement to code: a closable canvas feedback panel (\JIRA{12} $\rightarrow$ PR \PR{5} and PR \PR{6}), node-bound comments with click-to-locate (\JIRA{13} $\rightarrow$ PR \PR{6}), and authoring, replies and profiles (\JIRA{14} $\rightarrow$ PR \PR{9} and PR \PR{11}). Portable feedback is specified in \JIRA{15}--\JIRA{16} and implemented in PR \PR{7}; the feedback-restoration bug is tracked in \JIRA{21} and fixed with regression coverage in PR \PR{17}. The local-only constraint is recorded in \JIRA{18}.
 
 \subsection{Frontend and Architectural Design}
+The interface uses a warm, minimal editorial theme (warm paper \texttt{\#f7f6f0}, deep purple \texttt{\#25213e} and accent \texttt{\#6b51c9}). The feedback interface is a closable side panel so reviewers remain on the canvas; selecting a comment locates its model element. The dockable canvas workspace was introduced in PR \PR{3}, the feedback panel and node binding in PRs \PR{5} and \PR{6}, and image-based project portability in PR \PR{7}.
 
-The interface uses a warm, minimal editorial theme (warm paper \#f7f6f0, deep purple \#25213e and accent \#6b51c9). The feedback interface is a closable side panel so reviewers remain on the canvas; selecting a comment locates its model element. The dockable canvas workspace was introduced in \href{https://github.com/lkevincc0/mm-local-editor/pull/3}{PR \#3}, the feedback panel and node binding in PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/5}{\#5} and \href{https://github.com/lkevincc0/mm-local-editor/pull/6}{\#6}, and image-based project portability in \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{PR \#7}.
-
-The application follows the local-first decision recorded in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557378}{decision log} and \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18}. It is a React 18/TypeScript/Vite single-page application: maxGraph provides the canvas, Redux Toolkit manages model state, and the \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/context/ProjectProvider.tsx}{project provider} coordinates project data and feedback persistence. React Router uses an \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/utils/basename.ts}{adaptive basename} so the same build works locally and under the GitHub Pages sub-path. Project data, feedback and profile settings remain in browser storage, while \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/utils/imageMetadata.ts}{image metadata utilities} embed portable project data in PNG/SVG files. No backend or shared database is required.
+The application follows the local-first decision recorded in the \wpage{557378}{decision log} and \JIRA{18}. It is a React 18/TypeScript/Vite single-page application: maxGraph provides the canvas, Redux Toolkit manages model state, and the \href{\ghbase/blob/develop/src/components/context/ProjectProvider.tsx}{project provider} coordinates project data and feedback persistence. React Router uses an \href{\ghbase/blob/develop/src/components/utils/basename.ts}{adaptive basename} so the same build works locally and under the GitHub Pages sub-path. Project data, feedback and profile settings remain in browser storage, while \href{\ghbase/blob/develop/src/components/utils/imageMetadata.ts}{image metadata utilities} embed portable project data in PNG/SVG files. No backend or shared database is required.
 
 \subsection{Coding, Testing, Deployment and Repository}
-
 \begin{itemize}
-  \item \textbf{Coding:} Repository conventions introduced in \href{https://github.com/lkevincc0/mm-local-editor/pull/1}{PR \#1} document TypeScript/React naming, tests, branch names and PR expectations (\href{https://github.com/lkevincc0/mm-local-editor/blob/develop/AGENTS.md}{AGENTS.md}). ESLint is configured with a zero-warning policy. After the workflow was established, feature and bug-fix changes were submitted through pull requests and reviewed before merging (\href{https://github.com/lkevincc0/mm-local-editor/pulls?q=is\%3Apr+is\%3Amerged}{merged PR record}).
-  \item \textbf{Testing:} The repository contains \href{https://github.com/lkevincc0/mm-local-editor/tree/develop/src}{20 Vitest unit/component test files} co-located with source code and \href{https://github.com/lkevincc0/mm-local-editor/tree/develop/cypress}{one Cypress E2E specification}; both suites run in \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/.github/workflows/ci-cd.yml}{GitHub Actions}. Regression tests cover project rename (\href{https://github.com/lkevincc0/mm-local-editor/pull/14}{\#14}), feedback import/persistence (\href{https://github.com/lkevincc0/mm-local-editor/pull/17}{\#17}), Do3 task handling (\href{https://github.com/lkevincc0/mm-local-editor/pull/18}{\#18}), and node redraw/feedback preservation (\href{https://github.com/lkevincc0/mm-local-editor/pull/23}{\#23}). Zecheng maintains the QA test plan and Jira bug records as coverage changes.
-  \item \textbf{Deployment:} Pushes to develop run the CI workflow; successful builds are published by the CD job to \href{https://lkevincc0.github.io/mm-local-editor/}{GitHub Pages}. The deployment workflow is visible in \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/.github/workflows/ci-cd.yml}{ci-cd.yml}, and routing/asset fixes are evidenced by PRs \href{https://github.com/lkevincc0/mm-local-editor/pull/2}{\#2}, \href{https://github.com/lkevincc0/mm-local-editor/pull/12}{\#12} and \href{https://github.com/lkevincc0/mm-local-editor/pull/13}{\#13}.
-  \item \textbf{Repository:} A GitFlow-lite model is documented in \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/AGENTS.md}{AGENTS.md}. \href{https://github.com/lkevincc0/mm-local-editor/pulls?q=is\%3Apr+is\%3Amerged}{Twenty pull requests} had been merged during the reporting period as of 4 Sep. Repository maintenance included removing an unintended submodule entry (\href{https://github.com/lkevincc0/mm-local-editor/pull/8}{PR \#8}), updating lockfiles and retaining an environment template.
+  \item \textbf{Coding:} Repository conventions introduced in PR \PR{1} document TypeScript/React naming, tests, branch names and PR expectations (\ghpath{blob/develop/AGENTS.md}{AGENTS.md}). ESLint is configured with a zero-warning policy. After the workflow was established, feature and bug-fix changes were submitted through pull requests and reviewed before merging (\href{\ghbase/pulls?q=is\%3Apr+is\%3Amerged}{merged PR record}).
+  \item \textbf{Testing:} The repository contains \href{\ghbase/tree/develop/src}{20 Vitest unit/component test files} co-located with source code and \href{\ghbase/tree/develop/cypress}{one Cypress E2E specification}; both suites run in \href{\ghbase/blob/develop/.github/workflows/ci-cd.yml}{GitHub Actions}. Regression tests cover project rename (\PR{14}), feedback import/persistence (\PR{17}), Do3 task handling (\PR{18}), and node redraw/feedback preservation (\PR{23}). Zecheng maintains the QA test plan and Jira bug records as coverage changes.
+  \item \textbf{Deployment:} Pushes to develop run the CI workflow; successful builds are published by the CD job to \href{https://lkevincc0.github.io/mm-local-editor/}{GitHub Pages}. The deployment workflow is visible in \ghpath{blob/develop/.github/workflows/ci-cd.yml}{ci-cd.yml}, and routing/asset fixes are evidenced by PRs \PR{2}, \PR{12} and \PR{13}. The project can also be launched locally via Docker Compose.
+  \item \textbf{Repository:} A GitFlow-lite model is documented in \ghpath{blob/develop/AGENTS.md}{AGENTS.md}. \href{\ghbase/pulls?q=is\%3Apr+is\%3Amerged}{Twenty pull requests} had been merged during the reporting period as of 4 Sep. Repository maintenance included removing an unintended submodule entry (PR \PR{8}), updating lockfiles and retaining an environment template.
 \end{itemize}
 
+%==================== 4. MAINTENANCE & FEEDBACK ====================
 \section{Maintenance of Artefacts and Response to Feedback}
 
-The dated sprint plans, weekly minutes, retrospectives and decisions were maintained in the team agile workbook and are now published and indexed in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458754}{Confluence evidence index}. Jira maintains the corresponding requirements, tasks and bugs; Zecheng maintains the Jira and documentation records while issue owners update their assigned work. The Week 3 local-only change is traceable to \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18}, and feedback requirements are linked to implementation evidence (\href{https://student-team-zvzgb5e3.atlassian.net/issues/?jql=key\%20in\%20\%28KAN-12\%2CKAN-13\%2CKAN-14\%2CKAN-15\%2CKAN-16\%2CKAN-18\%2CKAN-21\%2CKAN-34\%29\%20ORDER\%20BY\%20key\%20ASC}{feedback/local requirement set}). The team checks Jira items against the \href{https://github.com/lkevincc0/mm-local-editor/commits/develop}{commit history} and \href{https://github.com/lkevincc0/mm-local-editor/pulls?q=is\%3Apr+is\%3Amerged}{merged PR record}; bug tickets link to the corresponding fixes.
+The dated sprint plans, weekly minutes, retrospectives and decisions were maintained in the team agile workbook and are now published and indexed in the \wpage{458754}{Confluence evidence index}. Jira maintains the corresponding requirements, tasks and bugs; Zecheng maintains the Jira and documentation records while issue owners update their assigned work. The Week 3 local-only change is traceable to \JIRA{18}, and feedback requirements are linked to implementation evidence (\href{\jirabase/issues/?jql=key\%20in\%20\%28KAN-12\%2CKAN-13\%2CKAN-14\%2CKAN-15\%2CKAN-16\%2CKAN-18\%2CKAN-21\%2CKAN-34\%29\%20ORDER\%20BY\%20key\%20ASC}{feedback/local requirement set}). The team checks Jira items against the \href{\ghbase/commits/develop}{commit history} and \href{\ghbase/pulls?q=is\%3Apr+is\%3Amerged}{merged PR record}; bug tickets link to the corresponding fixes.
 
-The \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557269}{26 Aug feedback review} was translated into specific Jira work rather than left as narrative notes: feedback restoration (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-21}{KAN-21} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{PR \#17}), the assigned UI/status correction (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-23}{KAN-23} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/18}{PR \#18}), editable commenter identity (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-34}{KAN-34} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/19}{PR \#19}), compact sharing (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-35}{KAN-35} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/20}{PR \#20}), and redraw preservation (\href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-37}{KAN-37} $\rightarrow$ \href{https://github.com/lkevincc0/mm-local-editor/pull/23}{PR \#23}). The remaining overall-feedback/export request is tracked in \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-33}{KAN-33} and implemented in \href{https://github.com/lkevincc0/mm-local-editor/pull/27}{PR \#27}, which is still open and is not counted as delivered. The complete status chain is summarised in the \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/524330}{client-feedback log}.
+The \wpage{557269}{26 Aug feedback review} was translated into specific Jira work rather than left as narrative notes: feedback restoration (\JIRA{21} $\rightarrow$ PR \PR{17}), the assigned UI/status correction (\JIRA{23} $\rightarrow$ PR \PR{18}), editable commenter identity (\JIRA{34} $\rightarrow$ PR \PR{19}), compact sharing (\JIRA{35} $\rightarrow$ PR \PR{20}), and redraw preservation (\JIRA{37} $\rightarrow$ PR \PR{23}). The remaining overall-feedback/export request is tracked in \JIRA{33} and implemented in PR \PR{27}, which is still open and is not counted as delivered. The complete status chain is summarised in the \wpage{524330}{client-feedback log}.
 
-Special circumstances: the Week 3 local-only clarification removed backend work and shifted responsibilities toward QA/testing and DevOps/tooling; an unintended gitlink that prevented reliable fresh clones was removed in \href{https://github.com/lkevincc0/mm-local-editor/pull/8}{PR \#8}; Sprint 2 follow-up work was distributed across all five members, with the overall-feedback/export change still under review in PR \#27.
+Special circumstances: the Week 3 local-only clarification removed backend work and shifted responsibilities toward QA/testing and DevOps/tooling; an unintended gitlink that prevented reliable fresh clones was removed in PR \PR{8}; Sprint 2 follow-up work was distributed across all five members, with the overall-feedback/export change still under review in PR \#27.
 
 \end{document}

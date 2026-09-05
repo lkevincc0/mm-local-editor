@@ -1,127 +1,86 @@
-%!TEX program = pdflatex
-\documentclass[11pt]{article}
+\documentclass[10pt,a4paper]{article}
 
-\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage[margin=1.8cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{newtxtext,newtxmath}
-\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
 \usepackage{enumitem}
-\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
 
-\setlist[itemize]{topsep=2pt,itemsep=1pt,parsep=0pt,leftmargin=1.4em}
+\definecolor{accent}{HTML}{25213E}
+\definecolor{purple}{HTML}{6B51C9}
+\definecolor{muted}{HTML}{6D6C66}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+\setlist{nosep,leftmargin=1.4em}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.45em}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.15}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}COMP30022 IT Project --- Team Deepsick}
+\fancyhead[R]{\small\color{muted}Progress Checklist, Weeks 1--6}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---- Evidence hyperlinks ----
+\newcommand{\ghbase}{https://github.com/lkevincc0/mm-local-editor}
+\newcommand{\PR}[1]{\href{\ghbase/pull/#1}{\##1}}
+\newcommand{\jirabase}{https://student-team-zvzgb5e3.atlassian.net}
+\newcommand{\JIRA}[1]{\href{\jirabase/browse/KAN-#1}{KAN-#1}}
+\newcommand{\wikibase}{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/}
+\newcommand{\wpage}[2]{\href{\wikibase#1}{#2}}
+\hypersetup{colorlinks=true, linkcolor=purple, urlcolor=purple}
 
 \begin{document}
 
+%==================== HEADER ====================
 \begin{center}
-  {\LARGE\bfseries COMP30022 Progress Checklist\par}
-  \vspace{0.5em}
-  \textbf{Team:} Team Deepsick -- AMMBER / MM Local Editor
-
-  \textbf{Reporting period:} Weeks 1--6 (27 Jul--6 Sep 2026)
+{\LARGE\bfseries\color{accent} COMP30022 Progress Checklist}\\[3pt]
+{\normalsize \textbf{Team:} Team Deepsick -- AMMBER / MM Local Editor}\\[1pt]
+{\normalsize \textbf{Reporting period:} Weeks 1--6 (27 Jul--6 Sep 2026)}
 \end{center}
 
-\medskip
+%==================== PROCESS ====================
+{\large\bfseries\color{accent} Process}\par\vspace{-2pt}
+{\small\color{muted} Please give a link to where the information is visible for each item.}\par
 
-\section*{Process}
-Please give a link to where the information is visible for each item.
+\textbf{\color{accent}Adherence to agile ceremonies:} \wpage{524291}{S1 plan} | \wpage{557355}{S1 retro} | \wpage{458808}{S2 plan} | \wpage{458855}{S2 retro}
 
-\subsection*{Adherence to agile ceremonies}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/524291}{S1 plan}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557355}{S1 retro}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458808}{S2 plan}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458855}{S2 retro}
-\end{itemize}
+\textbf{\color{accent}Team structure:} \href{\jirabase/issues/?jql=key\%20in\%20\%28KAN-24\%2CKAN-25\%2CKAN-26\%2CKAN-27\%2CKAN-28\%2CKAN-29\%2CKAN-30\%2CKAN-31\%2CKAN-32\%2CKAN-33\%2CKAN-34\%2CKAN-35\%2CKAN-36\%2CKAN-37\%29\%20ORDER\%20BY\%20key\%20ASC}{Assigned W3--W6 tasks} | \href{\ghbase/graphs/contributors}{GitHub contributors}
 
-\subsection*{Team structure}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/issues/?jql=key\%20in\%20\%28KAN-24\%2CKAN-25\%2CKAN-26\%2CKAN-27\%2CKAN-28\%2CKAN-29\%2CKAN-30\%2CKAN-31\%2CKAN-32\%2CKAN-33\%2CKAN-34\%2CKAN-35\%2CKAN-36\%2CKAN-37\%29\%20ORDER\%20BY\%20key\%20ASC}{Assigned W3--W6 tasks}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/graphs/contributors}{GitHub contributors}
-\end{itemize}
+\textbf{\color{accent}Team internal communication:} \wpage{458771}{W3} | \wpage{557224}{W4} | \wpage{557269}{W5} | \wpage{557316}{W6 minutes} | PR \PR{7} co-author | PR \PR{17} multi-author
 
-\subsection*{Team internal communication}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458771}{W3}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557224}{W4}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557269}{W5}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557316}{W6 minutes}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{PR \#7 co-author}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{PR \#17 multi-author}
-\end{itemize}
+\textbf{\color{accent}Team decision making:} \wpage{557378}{Decision log} | \JIRA{18} outcome | \JIRA{12} outcome
 
-\subsection*{Team decision making}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557378}{Decision log}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18 outcome}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-12}{KAN-12 outcome}
-\end{itemize}
+\textbf{\color{accent}Communication with client:} \wpage{557269}{26 Aug record} | \wpage{524330}{Client-feedback log} | PR \PR{17} | \PR{19} | \PR{27} open
 
-\subsection*{Communication with client}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557269}{26 Aug record}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/524330}{Client-feedback log}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{PR \#17}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/19}{\#19}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/27}{\#27 open}
-\end{itemize}
+\textbf{\color{accent}Tools used:} \href{\ghbase}{GitHub repository} | \href{\jirabase/jira/software/projects/KAN/boards/1}{Jira} | \wpage{458754}{Confluence evidence} | \href{\ghbase/actions}{GitHub Actions}
 
-\subsection*{Tools used}
-\begin{itemize}
-  \item \href{https://github.com/lkevincc0/mm-local-editor}{GitHub repository}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/jira/software/projects/KAN/boards/1}{Jira}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/458754}{Confluence evidence}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/actions}{GitHub Actions}
-\end{itemize}
+%==================== ARTEFACTS ====================
+{\large\bfseries\color{accent} Artefacts}\par\vspace{-2pt}
+{\small\color{muted} Please give a link to where the information is visible for each item.}\par
 
-\section*{Artefacts}
-Please give a link to where the information is visible for each item.
+\textbf{\color{accent}Requirements:} \href{\jirabase/issues/?jql=key\%20in\%20\%28KAN-12\%2CKAN-13\%2CKAN-14\%2CKAN-15\%2CKAN-16\%2CKAN-18\%2CKAN-21\%2CKAN-34\%29\%20ORDER\%20BY\%20key\%20ASC}{Feedback/local Jira stories} | PR \PR{5} | \PR{6} | \PR{7} | \PR{17}
 
-\subsection*{Requirements}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/issues/?jql=key\%20in\%20\%28KAN-12\%2CKAN-13\%2CKAN-14\%2CKAN-15\%2CKAN-16\%2CKAN-18\%2CKAN-21\%2CKAN-34\%29\%20ORDER\%20BY\%20key\%20ASC}{Feedback/local Jira stories}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/5}{PR \#5}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/6}{\#6}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/7}{\#7}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/17}{\#17}
-\end{itemize}
+\textbf{\color{accent}Front-end Design:} \href{https://lkevincc0.github.io/mm-local-editor/}{Live interface} | Canvas PR \PR{3} | Feedback PR \PR{5}
 
-\subsection*{Front-end Design}
-\begin{itemize}
-  \item \href{https://lkevincc0.github.io/mm-local-editor/}{Live interface}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/3}{Canvas PR \#3}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pull/5}{Feedback PR \#5}
-\end{itemize}
+\textbf{\color{accent}Architectural Design:} \wpage{557378}{Architecture decision} | \JIRA{18} | \href{\ghbase/blob/develop/src/components/context/ProjectProvider.tsx}{Project provider} | \href{\ghbase/blob/develop/src/components/utils/imageMetadata.ts}{Image metadata} | \href{\ghbase/blob/develop/src/components/utils/basename.ts}{Routing}
 
-\subsection*{Architectural Design}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/wiki/spaces/~7120206e0163ea5d37428b992775145124d7e8/pages/557378}{Architecture decision}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-18}{KAN-18}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/context/ProjectProvider.tsx}{Project provider}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/utils/imageMetadata.ts}{Image metadata}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/src/components/utils/basename.ts}{Routing}
-\end{itemize}
+\textbf{\color{accent}Coding:} \href{\ghbase/blob/develop/AGENTS.md}{Repository conventions} | \href{\ghbase/pulls?q=is\%3Apr+is\%3Amerged}{Merged PRs}
 
-\subsection*{Coding}
-\begin{itemize}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/AGENTS.md}{Repository conventions}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/pulls?q=is\%3Apr+is\%3Amerged}{Merged PRs}
-\end{itemize}
+\textbf{\color{accent}Testing:} Test-plan task \JIRA{27} | \href{\ghbase/tree/develop/src}{Vitest files} | \href{\ghbase/tree/develop/cypress}{Cypress E2E} | \href{\ghbase/blob/develop/.github/workflows/ci-cd.yml}{CI workflow}
 
-\subsection*{Testing}
-\begin{itemize}
-  \item \href{https://student-team-zvzgb5e3.atlassian.net/browse/KAN-27}{Test-plan task KAN-27}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/tree/develop/src}{Vitest files}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/tree/develop/cypress}{Cypress E2E}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/.github/workflows/ci-cd.yml}{CI workflow}
-\end{itemize}
-
-\subsection*{Deployment}
-\begin{itemize}
-  \item \href{https://lkevincc0.github.io/mm-local-editor/}{Live deployment}
-  \item \href{https://github.com/lkevincc0/mm-local-editor/blob/develop/.github/workflows/ci-cd.yml}{CI/CD workflow}
-\end{itemize}
+\textbf{\color{accent}Deployment:} \href{https://lkevincc0.github.io/mm-local-editor/}{Live deployment} | \href{\ghbase/blob/develop/.github/workflows/ci-cd.yml}{CI/CD workflow}
 
 \end{document}
