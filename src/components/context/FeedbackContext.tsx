@@ -51,6 +51,18 @@ type FeedbackContextType = {
     feedbackId: string,
     content: string
   ) => void;
+
+  /**
+   * Replaces all feedback (and overall feedback) for the current project.
+   * Used by "Reset" so that resetting to the empty graph clears feedback
+   * too, and resetting to the default graph seeds it with the matching
+   * template feedback, instead of leaving stale feedback from the
+   * previous graph behind.
+   */
+  resetFeedbacks: (
+    feedbacks?: Feedback[],
+    overallFeedback?: OverallFeedback
+  ) => void;
 };
 
 const FeedbackContext =
@@ -269,6 +281,14 @@ export const FeedbackProvider: React.FC<
     );
   };
 
+  const resetFeedbacks = (
+    feedbacks: Feedback[] = [],
+    overallFeedback?: OverallFeedback
+  ) => {
+    setFeedbacks(feedbacks);
+    setOverallFeedbackState(overallFeedback);
+  };
+
   const value = {
     feedbacks,
     overallFeedback,
@@ -279,7 +299,8 @@ export const FeedbackProvider: React.FC<
     addFeedback,
     updateFeedbackStatus,
     deleteFeedback,
-    addReply
+    addReply,
+    resetFeedbacks
   };
 
   return (
