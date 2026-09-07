@@ -111,7 +111,7 @@ const ShareExportSection: React.FC<ShareExportSectionProps> = ({
                     <span className={styles.toggleThumb}/>
                 </span>
                 <span className={styles.toggleLabel}>
-                    Include overall feedback in PNG
+                    Include overall feedback?
                     {!overallFeedback?.content.trim() && (
                         <span className={styles.toggleHint}>
                             Add it in the Feedback panel first
