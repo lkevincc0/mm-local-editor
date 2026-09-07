@@ -15,6 +15,22 @@ import {
 
 const PNG_EXPORT_SCALE = 3;
 
+type ExportExtension = "png" | "svg";
+
+export const getExportFileName = (
+    projectName: string | undefined,
+    extension: ExportExtension
+): string => {
+    const name = (projectName ?? "")
+        .trim()
+        .replace(/[<>:"/\\|?*]/g, "_")
+        .replace(/[. ]+$/, "")
+        .replace(/\.(png|svg)$/i, "")
+        .replace(/[. ]+$/, "");
+
+    return `${name || "Graph"}.${extension}`;
+};
+
 // Project metadata embedded into exported images so they can be re-imported.
 export type EmbeddedProjectData = {
     name?: string;
@@ -165,7 +181,7 @@ export const exportGraphAsSVG = async (
     try {
         await saveBlob(
             new Blob([finalSvg], {type: "image/svg+xml;charset=utf-8"}),
-            "Graph.svg",
+            getExportFileName(projectData.name, "svg"),
             "SVG Image",
             {"image/svg+xml": [".svg"]}
         );
@@ -287,7 +303,7 @@ export const exportGraphAsPNG = async (
         if (blob) {
             try {
                 const finalBlob = await embedJsonInPng(blob, options.projectData);
-                await saveBlob(finalBlob, "Graph.png", "PNG Image", {
+                await saveBlob(finalBlob, getExportFileName(options.projectData.name, "png"), "PNG Image", {
                     "image/png": [".png"]
                 });
             } catch (error) {
