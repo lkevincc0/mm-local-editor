@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import {BsThreeDots} from "react-icons/bs";
 import ConfirmModal from "./ConfirmModal";
+import ShareModal from "./ShareModal";
 import {Project, cardAccentColor, countGoals, formatRelativeTime} from "./utils/projects";
 import styles from "./Home.module.css";
 
@@ -17,6 +18,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({project, index, onOpen, onRena
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(project.name);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
 
     const startRename = () => {
         setTimeout(() => {
@@ -47,6 +49,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({project, index, onOpen, onRena
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     <Dropdown.Item onClick={startRename}>Rename</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setShowShareModal(true)}>Share</Dropdown.Item>
                     <Dropdown.Item onClick={() => setConfirmDelete(true)} className="text-danger">
                         Delete
                     </Dropdown.Item>
@@ -99,6 +102,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({project, index, onOpen, onRena
                     setConfirmDelete(false);
                     onDelete();
                 }}
+            />
+
+            <ShareModal
+                show={showShareModal}
+                project={project}
+                showGraphSection={false}
+                // The projects list never has an editor (and its
+                // GraphProvider/FeedbackProvider) mounted, so this project's
+                // graph can never be exported from here even if it happens to
+                // be the last-opened one.
+                isOpenProject={false}
+                onRenameProject={onRename}
+                onHide={() => setShowShareModal(false)}
             />
         </div>
     );
