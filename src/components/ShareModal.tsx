@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
 import Modal from "react-bootstrap/Modal";
-import {BsCheck, BsPeople, BsQrCode, BsX} from "react-icons/bs";
+import {BsCheck, BsFiletypePng, BsFiletypeSvg, BsPeople, BsQrCode, BsX} from "react-icons/bs";
 import {QRCodeSVG} from "qrcode.react";
 
 import type {Project} from "./utils/projects";
@@ -18,11 +18,25 @@ type ShareModalProps = {
     showGraphSection: boolean;
     onRenameProject?: (name: string) => void;
     onHide: () => void;
+    // The export-to-image section renders from the graph currently loaded in
+    // the project editor (via GraphContext/FileContext/FeedbackContext), so
+    // it can only actually export when `project` is the one open in the
+    // editor. Callers sharing a project that isn't open (eg. a card on the
+    // projects list) should pass `false` so Export is shown but disabled,
+    // instead of silently exporting the wrong project's graph.
+    isOpenProject?: boolean;
 };
 
 type CopyStatus = "idle" | "copied" | "error";
 
-const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection, onRenameProject, onHide}) => {
+const ShareModal: React.FC<ShareModalProps> = ({
+    show,
+    project,
+    showGraphSection,
+    onRenameProject,
+    onHide,
+    isOpenProject = true,
+}) => {
     const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
 
     const shareUrl = useMemo(() => createProjectShareUrl(project), [project]);
@@ -156,7 +170,34 @@ const ShareModal: React.FC<ShareModalProps> = ({show, project, showGraphSection,
             </Modal.Body>
 
             <Modal.Footer className={styles.footer}>
-                <ShareExportSection showGraphSection={showGraphSection}/>
+                {isOpenProject ? (
+                    <ShareExportSection showGraphSection={showGraphSection}/>
+                ) : (
+                    <div className={styles.exportSection}>
+                        <div className={styles.exportHeader}>
+                            <div>
+                                <div className={styles.exportTitle}>Export</div>
+                                <div className={styles.exportDescription}>
+                                    Open this project to export it as an image.
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.exportButtons}>
+                            <span className={styles.exportButtonWrap}>
+                                <button type="button" className={styles.exportButton} disabled>
+                                    <BsFiletypePng/>
+                                    PNG
+                                </button>
+                            </span>
+                            <span className={styles.exportButtonWrap}>
+                                <button type="button" className={styles.exportButton} disabled>
+                                    <BsFiletypeSvg/>
+                                    SVG
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                )}
             </Modal.Footer>
         </Modal>
     );

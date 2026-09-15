@@ -76,6 +76,28 @@ describe("Home", () => {
         await waitFor(() => expect(storedProjects()[0].name).toBe("Renamed"));
     });
 
+    it("opens the share dialog from the card menu with a disabled export section", async () => {
+        localStorage.setItem("ammber/projects", JSON.stringify([sampleProject]));
+        renderHome();
+        fireEvent.click(screen.getByLabelText("Options for My Model"));
+        fireEvent.click(screen.getByText("Share"));
+
+        expect(
+            await screen.findByText(/Anyone with the link can open this project/i)
+        ).toBeTruthy();
+        expect(screen.getByLabelText("Share link")).toBeTruthy();
+
+        // Export is shown for visual consistency with the in-editor Share
+        // button, but disabled: there's no live editor graph to export from
+        // the projects list.
+        expect(screen.getByText("Export")).toBeTruthy();
+        expect(
+            screen.getByText(/Open this project to export it as an image/i)
+        ).toBeTruthy();
+        expect((screen.getByRole("button", {name: /png/i}) as HTMLButtonElement).disabled).toBe(true);
+        expect((screen.getByRole("button", {name: /svg/i}) as HTMLButtonElement).disabled).toBe(true);
+    });
+
     it("uses a clear destructive action in the delete dialog", () => {
         localStorage.setItem("ammber/projects", JSON.stringify([sampleProject]));
         renderHome();
