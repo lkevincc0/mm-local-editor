@@ -10,6 +10,7 @@ import {ProfileProvider} from "./context/ProfileContext";
 import ProjectProvider from "./context/ProjectProvider";
 import {ThemeProvider} from "./context/ThemeContext";
 import {Project} from "./utils/projects";
+import {decodeSharedProjectHash} from "./utils/shareProject";
 
 const renderHome = () => {
     render(
@@ -96,6 +97,28 @@ describe("Home", () => {
         ).toBeTruthy();
         expect((screen.getByRole("button", {name: /png/i}) as HTMLButtonElement).disabled).toBe(true);
         expect((screen.getByRole("button", {name: /svg/i}) as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it("creates a share link for the selected project when multiple cards are shown", async () => {
+        const otherProject: Project = {
+            ...sampleProject,
+            id: "p2",
+            name: "Other Model",
+            updatedAt: sampleProject.updatedAt + 1,
+        };
+        localStorage.setItem(
+            "ammber/projects",
+            JSON.stringify([sampleProject, otherProject])
+        );
+        renderHome();
+
+        fireEvent.click(screen.getByLabelText("Options for Other Model"));
+        fireEvent.click(screen.getByText("Share"));
+
+        const input = await screen.findByLabelText("Share link") as HTMLInputElement;
+        const sharedProject = decodeSharedProjectHash(new URL(input.value).hash);
+        expect(sharedProject?.name).toBe("Other Model");
+        expect(sharedProject?.shareId).toBe(`p2:${otherProject.updatedAt}`);
     });
 
     it("uses a clear destructive action in the delete dialog", () => {
