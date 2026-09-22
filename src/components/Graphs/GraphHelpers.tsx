@@ -12,6 +12,7 @@ import {
     SYMBOL_WIDTH,
     SYMBOL_HEIGHT,
     SYMBOL_CONFIGS,
+    PARALLELOGRAM_START_SIZE,
     SymbolKey
 } from "../utils/GraphConstants.tsx";
 
@@ -254,9 +255,13 @@ export const renderFunction = (
     const preferred = graph.getPreferredSizeForCell(node); //getPreferredSizeForCell only works for width
     if (node_geo && preferred) {
         node_geo.height = lines.length * VERTEX_FONT.size * VERTEX_FONT.scaleHeight; //get height base on the number of lines in goal text and font size
+        // The label is centred, and each slant of the parallelogram consumes
+        // PARALLELOGRAM_START_SIZE of the width, so only (1 - start) of the node
+        // width is available for text. Apply that correction on top of the
+        // symbol's own width allowance so the label clears both slanted edges.
         node_geo.width = Math.max(
             node_geo.height,
-            preferred.width * config.scale.width,
+            (preferred.width * config.scale.width) / (1 - PARALLELOGRAM_START_SIZE),
             width
         );
         node_geo.height = Math.max(
