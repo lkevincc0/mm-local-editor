@@ -25,6 +25,11 @@ const FONT_FAMILY =
 const AVATAR_SIZE = 32;
 const AVATAR_RADIUS = AVATAR_SIZE / 2;
 const AVATAR_GAP = 12;
+const CONTENT_GAP = 12;
+
+// SVG and canvas both use an alphabetic baseline for the content.
+const contentBaseline = (bodyTop: number): number =>
+    bodyTop + BUBBLE_PADDING + AVATAR_SIZE + CONTENT_GAP + BUBBLE_TEXT_SIZE;
 const AVATAR_COLORS = [
     "#6b51c9",
     "#b7771e",
@@ -103,9 +108,12 @@ export const wrapBubbleText = (
 };
 
 const formatUpdatedAt = (updatedAt: string): string => {
+    if (!updatedAt?.trim()) return "";
+
     const date = new Date(updatedAt);
 
-    if (Number.isNaN(date.getTime())) {
+    // Older example projects use the Unix epoch as an unknown-date sentinel.
+    if (Number.isNaN(date.getTime()) || date.getTime() === 0) {
         return "";
     }
 
@@ -157,7 +165,7 @@ export const measureOverallFeedbackBubble = (
         BUBBLE_TAIL +
         BUBBLE_PADDING +
         AVATAR_SIZE +
-        6 +
+        CONTENT_GAP +
         lines.length * BUBBLE_LINE_HEIGHT +
         BUBBLE_PADDING;
 
@@ -241,6 +249,7 @@ export const drawOverallFeedbackBubble = (
     }
 
     // Content
+    ctx.textBaseline = "alphabetic";
     ctx.fillStyle = BUBBLE_INK;
     ctx.font = `${BUBBLE_TEXT_SIZE}px ${FONT_FAMILY}`;
 
@@ -248,7 +257,7 @@ export const drawOverallFeedbackBubble = (
         ctx.fillText(
             line,
             x + BUBBLE_PADDING,
-            bubbleY + BUBBLE_PADDING + AVATAR_SIZE + 6 + index * BUBBLE_LINE_HEIGHT
+            contentBaseline(bubbleY) + index * BUBBLE_LINE_HEIGHT
         );
     });
 
@@ -383,7 +392,7 @@ export const injectOverallFeedbackBubble = (
     content.setAttribute("x", String(bubbleX + BUBBLE_PADDING));
     content.setAttribute(
         "y",
-        String(bodyTop + BUBBLE_PADDING + AVATAR_SIZE + 6)
+        String(contentBaseline(bodyTop))
     );
     content.setAttribute("font-family", FONT_FAMILY);
     content.setAttribute("font-size", String(BUBBLE_TEXT_SIZE));

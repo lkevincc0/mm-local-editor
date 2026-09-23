@@ -1702,3 +1702,10 @@
 [data-theme='classic'] .feedback-reply-author {
     color: var(--accent);
 }
+
+.feedback-character-count {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+}

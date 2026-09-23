@@ -22,6 +22,31 @@ describe("FeedbackProvider", () => {
         localStorage.clear();
     });
 
+    it.each([250, 251])("enforces the limit for all feedback writes at %s characters", (length) => {
+        const {result} = renderHook(() => useFeedbackContext(), {wrapper});
+        const content = "字".repeat(length);
+        act(() => result.current.addFeedback("node", "Original"));
+        const id = result.current.feedbacks[0].id;
+        act(() => {
+            result.current.setOverallFeedback("Original overall");
+        });
+        act(() => {
+            result.current.setOverallFeedback(content);
+            result.current.addFeedback("other-node", content);
+            result.current.addReply(id, content);
+        });
+        if (length === 250) {
+            expect(result.current.overallFeedback?.content).toBe(content);
+            expect(result.current.feedbacks).toHaveLength(2);
+            expect(result.current.feedbacks.find((item) => item.nodeId === "other-node")?.content).toBe(content);
+            expect(result.current.feedbacks.find((item) => item.nodeId === "node")?.replies?.[0].content).toBe(content);
+        } else {
+            expect(result.current.overallFeedback?.content).toBe("Original overall");
+            expect(result.current.feedbacks).toHaveLength(1);
+            expect(result.current.feedbacks[0].replies ?? []).toHaveLength(0);
+        }
+    });
+
     it("starts with no feedback", () => {
         const {result} = renderHook(() => useFeedbackContext(), {wrapper});
 
