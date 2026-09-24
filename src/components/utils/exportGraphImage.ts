@@ -12,11 +12,23 @@ import {
     injectOverallFeedbackBubble,
     measureOverallFeedbackBubble
 } from "./feedbackBubble";
+import {
+    FeedbackGroup,
+    GraphNodeBounds,
+    PNG_FEEDBACK_PANEL_GAP,
+    calculateFeedbackPanelLayout,
+    calculatePngExportDimensions,
+    createGraphToExportPointConverter,
+    drawFeedbackNodeBadges,
+    drawFeedbackPanel,
+    getFeedbackNodeBadges,
+    groupFeedbackByNode
+} from "./pngFeedbackAnnotations";
 
 import {getThemeTokens} from "./themeTokens";
 
 const PNG_EXPORT_SCALE = 3;
-const EXPORT_PADDING = 24;
+export const EXPORT_PADDING = 24;
 
 type ExportExtension = "png" | "svg";
 
@@ -83,7 +95,13 @@ export const getExportReadiness = (
 export const serializeGraphSvg = (
     graph: Graph,
     includeOverallFeedback = false
-): {svgString: string; width: number; height: number} | null => {
+): {
+    svgString: string;
+    width: number;
+    height: number;
+    bounds: GraphNodeBounds;
+    scale: number;
+} | null => {
     if (!graph?.view?.drawPane) return null;
 
     const bounds = graph.getGraphBounds();
@@ -122,7 +140,20 @@ export const serializeGraphSvg = (
     // Paint model states only, excluding selection handles and editor overlays.
     new ImageExport().drawState(graph.view.getState(graph.getDataModel().getRoot()), canvas);
 
-    return {svgString: new XMLSerializer().serializeToString(svg), width, height};
+    return {
+        svgString: new XMLSerializer().serializeToString(svg),
+        width,
+        height,
+        // Callers need the same mapping to place overlays on the exported
+        // image, so hand back the bounds the transform above was built from.
+        bounds: {
+            x: bounds.x,
+            y: bounds.y,
+            width: bounds.width,
+            height: bounds.height
+        },
+        scale
+    };
 };
 
 const saveBlob = async (
@@ -199,11 +230,87 @@ export const exportGraphAsSVG = async (
     returnFocusToGraph();
 };
 
+// Node feedback is keyed by the maxgraph cell id, so the panel can reuse
+// whatever label the canvas is already showing for that goal.
+const resolveNodeLabel = (
+    graph: Graph,
+    nodeId: string
+): string | undefined => {
+    const cell = graph.getDataModel().getCell(nodeId);
+
+    if (!cell) {
+        return undefined;
+    }
+
+    const value = cell.getValue();
+
+    if (typeof value === "string" && value.trim()) {
+        return value;
+    }
+
+    return graph.getLabel(cell) ?? undefined;
+};
+
+const collectFeedbackGroups = (
+    graph: Graph,
+    feedbacks: Feedback[]
+): FeedbackGroup[] => {
+    if (feedbacks.length === 0) {
+        return [];
+    }
+
+    return groupFeedbackByNode(feedbacks, (nodeId) =>
+        resolveNodeLabel(graph, nodeId)
+    );
+};
+
+// Numbers the groups onto the nodes they belong to, so a panel entry can be
+// traced back to a goal on the graph.
+const drawNodeFeedbackBadges = (
+    context: CanvasRenderingContext2D,
+    graph: Graph,
+    groups: FeedbackGroup[],
+    exportBounds: GraphNodeBounds,
+    exportScale: number,
+    graphWidth: number
+): void => {
+    const model = graph.getDataModel();
+    const convertPoint = createGraphToExportPointConverter(
+        exportBounds,
+        exportScale,
+        graphWidth,
+        EXPORT_PADDING
+    );
+
+    const badges = getFeedbackNodeBadges(
+        groups,
+        (nodeId) => {
+            const cell = model.getCell(nodeId);
+            const state = cell ? graph.getView().getState(cell) : null;
+
+            if (!state) {
+                return undefined;
+            }
+
+            return {
+                x: state.x,
+                y: state.y,
+                width: state.width,
+                height: state.height
+            };
+        },
+        convertPoint
+    );
+
+    drawFeedbackNodeBadges(context, badges);
+};
+
 export const exportGraphAsPNG = async (
     graph: Graph,
     options: {
         projectData: EmbeddedProjectData;
         includeOverallFeedback: boolean;
+        includeNodeFeedback: boolean;
     }
 ): Promise<void> => {
     const serialized = serializeGraphSvg(graph, options.includeOverallFeedback &&
@@ -213,7 +320,13 @@ export const exportGraphAsPNG = async (
         return;
     }
 
-    const {svgString, width: graphWidth, height: graphHeight} = serialized;
+    const {
+        svgString,
+        width: graphWidth,
+        height: graphHeight,
+        bounds: exportBounds,
+        scale: exportScale
+    } = serialized;
     const overallFeedback =
         options.includeOverallFeedback &&
         options.projectData.overallFeedback?.content.trim()
@@ -243,30 +356,36 @@ export const exportGraphAsPNG = async (
     // Render SVG onto the canvas
     await v.render();
 
+    const groups = options.includeNodeFeedback
+        ? collectFeedbackGroups(graph, options.projectData.feedbacks)
+        : [];
+    // The graph canvas context already carries the export font metrics, so it
+    // measures the panel too.
+    const panelLayout =
+        groups.length > 0
+            ? calculateFeedbackPanelLayout(context, groups)
+            : null;
+
     let exportCanvas = canvas;
-    let exportWidth = graphWidth;
-    let exportHeight = graphHeight;
 
-    if (overallFeedback) {
-        // Reserve a chat-bubble band under the graph for the overall feedback.
-        const bubbleMaxWidth = graphWidth - BUBBLE_PADDING * 2;
-        const bubble = measureOverallFeedbackBubble(
-            context,
-            overallFeedback,
-            bubbleMaxWidth
-        );
-        const bandHeight =
-            BUBBLE_PADDING + bubble.height + BUBBLE_PADDING;
+    // The node-feedback panel sits to the right of the graph, and the overall
+    // feedback band is added underneath whatever the panel produced.
+    const dimensions = calculatePngExportDimensions(
+        graphWidth,
+        graphHeight,
+        panelLayout
+    );
+    const bubbleMaxWidth = dimensions.width - BUBBLE_PADDING * 2;
+    const bubble = overallFeedback
+        ? measureOverallFeedbackBubble(context, overallFeedback, bubbleMaxWidth)
+        : null;
 
-        // Centre the bubble in the free band below the graph instead of
-        // leaving it cramped in the bottom-left corner.
-        const bubbleX = Math.max(
-            BUBBLE_PADDING,
-            (graphWidth - bubble.width) / 2
-        );
-
-        exportWidth = graphWidth;
-        exportHeight = graphHeight + bandHeight;
+    if (panelLayout || bubble) {
+        const bandHeight = bubble
+            ? BUBBLE_PADDING + bubble.height + BUBBLE_PADDING
+            : 0;
+        const exportWidth = dimensions.width;
+        const exportHeight = dimensions.height + bandHeight;
 
         const finalCanvas = document.createElement("canvas");
         finalCanvas.width = Math.round(exportWidth * PNG_EXPORT_SCALE);
@@ -294,13 +413,39 @@ export const exportGraphAsPNG = async (
             graphHeight
         );
 
-        drawOverallFeedbackBubble(
-            finalContext,
-            overallFeedback,
-            bubbleX,
-            graphHeight + BUBBLE_PADDING,
-            bubbleMaxWidth
-        );
+        if (panelLayout) {
+            drawNodeFeedbackBadges(
+                finalContext,
+                graph,
+                groups,
+                exportBounds,
+                exportScale,
+                graphWidth
+            );
+            drawFeedbackPanel(
+                finalContext,
+                panelLayout,
+                graphWidth + PNG_FEEDBACK_PANEL_GAP,
+                dimensions.height
+            );
+        }
+
+        if (bubble && overallFeedback) {
+            // Centre the bubble in the free band below the graph instead of
+            // leaving it cramped in the bottom-left corner.
+            const bubbleX = Math.max(
+                BUBBLE_PADDING,
+                (exportWidth - bubble.width) / 2
+            );
+
+            drawOverallFeedbackBubble(
+                finalContext,
+                overallFeedback,
+                bubbleX,
+                dimensions.height + BUBBLE_PADDING,
+                bubbleMaxWidth
+            );
+        }
 
         exportCanvas = finalCanvas;
     }

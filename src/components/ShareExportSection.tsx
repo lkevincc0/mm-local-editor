@@ -21,6 +21,44 @@ type ShareExportSectionProps = {
     showGraphSection: boolean;
 };
 
+type ExportToggleProps = {
+    label: string;
+    hint: string;
+    disabled: boolean;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+};
+
+const ExportToggle: React.FC<ExportToggleProps> = ({
+    label,
+    hint,
+    disabled,
+    checked,
+    onChange
+}) => (
+    <label
+        className={
+            disabled
+                ? `${styles.feedbackToggle} ${styles.feedbackToggleDisabled}`
+                : styles.feedbackToggle
+        }
+    >
+        <input
+            type="checkbox"
+            checked={checked && !disabled}
+            disabled={disabled}
+            onChange={(event) => onChange(event.target.checked)}
+        />
+        <span className={styles.toggleTrack} aria-hidden="true">
+            <span className={styles.toggleThumb}/>
+        </span>
+        <span className={styles.toggleLabel}>
+            {label}
+            {disabled && <span className={styles.toggleHint}>{hint}</span>}
+        </span>
+    </label>
+);
+
 const ShareExportSection: React.FC<ShareExportSectionProps> = ({
     showGraphSection
 }) => {
@@ -29,7 +67,8 @@ const ShareExportSection: React.FC<ShareExportSectionProps> = ({
     const {currentProject} = useProjectContext();
     const {feedbacks, overallFeedback} = useFeedbackContext();
 
-    const [includeFeedback, setIncludeFeedback] = useState(true);
+    const [includeOverallFeedback, setIncludeOverallFeedback] = useState(true);
+    const [includeNodeFeedback, setIncludeNodeFeedback] = useState(true);
     const [errorModal, setErrorModal] = useState<ErrorModalProps>({
         show: false,
         title: "",
@@ -64,7 +103,8 @@ const ShareExportSection: React.FC<ShareExportSectionProps> = ({
 
         exportGraphAsPNG(graph, {
             projectData: buildProjectData(),
-            includeOverallFeedback: includeFeedback
+            includeOverallFeedback,
+            includeNodeFeedback
         });
     };
 
@@ -92,33 +132,21 @@ const ShareExportSection: React.FC<ShareExportSectionProps> = ({
                 </div>
             </div>
 
-            <label
-                className={
-                    overallFeedback?.content.trim()
-                        ? styles.feedbackToggle
-                        : `${styles.feedbackToggle} ${styles.feedbackToggleDisabled}`
-                }
-            >
-                <input
-                    type="checkbox"
-                    checked={includeFeedback && Boolean(overallFeedback?.content.trim())}
-                    disabled={!overallFeedback?.content.trim()}
-                    onChange={(event) =>
-                        setIncludeFeedback(event.target.checked)
-                    }
-                />
-                <span className={styles.toggleTrack} aria-hidden="true">
-                    <span className={styles.toggleThumb}/>
-                </span>
-                <span className={styles.toggleLabel}>
-                    Include overall feedback?
-                    {!overallFeedback?.content.trim() && (
-                        <span className={styles.toggleHint}>
-                            Add it in the Feedback panel first
-                        </span>
-                    )}
-                </span>
-            </label>
+            <ExportToggle
+                label="Include overall feedback?"
+                hint="Add it in the Feedback panel first"
+                disabled={!overallFeedback?.content.trim()}
+                checked={includeOverallFeedback}
+                onChange={setIncludeOverallFeedback}
+            />
+
+            <ExportToggle
+                label="Include goal feedback?"
+                hint="Add feedback to a goal first"
+                disabled={feedbacks.length === 0}
+                checked={includeNodeFeedback}
+                onChange={setIncludeNodeFeedback}
+            />
 
             <div className={styles.exportButtons}>
                 <OverlayTrigger

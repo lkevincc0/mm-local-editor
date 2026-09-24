@@ -1,8 +1,13 @@
 /** @vitest-environment jsdom */
 import {Graph} from "@maxgraph/core";
 import {afterEach, describe, expect, it} from "vitest";
-import {serializeGraphSvg} from "./exportGraphImage";
+import {EXPORT_PADDING, serializeGraphSvg} from "./exportGraphImage";
 import {BUBBLE_MIN_WIDTH, BUBBLE_PADDING} from "./feedbackBubble";
+import {
+    createGraphToExportPointConverter,
+    getFeedbackNodeBadges,
+    groupFeedbackByNode
+} from "./pngFeedbackAnnotations";
 
 const graphs: Graph[] = [];
 const makeGraph = () => {
@@ -67,5 +72,65 @@ describe("SVG export bounds", () => {
         const graph = new Graph(document.createElement("div"));
         graphs.push(graph);
         expect(serializeGraphSvg(graph)).toBeNull();
+    });
+});
+
+describe("PNG node feedback badges", () => {
+    // The badge is placed from the same bounds and scale the serializer used to
+    // build the export transform, so it must land on the node's exported corner
+    // at any zoom. Handing the serializer's own numbers to the converter is what
+    // this asserts; the SVG below is the reference the user actually sees.
+    it.each([0.5, 1, 2])("keeps badges on their node at zoom %s", (scale) => {
+        const graph = new Graph(document.createElement("div"));
+        graphs.push(graph);
+        const cell = graph.insertVertex(
+            graph.getDefaultParent(),
+            null,
+            "Do1",
+            -200,
+            -100,
+            160,
+            80
+        );
+        graph.view.scaleAndTranslate(scale, -700, 300);
+
+        const exported = serializeGraphSvg(graph)!;
+        const doc = new DOMParser().parseFromString(
+            exported.svgString,
+            "image/svg+xml"
+        );
+        const node = Array.from(doc.querySelectorAll("rect")).find(
+            (rect) => rect.getAttribute("width") === "160"
+        )!;
+        expect(node).toBeDefined();
+
+        const state = graph.getView().getState(cell)!;
+        const [badge] = getFeedbackNodeBadges(
+            groupFeedbackByNode([
+                {
+                    id: "feedback-1",
+                    nodeId: cell.id,
+                    author: "Reviewer",
+                    content: "Too broad.",
+                    createdAt: "2026-09-17T12:00:00.000Z",
+                    status: "open"
+                }
+            ]),
+            () => ({
+                x: state.x,
+                y: state.y,
+                width: state.width,
+                height: state.height
+            }),
+            createGraphToExportPointConverter(
+                exported.bounds,
+                exported.scale,
+                exported.width,
+                EXPORT_PADDING
+            )
+        );
+
+        expect(badge.x).toBeCloseTo(Number(node.getAttribute("x")) + 160, 5);
+        expect(badge.y).toBeCloseTo(Number(node.getAttribute("y")), 5);
     });
 });
