@@ -71,15 +71,19 @@ describe("SVG export", () => {
       expect(svg.getAttribute("viewBox"), "viewBox matches the size")
         .to.equal(`0 0 ${svg.getAttribute("width")} ${svg.getAttribute("height")}`);
       expect(svg.textContent, "the model graph is drawn").to.contain("Export");
-      // The graph shapes sit inside the canvas with nothing below them.
-      const shapes = Array.from(svg.querySelectorAll('rect[stroke]:not([stroke="none"])'));
-      expect(shapes.length, "the goal is painted").to.be.greaterThan(0);
-      shapes.forEach((shape) => {
-        const y = Number(shape.getAttribute("y"));
-        expect(y).to.be.at.least(0);
-        expect(y + Number(shape.getAttribute("height")))
-          .to.be.at.most(svg.viewBox.baseVal.height);
-      });
+      // The Do goal is a parallelogram, so it is painted as a path inside the
+      // graph group rather than as a rectangle.
+      expect(svg.querySelectorAll("g").length, "the graph is placed in a group")
+        .to.be.greaterThan(0);
+      expect(svg.querySelectorAll("path").length, "the goal shape is painted")
+        .to.be.greaterThan(0);
+      // Only the background fills the canvas; nothing is painted below the
+      // graph any more, which is where the overall-feedback band used to sit.
+      const background = svg.querySelector("rect")!;
+      expect(background.getAttribute("width")).to.equal("100%");
+      expect(background.getAttribute("height")).to.equal("100%");
+      expect(svg.viewBox.baseVal.height, "viewBox height matches the image")
+        .to.equal(Number(svg.getAttribute("height")));
     });
   });
 });
