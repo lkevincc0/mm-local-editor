@@ -1,11 +1,9 @@
-// Palette, type stack and avatar helpers shared by the PNG/SVG export
-// artifacts (the overall-feedback bubble in feedbackBubble.ts and the
-// goal-feedback panel in pngFeedbackAnnotations.ts).
+// Palette, type stack and avatar helpers for the exported SVG/PNG artifacts
+// (the goal-feedback panel in pngFeedbackAnnotations.ts).
 //
 // These are deliberately fixed export-artifact colors (the modern palette)
 // rather than tokens read from the active theme, so an exported image looks
-// the same whichever theme produced it. Both renderers draw from this one
-// module so the two halves of an export cannot drift apart.
+// the same whichever theme produced it.
 
 export const EXPORT_FONT_FAMILY =
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';

@@ -2,7 +2,6 @@
 import {Graph} from "@maxgraph/core";
 import {afterEach, describe, expect, it} from "vitest";
 import {EXPORT_PADDING, serializeGraphSvg} from "./exportGraphImage";
-import {BUBBLE_MIN_WIDTH, BUBBLE_PADDING} from "./feedbackBubble";
 import {
     createGraphToExportPointConverter,
     getFeedbackNodeBadges,
@@ -60,12 +59,16 @@ describe("SVG export bounds", () => {
         expect(graph.view.translate.x).toBe(-700);
     });
 
-    it("reserves enough width for feedback on small graphs", () => {
+    it("sizes a small graph to its own bounds, with no room reserved for feedback", () => {
         const graph = new Graph(document.createElement("div"));
         graphs.push(graph);
         graph.insertVertex(graph.getDefaultParent(), null, "Small", 0, 0, 80, 40);
-        expect(serializeGraphSvg(graph)!.width).toBeLessThan(BUBBLE_MIN_WIDTH);
-        expect(serializeGraphSvg(graph, true)!.width).toBe(BUBBLE_MIN_WIDTH + BUBBLE_PADDING * 2);
+        // 80x40 of content plus the padding on both sides, and nothing else:
+        // the overall-feedback band that used to widen small exports is gone.
+        expect(serializeGraphSvg(graph)!.width).toBe(
+            Math.ceil(graph.getGraphBounds().width / graph.view.scale) +
+                EXPORT_PADDING * 2
+        );
     });
 
     it("skips empty graphs", () => {
