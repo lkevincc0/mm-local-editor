@@ -30,5 +30,6 @@ export const defaultFeedbacks: Feedback[] = [{
 export const defaultOverallFeedback: OverallFeedback = {
     author: "Ammber Team",
     content: "Overall this is a solid starting structure -- try filling in the remaining Be/Feel/Concern/Who goals next.",
-    updatedAt: new Date(0).toISOString()
+    // Example feedback has no real update date.
+    updatedAt: ""
 };

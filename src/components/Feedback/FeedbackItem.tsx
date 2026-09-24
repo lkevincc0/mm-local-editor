@@ -6,6 +6,7 @@ import type {
 } from "../types.ts";
 
 import Avatar from "../Avatar";
+import {FEEDBACK_MAX_LENGTH} from "../utils/feedbackLimits";
 import {useProfileContext} from "../context/ProfileContext";
 
 interface FeedbackItemProps {
@@ -93,7 +94,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
     const handleSubmitReply = () => {
         const content = replyText.trim();
 
-        if (!content) {
+        if (!content || replyText.length > FEEDBACK_MAX_LENGTH) {
             return;
         }
 
@@ -265,6 +266,8 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                     <div className="feedback-reply-composer">
                         <input
                             className="feedback-reply-input"
+                            maxLength={FEEDBACK_MAX_LENGTH}
+                            aria-describedby={`feedback-reply-count-${feedback.id}`}
                             value={replyText}
                             onChange={(event) =>
                                 setReplyText(
@@ -283,10 +286,13 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
                             type="button"
                             className="feedback-reply-submit"
                             onClick={handleSubmitReply}
-                            disabled={!replyText.trim()}
+                            disabled={!replyText.trim() || replyText.length > FEEDBACK_MAX_LENGTH}
                         >
                             Send
                         </button>
+                    </div>
+                    <div id={`feedback-reply-count-${feedback.id}`} className="feedback-character-count">
+                        {replyText.length}/{FEEDBACK_MAX_LENGTH} characters
                     </div>
                 </div>
             </div>

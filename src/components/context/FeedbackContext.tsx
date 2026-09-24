@@ -1,3 +1,4 @@
+import {FEEDBACK_MAX_LENGTH} from "../utils/feedbackLimits";
 import React, {
   createContext,
   useContext,
@@ -186,6 +187,7 @@ export const FeedbackProvider: React.FC<
   };
 
   const setOverallFeedback = (content: string) => {
+    if (content.length > FEEDBACK_MAX_LENGTH) return;
     const trimmed = content.trim();
 
     if (!trimmed) {
@@ -209,6 +211,8 @@ export const FeedbackProvider: React.FC<
     nodeLabel?: string,
     author?: string
   ) => {
+    if (content.length > FEEDBACK_MAX_LENGTH) return;
+
     const newFeedback: Feedback = {
       id: `feedback-${Date.now()}`,
       nodeId,
@@ -256,6 +260,8 @@ export const FeedbackProvider: React.FC<
     feedbackId: string,
     content: string
   ) => {
+    if (content.length > FEEDBACK_MAX_LENGTH) return;
+
     const reply: FeedbackReply = {
       id: `reply-${Date.now()}`,
       author:

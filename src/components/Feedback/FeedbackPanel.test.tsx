@@ -77,6 +77,38 @@ describe("FeedbackPanel", () => {
         localStorage.clear();
     });
 
+    it("limits overall feedback and blocks saving an overlong draft", () => {
+        renderPanel();
+        const input = screen.getByPlaceholderText("Feedback about the model as a whole...") as HTMLTextAreaElement;
+        expect(input.maxLength).toBe(250);
+        fireEvent.change(input, {target: {value: "字".repeat(250)}});
+        expect(screen.getByText("250/250 characters")).toBeTruthy();
+        expect((screen.getByRole("button", {name: "Save"}) as HTMLButtonElement).disabled).toBe(false);
+        // Synthetic changes bypass the browser maxlength check; saving still rejects them.
+        fireEvent.change(input, {target: {value: "字".repeat(251)}});
+        expect((screen.getByRole("button", {name: "Save"}) as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it("limits node feedback and replies, including Enter submission", () => {
+        renderPanel({seed: [{nodeId: "node", content: "Existing feedback"}], selected: {nodeId: "node"}});
+        fireEvent.click(screen.getByRole("button", {name: "+ New Feedback"}));
+        const input = screen.getByLabelText("New Feedback") as HTMLTextAreaElement;
+        expect(input.maxLength).toBe(250);
+        fireEvent.change(input, {target: {value: "x".repeat(251)}});
+        expect((screen.getByRole("button", {name: "Add Feedback"}) as HTMLButtonElement).disabled).toBe(true);
+        fireEvent.click(screen.getByRole("button", {name: "Reply"}));
+        const reply = screen.getByPlaceholderText("Write a reply...") as HTMLInputElement;
+        expect(reply.maxLength).toBe(250);
+        fireEvent.change(reply, {target: {value: "x".repeat(251)}});
+        expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+        fireEvent.keyDown(reply, {key: "Enter"});
+        expect(reply.value).toHaveLength(251);
+        fireEvent.change(reply, {target: {value: "x".repeat(250)}});
+        fireEvent.keyDown(reply, {key: "Enter"});
+        expect(reply.value).toBe("");
+        expect(screen.getByText("x".repeat(250))).toBeTruthy();
+    });
+
     it("lists all feedback when no node is selected", async () => {
         renderPanel({
             seed: [
