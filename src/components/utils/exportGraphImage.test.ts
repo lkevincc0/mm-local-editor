@@ -109,7 +109,7 @@ describe("PNG node feedback badges", () => {
             groupFeedbackByNode([
                 {
                     id: "feedback-1",
-                    nodeId: cell.id,
+                    nodeId: cell.id ?? "node-1",
                     author: "Reviewer",
                     content: "Too broad.",
                     createdAt: "2026-09-17T12:00:00.000Z",

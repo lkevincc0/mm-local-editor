@@ -1,8 +1,14 @@
 import type {OverallFeedback} from "../types";
+import {
+    EXPORT_COLORS,
+    EXPORT_FONT_FAMILY,
+    exportAvatarColor,
+    exportAvatarInitial
+} from "./exportPalette";
 
-// Chat-bubble renderer for the overall feedback on the exported PNG.
-// Colors are fixed export-artifact colors (the modern palette) so the PNG
-// looks the same regardless of the in-app theme.
+// Chat-bubble renderer for the overall feedback on the exported PNG. The
+// palette it draws with lives in exportPalette.ts, shared with the
+// goal-feedback panel so one export never mixes two design languages.
 
 export const BUBBLE_PADDING = 22;
 export const BUBBLE_RADIUS = 18;
@@ -12,13 +18,12 @@ export const BUBBLE_TEXT_SIZE = 16;
 export const BUBBLE_LINE_HEIGHT = 24;
 export const BUBBLE_MIN_WIDTH = 420;
 
-const BUBBLE_FILL = "#f4f3ee";
-const BUBBLE_BORDER = "#deddd6";
-const BUBBLE_INK = "#11110f";
-const BUBBLE_MUTED = "#6d6c66";
+const BUBBLE_FILL = EXPORT_COLORS.bubbleFill;
+const BUBBLE_BORDER = EXPORT_COLORS.line;
+const BUBBLE_INK = EXPORT_COLORS.ink;
+const BUBBLE_MUTED = EXPORT_COLORS.muted;
 
-const FONT_FAMILY =
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const FONT_FAMILY = EXPORT_FONT_FAMILY;
 
 // Deterministic author avatar (coloured disc + initial) so the exported
 // bubble shows who wrote the overall feedback without needing the DOM.
@@ -30,25 +35,6 @@ const CONTENT_GAP = 12;
 // SVG and canvas both use an alphabetic baseline for the content.
 const contentBaseline = (bodyTop: number): number =>
     bodyTop + BUBBLE_PADDING + AVATAR_SIZE + CONTENT_GAP + BUBBLE_TEXT_SIZE;
-const AVATAR_COLORS = [
-    "#6b51c9",
-    "#b7771e",
-    "#397052",
-    "#9f352d",
-    "#2c6e9e",
-    "#71486d"
-];
-
-const hashString = (input: string): number => {
-    let hash = 0;
-    for (let i = 0; i < input.length; i += 1) {
-        hash = (hash * 31 + input.charCodeAt(i)) | 0;
-    }
-    return Math.abs(hash);
-};
-
-const avatarColor = (author: string): string =>
-    AVATAR_COLORS[hashString(author.trim()) % AVATAR_COLORS.length];
 
 const drawAvatar = (
     ctx: CanvasRenderingContext2D,
@@ -59,17 +45,13 @@ const drawAvatar = (
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, AVATAR_RADIUS, 0, Math.PI * 2);
-    ctx.fillStyle = avatarColor(author);
+    ctx.fillStyle = exportAvatarColor(author);
     ctx.fill();
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = EXPORT_COLORS.white;
     ctx.font = `700 ${Math.round(AVATAR_SIZE * 0.48)}px ${FONT_FAMILY}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(
-        (author.trim().charAt(0) || "?").toUpperCase(),
-        cx,
-        cy + 0.5
-    );
+    ctx.fillText(exportAvatarInitial(author), cx, cy + 0.5);
     ctx.restore();
 };
 
@@ -339,10 +321,10 @@ export const injectOverallFeedbackBubble = (
     circle.setAttribute("cx", String(avatarCx));
     circle.setAttribute("cy", String(avatarCy));
     circle.setAttribute("r", String(AVATAR_RADIUS));
-    circle.setAttribute("fill", avatarColor(feedback.author));
+    circle.setAttribute("fill", exportAvatarColor(feedback.author));
     group.appendChild(circle);
 
-    const initial = (feedback.author.trim().charAt(0) || "?").toUpperCase();
+    const initial = exportAvatarInitial(feedback.author);
     group.appendChild(
         makeSvgText(doc, initial, {
             x: String(avatarCx),

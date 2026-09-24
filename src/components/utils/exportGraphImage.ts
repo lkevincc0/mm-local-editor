@@ -302,7 +302,9 @@ const drawNodeFeedbackBadges = (
         convertPoint
     );
 
-    drawFeedbackNodeBadges(context, badges);
+    // The badge ring blends into the graph's own background, which the export
+    // paints from the same token.
+    drawFeedbackNodeBadges(context, badges, getThemeTokens().graph.canvasBackground);
 };
 
 export const exportGraphAsPNG = async (
