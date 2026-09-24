@@ -10,6 +10,8 @@ import FeedbackAuthor from "./FeedbackAuthor";
 import {useFeedbackContext} from "../context/FeedbackContext";
 import {useProfileContext} from "../context/ProfileContext";
 
+import {FEEDBACK_MAX_LENGTH} from "../utils/feedbackLimits";
+
 import "./FeedbackPanel.css";
 
 type FeedbackFilter =
@@ -140,7 +142,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         author: string,
         content: string
     ) => {
-        if (!selectedNodeId) {
+        if (!selectedNodeId || content.length > FEEDBACK_MAX_LENGTH) {
             return;
         }
 
@@ -166,7 +168,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
         if (
             !selectedNodeId ||
-            !content
+            !content || newFeedback.length > FEEDBACK_MAX_LENGTH
         ) {
             return;
         }
@@ -229,7 +231,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
     };
 
     const handleSaveOverall = () => {
-        if (!overallDirty) {
+        if (!overallDirty || overallDraft.length > FEEDBACK_MAX_LENGTH) {
             return;
         }
 
@@ -277,6 +279,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 <textarea
                     id="feedback-overall-content"
                     className="feedback-overall-textarea"
+                    maxLength={FEEDBACK_MAX_LENGTH}
+                    aria-describedby="feedback-overall-count"
                     value={overallDraft}
                     onChange={(event) =>
                         setOverallDraft(event.target.value)
@@ -284,6 +288,10 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     placeholder="Feedback about the model as a whole..."
                     rows={3}
                 />
+
+                <div id="feedback-overall-count" className="feedback-character-count">
+                    {overallDraft.length}/{FEEDBACK_MAX_LENGTH} characters
+                </div>
 
                 {overallDirty && (
                     <div className="feedback-overall-actions">
@@ -299,7 +307,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                             type="button"
                             className="feedback-overall-save"
                             onClick={handleSaveOverall}
-                            disabled={!overallDraft.trim() && !overallFeedback?.content}
+                            disabled={overallDraft.length > FEEDBACK_MAX_LENGTH || (!overallDraft.trim() && !overallFeedback?.content)}
                         >
                             Save
                         </button>
@@ -373,6 +381,8 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     <textarea
                         id="feedback-new-content"
                         className="feedback-composer-textarea"
+                        maxLength={FEEDBACK_MAX_LENGTH}
+                        aria-describedby="feedback-new-count"
                         value={newFeedback}
                         onChange={(event) =>
                             setNewFeedback(
@@ -386,6 +396,10 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                         rows={4}
                         autoFocus
                     />
+
+                    <div id="feedback-new-count" className="feedback-character-count">
+                        {newFeedback.length}/{FEEDBACK_MAX_LENGTH} characters
+                    </div>
 
                     <div className="feedback-composer-actions">
                         <button
@@ -405,7 +419,7 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                                 handleSubmitFeedback
                             }
                             disabled={
-                                !newFeedback.trim()
+                                !newFeedback.trim() || newFeedback.length > FEEDBACK_MAX_LENGTH
                             }
                         >
                             Add Feedback

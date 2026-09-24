@@ -1,6 +1,5 @@
-import {Graph} from "@maxgraph/core";
+import {Graph, ImageExport, SvgCanvas2D} from "@maxgraph/core";
 import {Canvg} from "canvg";
-import * as d3 from "d3";
 
 import type {Feedback, OverallFeedback, TabContent, TreeGoal} from "../types";
 import {InitialTab} from "../../data/initialTabs";
@@ -8,23 +7,28 @@ import {returnFocusToGraph} from "./GraphUtils";
 import {embedJsonInPng, embedJsonInSvg} from "./imageMetadata";
 import {
     BUBBLE_PADDING,
+    BUBBLE_MIN_WIDTH,
     drawOverallFeedbackBubble,
     injectOverallFeedbackBubble,
     measureOverallFeedbackBubble
 } from "./feedbackBubble";
 import {
     FeedbackGroup,
+    GraphNodeBounds,
     PNG_FEEDBACK_PANEL_GAP,
     calculateFeedbackPanelLayout,
     calculatePngExportDimensions,
-    createSvgToCanvasPointConverter,
+    createGraphToExportPointConverter,
     drawFeedbackNodeBadges,
     drawFeedbackPanel,
     getFeedbackNodeBadges,
     groupFeedbackByNode
 } from "./pngFeedbackAnnotations";
 
+import {getThemeTokens} from "./themeTokens";
+
 const PNG_EXPORT_SCALE = 3;
+export const EXPORT_PADDING = 24;
 
 type ExportExtension = "png" | "svg";
 
@@ -88,53 +92,67 @@ export const getExportReadiness = (
     return {ready: true, message: "Export is ready."};
 };
 
-const findSVGElementInGraph = (graph: Graph): SVGSVGElement | null => {
-    if (!graph) {
-        return null;
-    }
-
-    // Clear all selection for no green bounding box
-    graph.clearSelection();
-
-    const svgElement = graph.getContainer().querySelector("svg");
-
-    if (!svgElement) {
-        console.error("Failed to find SVG element in the graph container.");
-        return null;
-    }
-
-    return svgElement;
-};
-
-const serializeGraphSvg = (
-    graph: Graph
+export const serializeGraphSvg = (
+    graph: Graph,
+    includeOverallFeedback = false
 ): {
     svgString: string;
-    svgElement: SVGSVGElement;
     width: number;
     height: number;
+    bounds: GraphNodeBounds;
+    scale: number;
 } | null => {
-    const svgElement = findSVGElementInGraph(graph);
+    if (!graph?.view?.drawPane) return null;
 
-    if (!svgElement) {
-        return null;
-    }
+    const bounds = graph.getGraphBounds();
+    const scale = graph.view.scale;
+    if (![bounds.x, bounds.y, bounds.width, bounds.height, scale].every(Number.isFinite) ||
+        bounds.width <= 0 || bounds.height <= 0 || scale <= 0) return null;
 
-    // Export a copy so the visible canvas is never mutated.
-    const svgCopy = svgElement.cloneNode(true) as SVGSVGElement;
-    const svg = d3.select(svgCopy);
-    svg.insert("rect", ":first-child")
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .attr("fill", "white");
+    // Bounds and cell states are in view coordinates. Remove the current zoom
+    // and pan so exports contain the full model at its original size.
+    const width = Math.max(
+        Math.ceil(bounds.width / scale) + EXPORT_PADDING * 2,
+        includeOverallFeedback ? BUBBLE_MIN_WIDTH + BUBBLE_PADDING * 2 : 0
+    );
+    const height = Math.ceil(bounds.height / scale) + EXPORT_PADDING * 2;
+    const doc = document.implementation.createDocument("http://www.w3.org/2000/svg", "svg", null);
+    const svg = doc.documentElement;
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("version", "1.1");
 
-    const serializer = new XMLSerializer();
+    const background = doc.createElementNS(svg.namespaceURI, "rect");
+    background.setAttribute("width", "100%");
+    background.setAttribute("height", "100%");
+    background.setAttribute("fill", getThemeTokens().graph.canvasBackground);
+    svg.appendChild(background);
+
+    const group = doc.createElementNS(svg.namespaceURI, "g");
+    svg.appendChild(group);
+    const canvas = new SvgCanvas2D(group);
+    canvas.scale(1 / scale);
+    canvas.translate(
+        (width - bounds.width / scale) / 2 - bounds.x / scale,
+        EXPORT_PADDING - bounds.y / scale
+    );
+    // Paint model states only, excluding selection handles and editor overlays.
+    new ImageExport().drawState(graph.view.getState(graph.getDataModel().getRoot()), canvas);
 
     return {
-        svgString: serializer.serializeToString(svgCopy),
-        svgElement,
-        width: svgElement.clientWidth,
-        height: svgElement.clientHeight
+        svgString: new XMLSerializer().serializeToString(svg),
+        width,
+        height,
+        // Callers need the same mapping to place overlays on the exported
+        // image, so hand back the bounds the transform above was built from.
+        bounds: {
+            x: bounds.x,
+            y: bounds.y,
+            width: bounds.width,
+            height: bounds.height
+        },
+        scale
     };
 };
 
@@ -171,7 +189,7 @@ export const exportGraphAsSVG = async (
     graph: Graph,
     projectData: EmbeddedProjectData
 ): Promise<void> => {
-    const serialized = serializeGraphSvg(graph);
+    const serialized = serializeGraphSvg(graph, Boolean(projectData.overallFeedback?.content.trim()));
 
     if (!serialized) {
         return;
@@ -251,20 +269,17 @@ const collectFeedbackGroups = (
 const drawNodeFeedbackBadges = (
     context: CanvasRenderingContext2D,
     graph: Graph,
-    svgElement: SVGSVGElement,
     groups: FeedbackGroup[],
-    graphWidth: number,
-    graphHeight: number
+    exportBounds: GraphNodeBounds,
+    exportScale: number,
+    graphWidth: number
 ): void => {
     const model = graph.getDataModel();
-    const drawPane = graph.getView().getDrawPane();
-    const coordinateElement =
-        drawPane instanceof SVGGraphicsElement ? drawPane : svgElement;
-    const convertPoint = createSvgToCanvasPointConverter(
-        svgElement,
+    const convertPoint = createGraphToExportPointConverter(
+        exportBounds,
+        exportScale,
         graphWidth,
-        graphHeight,
-        coordinateElement
+        EXPORT_PADDING
     );
 
     const badges = getFeedbackNodeBadges(
@@ -298,14 +313,20 @@ export const exportGraphAsPNG = async (
         includeNodeFeedback: boolean;
     }
 ): Promise<void> => {
-    const serialized = serializeGraphSvg(graph);
+    const serialized = serializeGraphSvg(graph, options.includeOverallFeedback &&
+        Boolean(options.projectData.overallFeedback?.content.trim()));
 
     if (!serialized) {
         return;
     }
 
-    const {svgString, svgElement, width: graphWidth, height: graphHeight} =
-        serialized;
+    const {
+        svgString,
+        width: graphWidth,
+        height: graphHeight,
+        bounds: exportBounds,
+        scale: exportScale
+    } = serialized;
     const overallFeedback =
         options.includeOverallFeedback &&
         options.projectData.overallFeedback?.content.trim()
@@ -378,7 +399,7 @@ export const exportGraphAsPNG = async (
         }
 
         finalContext.scale(PNG_EXPORT_SCALE, PNG_EXPORT_SCALE);
-        finalContext.fillStyle = "white";
+        finalContext.fillStyle = getThemeTokens().graph.canvasBackground;
         finalContext.fillRect(0, 0, exportWidth, exportHeight);
         finalContext.drawImage(
             canvas,
@@ -396,10 +417,10 @@ export const exportGraphAsPNG = async (
             drawNodeFeedbackBadges(
                 finalContext,
                 graph,
-                svgElement,
                 groups,
-                graphWidth,
-                graphHeight
+                exportBounds,
+                exportScale,
+                graphWidth
             );
             drawFeedbackPanel(
                 finalContext,

@@ -1,11 +1,13 @@
 /**
  * @vitest-environment jsdom
  */
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 
 import type {OverallFeedback} from "../types";
 import {
     BUBBLE_MIN_WIDTH,
+    BUBBLE_LINE_HEIGHT,
+    BUBBLE_TEXT_SIZE,
     BUBBLE_PADDING,
     drawOverallFeedbackBubble,
     injectOverallFeedbackBubble,
@@ -138,6 +140,65 @@ describe("feedbackBubble", () => {
 
         // avatar initial + author + optional date stamp + one call per content line
         expect(fillTexts.length - drawCallsBefore).toBe(lines.length + 3);
+    });
+
+    it.each(["", "not-a-date", "1970-01-01T00:00:00.000Z"])(
+        "omits missing, invalid and placeholder dates (%s) in SVG and PNG",
+        (updatedAt) => {
+            const {ctx, calls} = createMockContext();
+            const undated = {...feedback, updatedAt};
+            const spy = vi.spyOn(HTMLCanvasElement.prototype, "getContext")
+                .mockReturnValue(ctx);
+            try {
+                const svg = injectOverallFeedbackBubble(
+                    '<svg xmlns="http://www.w3.org/2000/svg"/>', 500, 300, undated
+                );
+                const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+                expect(doc.querySelector('text[text-anchor="end"]')).toBeNull();
+                drawOverallFeedbackBubble(ctx, undated, 22, 322, 456);
+                const {lines} = measureOverallFeedbackBubble(ctx, undated, 456);
+                expect(calls.filter((call) => call.method === "fillText")).toHaveLength(lines.length + 2);
+            } finally {
+                spy.mockRestore();
+            }
+        }
+    );
+
+    it("places multiline SVG and PNG content below the avatar with matching baselines", () => {
+        const {ctx, calls} = createMockContext();
+        const multiline = {...feedback, content: "First line\nSecond line\nThird line"};
+        const spy = vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx);
+        try {
+            const svg = injectOverallFeedbackBubble(
+                '<svg xmlns="http://www.w3.org/2000/svg"/>', 500, 300, multiline
+            );
+            const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+            const avatar = doc.querySelector("circle")!;
+            const content = doc.querySelector("tspan")!.parentElement!;
+            const baseline = Number(content.getAttribute("y"));
+            const avatarBottom = Number(avatar.getAttribute("cy")) + Number(avatar.getAttribute("r"));
+            expect(baseline - BUBBLE_TEXT_SIZE - avatarBottom).toBeGreaterThanOrEqual(12);
+            expect(doc.querySelector('text[text-anchor="end"]')!.textContent).toBe(
+                new Date(feedback.updatedAt).toLocaleDateString(undefined, {
+                    year: "numeric", month: "short", day: "numeric"
+                })
+            );
+            const lines = Array.from(content.querySelectorAll("tspan"));
+            expect(lines).toHaveLength(3);
+            expect(lines[1].getAttribute("dy")).toBe(String(BUBBLE_LINE_HEIGHT));
+            const body = doc.querySelector("rect")!;
+            const bodyBottom = Number(body.getAttribute("y")) + Number(body.getAttribute("height"));
+            expect(baseline + 2 * BUBBLE_LINE_HEIGHT).toBeLessThan(bodyBottom - BUBBLE_PADDING);
+
+            drawOverallFeedbackBubble(ctx, multiline, 22, 322, 456);
+            expect(ctx.textBaseline).toBe("alphabetic");
+            const contentCalls = calls.filter((call) => call.method === "fillText").slice(-3);
+            expect(contentCalls.map((call) => call.args[2])).toEqual(
+                [baseline, baseline + BUBBLE_LINE_HEIGHT, baseline + 2 * BUBBLE_LINE_HEIGHT]
+            );
+        } finally {
+            spy.mockRestore();
+        }
     });
 
     it("injects the feedback bubble as vector SVG below the graph", () => {

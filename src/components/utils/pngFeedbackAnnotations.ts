@@ -386,38 +386,38 @@ export const getFeedbackNodeBadges = (
     });
 
 /**
- * Cell states use the SVG's user coordinate system. Mapping through the live
- * SVG screen CTM keeps badges aligned when a viewBox or CSS/SVG transform is
- * present, then normalises the result back into exported logical pixels.
+ * Cell states live in the graph view's coordinates, while the exported image
+ * is drawn at the graph's own scale, centred horizontally and padded.
+ * Reproducing that transform is what keeps a badge on its node: an overlay
+ * drawn with the export's own arithmetic cannot drift from the graph the way
+ * a mapping through the on-screen SVG can once the user has zoomed or panned.
  */
-export const createSvgToCanvasPointConverter = (
-    svgElement: SVGSVGElement,
-    canvasWidth: number,
-    canvasHeight: number,
-    coordinateElement: SVGGraphicsElement = svgElement
+export const createGraphToExportPointConverter = (
+    bounds: GraphNodeBounds,
+    viewScale: number,
+    exportWidth: number,
+    padding: number
 ): PointConverter => {
-    try {
-        const matrix = coordinateElement.getScreenCTM();
-        const bounds = svgElement.getBoundingClientRect();
+    const finite = [
+        bounds.x,
+        bounds.y,
+        bounds.width,
+        bounds.height,
+        viewScale,
+        exportWidth,
+        padding
+    ].every(Number.isFinite);
 
-        if (!matrix || bounds.width <= 0 || bounds.height <= 0) {
-            return (point) => point;
-        }
-
-        return (point) => {
-            const svgPoint = svgElement.createSVGPoint();
-            svgPoint.x = point.x;
-            svgPoint.y = point.y;
-            const screenPoint = svgPoint.matrixTransform(matrix);
-
-            return {
-                x: (screenPoint.x - bounds.left) * canvasWidth / bounds.width,
-                y: (screenPoint.y - bounds.top) * canvasHeight / bounds.height
-            };
-        };
-    } catch {
+    if (!finite || viewScale <= 0) {
         return (point) => point;
     }
+
+    const offsetX = (exportWidth - bounds.width / viewScale) / 2;
+
+    return (point) => ({
+        x: (point.x - bounds.x) / viewScale + offsetX,
+        y: (point.y - bounds.y) / viewScale + padding
+    });
 };
 
 const drawLines = (

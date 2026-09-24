@@ -16,6 +16,7 @@ import {
 } from "@maxgraph/core";
 
 import {
+  PARALLELOGRAM_START_SIZE,
   SYMBOL_CONFIGS,
 } from "../utils/GraphConstants";
 
@@ -43,7 +44,7 @@ class ParallelogramShape extends ActorShape {
     this.fill = fill;
     this.stroke = stroke;
     this.strokeWidth = strokeWidth;
-    this.startSize = 0.12;
+    this.startSize = PARALLELOGRAM_START_SIZE;
   }
 
   isRoundable(): boolean {

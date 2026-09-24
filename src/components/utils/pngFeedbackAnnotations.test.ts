@@ -9,6 +9,7 @@ import {
     PNG_FEEDBACK_PANEL_WIDTH,
     calculateFeedbackPanelLayout,
     calculatePngExportDimensions,
+    createGraphToExportPointConverter,
     drawFeedbackNodeBadges,
     drawFeedbackPanel,
     getFeedbackNodeBadges,
@@ -349,5 +350,36 @@ describe("drawing", () => {
             .filter((call) => call.method === "fillText")
             .map((call) => call.args[0]);
         expect(texts).toContain("Feedback (1)");
+    });
+});
+
+describe("createGraphToExportPointConverter", () => {
+    // bounds 400x200 at view scale 2 -> a 200x100 export plus 24px padding.
+    const bounds = {x: 100, y: 50, width: 400, height: 200};
+    const convert = createGraphToExportPointConverter(bounds, 2, 248, 24);
+
+    it("places the graph origin one padding step in from the top-left", () => {
+        expect(convert({x: 100, y: 50})).toEqual({x: 24, y: 24});
+    });
+
+    it("scales cell coordinates down by the current view zoom", () => {
+        expect(convert({x: 500, y: 250})).toEqual({x: 224, y: 124});
+    });
+
+    it("centres the graph when the export is wider than the graph", () => {
+        const wide = createGraphToExportPointConverter(bounds, 2, 348, 24);
+
+        expect(wide({x: 100, y: 50})).toEqual({x: 74, y: 24});
+        expect(wide({x: 500, y: 250})).toEqual({x: 274, y: 124});
+    });
+
+    it.each([
+        ["a zero view scale", {...bounds}, 0, 248, 24],
+        ["a non-finite bound", {x: Number.NaN, y: 50, width: 400, height: 200}, 2, 248, 24],
+        ["a non-finite export width", {...bounds}, 2, Number.NaN, 24]
+    ])("falls back to identity coordinates for %s", (_label, b, scale, width, padding) => {
+        const fallback = createGraphToExportPointConverter(b, scale, width, padding);
+
+        expect(fallback({x: 500, y: 250})).toEqual({x: 500, y: 250});
     });
 });

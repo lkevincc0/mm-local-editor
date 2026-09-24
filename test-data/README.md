@@ -69,6 +69,23 @@ Useful for testing:
 - Models containing many feedback items
 - Feedback panel behaviour with a larger amount of test data
 
+### Doctoral Candidature Programme
+
+The largest fixture here, built as a stress test rather than as a realistic
+model. 153 goals — 126 `Do`, 6 `Be`, 6 `Feel`, 7 `Concern` and 8 `Who` —
+arranged as 10 top-level branches and 27 sub-branches with 88 leaf actions,
+plus 48 feedback items (36 open, 12 resolved, 21 replies).
+
+Useful for testing:
+- The review workflow with a realistic volume of feedback
+- Layout and performance at a size well beyond normal use
+- Whether the feedback panel stays usable with several hundred items
+
+The tree spans roughly 53,000 units, so the fitted view renders labels at about
+0.4 px and a whole-model image is not readable at any screenshot resolution.
+Capture it at a zoomed level instead, or read the structure from the branch
+list above. This is a property of a wide tree, not a rendering defect.
+
 ## Feedback Data
 
 Some models contain pre-populated feedback for testing the feedback feature.
