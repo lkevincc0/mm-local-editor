@@ -39,7 +39,7 @@ const treeListStyle: React.CSSProperties = {
     borderRadius: "8px",
     alignItems: "center",
     padding: "0.35rem 0.5rem",
-    minWidth: "100px",
+    minWidth: 0,
     width: "100%",
 };
 
@@ -190,7 +190,7 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
 }, ref) => {
     const treeItem = item as SortableTreeGoal;
     const isEditing = editingItemId === treeItem.instanceId;
-    const iconSize = 25;
+    const iconSize = 18;
     const {theme} = useTheme();
     const treeTokens = themeTokens[theme].tree;
     const isReference = existingGoalReferenceInstanceId.some(
@@ -359,8 +359,10 @@ const TreeRow = React.forwardRef<HTMLDivElement, TreeRowProps>(({
             style={{
               padding: ".5rem",
               flex: 1,
-              overflowWrap: "break-word",
-              wordBreak: "break-word",
+              minWidth: 0,
+              whiteSpace: "normal",
+              overflowWrap: "normal",
+              wordBreak: "normal",
             }}
           >
             {isEditing ? (

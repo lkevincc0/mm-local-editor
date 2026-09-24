@@ -1,10 +1,22 @@
 .delete-icon,
 .edit-icon {
-	visibility: hidden;
-	margin-right: 10px;
-	opacity: 0;
-	transform: translateY(1px);
-	transition: opacity 140ms ease, transform 140ms ease;
+    position: absolute;
+    top: 50%;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transform: translateY(-50%);
+
+    transition: opacity 140ms ease;
+}
+
+.edit-icon {
+    right: 34px;
+}
+
+.delete-icon {
+    right: 10px;
 }
 
 .delete-icon:hover,
@@ -16,7 +28,6 @@
 .tree-list:hover .edit-icon {
 	visibility: visible;
 	opacity: 1;
-	transform: translateY(0);
 }
 
 .tree-list:hover {
@@ -44,6 +55,23 @@
 
 .tree-collapse-icon:active {
 	transform: scale(0.82);
+}
+
+.tree-item-content {
+	font-size: 1rem;
+	line-height: 1.4;
+}
+
+@container (max-width: 320px) {
+    .tree-item-content {
+        font-size: 0.875rem;
+    }
+}
+
+@container (max-width: 260px) {
+    .tree-item-content {
+        font-size: 0.8rem;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -7,3 +7,7 @@
   background-color: gray;
   opacity: 50%;
 }
+
+.hierarchy-panel {
+    container-type: inline-size;
+}
