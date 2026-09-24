@@ -16,6 +16,10 @@ const LineIcon = assetUrl("/img/line.svg");
 export const LINE_SIZE = 50;             // Line length between nodes
 export const SYMBOL_WIDTH = 145;         // Base width of a symbol node
 export const SYMBOL_HEIGHT = 110;        // Base height of a symbol node
+// Each slant of a functional (Do) node is this fraction of the node width, so
+// the widest label a node can hold is (1 - PARALLELOGRAM_START_SIZE) of its
+// width. Sizing a node from its label must compensate for both slants.
+export const PARALLELOGRAM_START_SIZE = 0.12;
 
 // --- Vertex Font Styling ---
 export const VERTEX_FONT = {
